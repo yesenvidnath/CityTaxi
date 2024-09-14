@@ -1,6 +1,8 @@
 <?php
 session_start();
 include 'Database.php';
+include 'SessionManager.php';
+include 'Users.php'; // Include the Users class
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -13,22 +15,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     try {
-        $db = new Database();
-        $conn = $db->getConnection();
+        // Create an instance of the Users class and call fetchUserByEmail
+        $users = new Users();
+        $user = $users->fetchUserByEmail($email);
 
-        $sql = "SELECT * FROM Users WHERE Email = :email";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-
-        if ($stmt->rowCount() > 0) {
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
+        if ($user) {
             if ($password === $user['password']) {
-                $_SESSION['user_ID'] = $user['user_ID'];
-                $_SESSION['user_type'] = $user['user_type'];
+                // Store user details in the session
+                SessionManager::startSession();
+                SessionManager::set('user_ID', $user['user_ID']);
+                SessionManager::set('user_type', $user['user_type']);
+                SessionManager::set('first_name', $user['First_name']);
+                SessionManager::set('last_name', $user['Last_name']);
+                SessionManager::set('logged_in', true); // Mark the user as logged in
 
-                // Redirect to the login page with success status
+                // Redirect to the correct URL
                 header("Location: /CityTaxi/login.php?status=success&message=Login successful!");
                 exit();
             } else {
@@ -40,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
 
-        $db->close();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }

@@ -3,6 +3,8 @@
 include 'TemplateParts/Header/header.php';
 // Import the right-side nav menu
 include 'TemplateParts/Shared/NavMenu.php';
+
+
 ?>
 
 <div class="container-fluid text-center">
@@ -10,25 +12,33 @@ include 'TemplateParts/Shared/NavMenu.php';
         <div class="col-md-12">
             <img src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/Assets/Img/taxi-icon.png" alt="Taxi Icon" class="img-fluid" style="width: 150px;">
             <h1 class="display-4">Your Journey, Your Control</h1>
-            <div class="mt-4">
-                <button class="btn btn-warning btn-lg mr-2">Apply to Drive</button>
-                <button class="btn btn-outline-secondary btn-lg">Sign up to Ride</button>
-            </div>
-            <center><p><a href="login.php">Have a Account ? Login in now</a></p></center>
+
+
+                <div class="mt-4">
+                    <button class="btn btn-warning btn-lg mr-2">Apply to Drive</button>
+                    <button class="btn btn-outline-secondary btn-lg">Sign up to Ride</button>
+                </div>
+                <center><p><a href="login.php">Have an Account? Log in now</a></p></center>
+            
         </div>
     </div>
 </div>
 
-
+<!-- Display SweetAlert alerts if status is passed -->
 <?php 
-if (isset($_GET['status']) && isset($_GET['message'])) {
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showAlert('".$_GET['status']."', '".$_GET['message']."');
-        });
-    </script>";
-}
+    if (isset($_GET['status'])) {
+        $status = $_GET['status'];
+        $message = htmlspecialchars($_GET['message']);
+        echo "
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showAlert('$status', '$message');
+            });
+        </script>
+        ";
+    }
 ?>
+
 
 <?php
 // Import the footer

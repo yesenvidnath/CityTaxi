@@ -16,6 +16,30 @@ closeMenu.addEventListener('click', () => {
 });
 
 
+
+// Function to confirm logout
+function confirmLogout() {
+    swal({
+        title: "Are you sure?",
+        text: "You will be logged out of the application.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, log me out!",
+        cancelButtonText: "Cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+    },
+    function(isConfirm) {
+        if (isConfirm) {
+            // Redirect to the logout PHP script
+            window.location.href = "/CityTaxi/Functions/Common/logout.php";
+        }
+    });
+}
+
+
+
 // Display Alert Accordingly
 function showAlert(status, message) {
     // Ensure 'status' is either 'success' or 'error'
