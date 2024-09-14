@@ -1,41 +1,36 @@
 <?php
-include_once 'Functions/Common/Users.php';
-
-$users = new Users();
-$userList = $users->fetchAllUsers();
+// Import the header
+include 'TemplateParts/Header/header.php';
+// Import the right-side nav menu
+include 'TemplateParts/Shared/NavMenu.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User List</title>
-    <link rel="stylesheet" href="Assets/Css/style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>User List</h1>
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($userList as $user): ?>
-                    <tr>
-                        <td><?php echo $user['user_ID']; ?></td>
-                        <td><?php echo $user['First_name']; ?></td>
-                        <td><?php echo $user['Last_name']; ?></td>
-                        <td><?php echo $user['Email']; ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+<div class="container-fluid text-center">
+    <div class="row align-items-center" style="height: 100vh;">
+        <div class="col-md-12">
+            <img src="<?php echo dirname($_SERVER['PHP_SELF']); ?>/Assets/Img/taxi-icon.png" alt="Taxi Icon" class="img-fluid" style="width: 150px;">
+            <h1 class="display-4">Your Journey, Your Control</h1>
+            <div class="mt-4">
+                <button class="btn btn-warning btn-lg mr-2">Apply to Drive</button>
+                <button class="btn btn-outline-secondary btn-lg">Sign up to Ride</button>
+            </div>
+            <center><p><a href="login.php">Have a Account ? Login in now</a></p></center>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+
+<?php 
+if (isset($_GET['status']) && isset($_GET['message'])) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showAlert('".$_GET['status']."', '".$_GET['message']."');
+        });
+    </script>";
+}
+?>
+
+<?php
+// Import the footer
+include 'TemplateParts/Footer/footer.php';
+?>
