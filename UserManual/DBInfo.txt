@@ -1,0 +1,226 @@
+## The FInalized 
+
+-- Users Table
+CREATE TABLE Users (
+    user_ID INT IDENTITY(1,1) PRIMARY KEY,
+    user_type VARCHAR(50),
+    password VARCHAR(255),
+    Email VARCHAR(255) NOT NULL,
+    First_name VARCHAR(50),
+    Last_name VARCHAR(50),
+    NIC_No VARCHAR(20),
+    mobile_number VARCHAR(15),
+    Address VARCHAR(255),
+    user_img VARCHAR(255)
+);
+
+-- Vehicle Owner Table
+CREATE TABLE Vehicle_Owner (
+    Vehicle_Owner_ID INT IDENTITY(1,1) PRIMARY KEY,
+    User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
+    Driving_Licence_No VARCHAR(50),
+    Licence_ID INT
+);
+
+-- Passengers Table
+CREATE TABLE Passengers (
+    Passenger_ID INT IDENTITY(1,1) PRIMARY KEY,
+    User_ID INT FOREIGN KEY REFERENCES Users(user_ID)
+);
+
+-- License Table
+CREATE TABLE License (
+    License_ID INT IDENTITY(1,1) PRIMARY KEY,
+    User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
+    NIC_Img_Front VARCHAR(255),
+    NIC_Img_Back VARCHAR(255),
+    Drivers_license_Front_ID VARCHAR(255),
+    Drivers_license_Back_ID VARCHAR(255)
+);
+
+-- Drivers Table
+CREATE TABLE Drivers (
+    Driver_ID INT IDENTITY(1,1) PRIMARY KEY,
+    User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
+    Licence_ID INT FOREIGN KEY REFERENCES License(License_ID),
+    Availability BIT  -- 1 for available, 0 for unavailable
+);
+
+-- Taxis Table
+CREATE TABLE Taxis (
+    Taxi_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Taxi_type VARCHAR(50),
+    Vehicle_Owner_ID INT FOREIGN KEY REFERENCES Vehicle_Owner(Vehicle_Owner_ID),
+    Plate_number VARCHAR(20),
+    Registration_Date DATE,
+    RevenueLicence VARCHAR(50),
+    Insurance_info VARCHAR(255),
+    Revenue_licence_Img VARCHAR(255),
+    Insurance_Card_Img VARCHAR(255),
+    Vehicle_Img VARCHAR(255)
+);
+
+-- Reservations Table
+CREATE TABLE Reservations (
+    Reservation_ID INT IDENTITY(1,1) PRIMARY KEY,
+    TaxiID INT FOREIGN KEY REFERENCES Taxis(Taxi_ID),
+    Start_Location VARCHAR(255),
+    End_Location VARCHAR(255),
+    Driver_ID INT FOREIGN KEY REFERENCES Drivers(Driver_ID),
+    Passenger_ID INT FOREIGN KEY REFERENCES Passengers(Passenger_ID)
+);
+
+-- Rides Table
+CREATE TABLE Rides (
+    Ride_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Taxi_ID INT FOREIGN KEY REFERENCES Taxis(Taxi_ID),
+    Driver_ID INT FOREIGN KEY REFERENCES Drivers(Driver_ID),
+    Passenger_ID INT FOREIGN KEY REFERENCES Passengers(Passenger_ID),
+    Type VARCHAR(50),  -- DayRide, Booking
+    Start_Location VARCHAR(255),
+    End_Location VARCHAR(255),
+    Start_time TIME,
+    End_time TIME,
+    Start_date DATE,
+    End_date DATE,
+    Total_distance DECIMAL(10, 2),
+    Amount DECIMAL(10, 2),
+    Status VARCHAR(50)  -- Accepted, Rejected, Canceled, Rescheduled
+);
+
+-- Payments Table
+CREATE TABLE Payments (
+    Payment_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Payment_date DATE,
+    Payment_time TIME,
+    Amount DECIMAL(10, 2),
+    Driver_ID INT FOREIGN KEY REFERENCES Drivers(Driver_ID),
+    Taxi_ID INT FOREIGN KEY REFERENCES Taxis(Taxi_ID),
+    Ride_ID INT FOREIGN KEY REFERENCES Rides(Ride_ID)
+);
+
+-- Ratings Table
+CREATE TABLE Ratings (
+    Rating_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Rate INT CHECK (Rate >= 1 AND Rate <= 5),  -- Rating between 1 and 5
+    Comment VARCHAR(255),
+    Driver_ID INT FOREIGN KEY REFERENCES Drivers(Driver_ID),
+    Passenger_ID INT FOREIGN KEY REFERENCES Passengers(Passenger_ID)
+);
+
+-- Invoices Table
+CREATE TABLE Invoices (
+    Invoice_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Payment_ID INT FOREIGN KEY REFERENCES Payments(Payment_ID)
+);
+
+-- Admin Table
+CREATE TABLE Admin (
+    Admin_ID INT IDENTITY(1,1) PRIMARY KEY,
+    User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
+    Permission VARCHAR(255),
+    Description VARCHAR(255)
+);
+
+
+
+
+## Sample Data For the DB 
+
+-- Insert into Users table (Passenger, Driver, Admin)
+INSERT INTO Users (user_type, password, Email, First_name, Last_name, NIC_No, Address, user_img)
+VALUES 
+('Passenger', 'pass123', 'john.doe@example.com', 'John', 'Doe', '982345678V', '0766588440', '123 Main St, City', 'john_img.jpg'),
+('Driver', 'driver123', 'jane.smith@example.com', 'Jane', 'Smith', '983456789V', '0766588440', '456 Side St, City', 'jane_img.jpg'),
+('Admin', 'admin123', 'admin@example.com', 'Admin', 'User', '999123456V','0766588440', 'Admin Address', 'admin_img.jpg');
+
+-- Insert into Vehicle Owner table
+INSERT INTO Vehicle_Owner (User_ID, Driving_Licence_No, Licence_ID)
+VALUES 
+(2, 'D123456789', 1);  -- Jane Smith is a vehicle owner
+
+-- Insert into License table
+INSERT INTO License (User_ID, NIC_Img_Front, NIC_Img_Back, Drivers_license_Front_ID, Drivers_license_Back_ID)
+VALUES 
+(2, 'jane_nic_front.jpg', 'jane_nic_back.jpg', 'jane_dl_front.jpg', 'jane_dl_back.jpg');
+
+-- Insert into Drivers table
+INSERT INTO Drivers (User_ID, Licence_ID, Availability)
+VALUES 
+(2, 1, 1);  -- Jane Smith is available as a driver
+
+-- Insert into Taxis table
+INSERT INTO Taxis (Taxi_type, Vehicle_Owner_ID, Plate_number, Registration_Date, RevenueLicence, Insurance_info, Revenue_licence_Img, Insurance_Card_Img, Vehicle_Img)
+VALUES 
+('Car', 1, 'ABC-1234', '2023-01-01', 'RL123', 'Fully Insured', 'rev_licence_img.jpg', 'insurance_card_img.jpg', 'car_img.jpg');
+
+-- Insert into Passengers table
+INSERT INTO Passengers (User_ID)
+VALUES 
+(1);  -- John Doe is a passenger
+
+-- Insert into Reservations table
+INSERT INTO Reservations (TaxiID, Start_Location, End_Location, Driver_ID, Passenger_ID)
+VALUES 
+(1, '123 Main St, City', '456 Park Ave, City', 1, 1);  -- Jane Smith drives John Doe
+
+-- Insert into Rides table
+INSERT INTO Rides (Taxi_ID, Driver_ID, Passenger_ID, Type, Start_Location, End_Location, Start_time, End_time, Start_date, End_date, Total_distance, Amount, Status)
+VALUES 
+(1, 1, 1, 'DayRide', '123 Main St', '456 Park Ave', '10:00', '10:30', '2023-09-10', '2023-09-10', 15.5, 20.00, 'Accepted');
+
+-- Insert into Payments table
+INSERT INTO Payments (Payment_date, Payment_time, Amount, Driver_ID, Taxi_ID, Ride_ID)
+VALUES 
+('2023-09-10', '10:45', 20.00, 1, 1, 1);
+
+-- Insert into Ratings table
+INSERT INTO Ratings (Rate, Comment, Driver_ID, Passenger_ID)
+VALUES 
+(5, 'Great ride, very comfortable!', 1, 1);
+
+-- Insert into Invoices table
+INSERT INTO Invoices (Payment_ID)
+VALUES 
+(1);
+
+-- Insert into Admin table
+INSERT INTO Admin (User_ID, Permission, Description)
+VALUES 
+(3, 'Full Access', 'Main administrator');
+
+
+
+
+## Stored Prosedures 
+
+01. 
+Prosedure Name : GetUserByEmail
+BEGIN
+    SELECT * FROM Users WHERE Email = userEmail;
+END
+
+
+02. 
+Prosedure Name : GetPassengerDetails
+DELIMITER $$
+
+CREATE PROCEDURE GetPassengerDetails(IN passengerID INT)
+BEGIN
+    -- Fetch details from ratings
+    SELECT `Rating_ID`, `Rate`, `Comment`, `Driver_ID`, `Passenger_ID` 
+    FROM `ratings` 
+    WHERE `Passenger_ID` = passengerID;
+
+    -- Fetch details from reservations
+    SELECT `Reservation_ID`, `TaxiID`, `Start_Location`, `End_Location`, `Driver_ID`, `Passenger_ID` 
+    FROM `reservations` 
+    WHERE `Passenger_ID` = passengerID;
+
+    -- Fetch details from rides
+    SELECT `Ride_ID`, `Taxi_ID`, `Driver_ID`, `Passenger_ID`, `Type`, `Start_Location`, `End_Location`, `Start_time`, `End_time`, `Start_date`, `End_date`, `Total_distance`, `Amount`, `Status` 
+    FROM `rides` 
+    WHERE `Passenger_ID` = passengerID;
+END $$
+
+DELIMITER ;

@@ -65,3 +65,61 @@ function clearURLParams() {
         window.history.pushState({ path: newUrl }, '', newUrl);
     }
 }
+
+
+// Registration Js Funtions
+
+function togglePasswordVisibility() {
+    var password = document.getElementById("password");
+    var confirm_password = document.getElementById("confirm_password");
+    if (password.type === "password") {
+        password.type = "text";
+        confirm_password.type = "text";
+    } else {
+        password.type = "password";
+        confirm_password.type = "password";
+    }
+}
+
+$(document).ready(function() {
+    $("#registrationForm").validate({
+        errorElement: 'div',
+        errorClass: 'invalid-feedback',
+        highlight: function(element, errorClass, validClass) {
+            $(element).addClass('is-invalid').removeClass('is-valid');
+        },
+        unhighlight: function(element, errorClass, validClass) {
+            $(element).addClass('is-valid').removeClass('is-invalid');
+        },
+        errorPlacement: function(error, element) {
+            error.insertAfter(element);
+        },
+        rules: {
+            confirm_password: { // Special handling for confirm password to match
+                equalTo: "#password"
+            }
+        }
+    });
+
+    // Define custom messages and rules based on data attributes
+    $("#registrationForm input").each(function() {
+        $(this).rules('add', {
+            required: true,
+            messages: {
+                required: $(this).data('msg')
+            }
+        });
+    });
+});
+
+
+/**
+ * Hides elements on the page based on the provided CSS selector.
+ * @param {string} selector - The CSS selector of the elements to hide.
+ */
+function hideElementsBySelector(selector) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
+        element.style.display = 'none';
+    });
+}

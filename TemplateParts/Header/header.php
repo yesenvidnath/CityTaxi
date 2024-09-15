@@ -7,19 +7,19 @@
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
-    <!-- Font Awesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
- 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
     
-    <link rel="stylesheet" href="<?php echo dirname($_SERVER['PHP_SELF']); ?>/Assets/Css/style.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/CityTaxi/Assets/Css/style.css">
 
     <?php 
+        include $rootPath . 'Functions/Common/PathHandler.php'; 
+        showLinkOnProfilePage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/profile.css">');
+
         // Include the SessionManager
-        include 'Functions/Common/SessionManager.php';
+        include $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/SessionManager.php';
         // Start the session to check if the user is logged in
         SessionManager::startSession();
     ?>
@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    
+
     <!-- Header -->
     <header class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
         <!-- Brand Name -->
@@ -43,7 +43,9 @@
                     <h5 class="mb-0">Welcome, <?php echo SessionManager::get('first_name') . ' ' . SessionManager::get('last_name'); ?>!</h5>
                 </div>
                 <!-- Logout Button -->
-                <a href="javascript:void(0);" onclick="confirmLogout();" class="btn btn-secondary btn-sm ml-3">Logout</a>
+                <a href="TemplateParts/Passenger/profile.php" class="btn btn-secondary btn-sm ml-3 " id="myprofile-hide-btn">Visit My Profile</a>
+                <!-- Logout Button -->
+                <a href="javascript:void(0);" onclick="confirmLogout();" class="btn btn-outline-secondary btn-sm ml-3">Logout</a>
             <?php else: ?>
                 <!-- Login Button -->
                 <a href="login.php" class="btn btn-outline-secondary btn-sm ml-3">Login</a>
