@@ -63,12 +63,7 @@ $imagePath = "/CityTaxi/Assets/Img/Passenger/" . $userImage;
 </script>
 
 
-
-<!-- Include the footer -->
 <?php 
-include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php'; 
-?>
-
-<?php 
+include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
 include $rootPath . 'TemplateParts/Footer/footer.php'; 
 ?>

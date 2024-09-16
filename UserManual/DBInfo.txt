@@ -224,3 +224,20 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+03.
+Prosedure Name : GetDriverDetails
+DELIMITER $$
+
+CREATE PROCEDURE GetDriverDetails(IN driverID INT)
+BEGIN
+    -- Fetch driver details
+    SELECT d.Driver_ID, d.User_ID, d.Licence_ID, d.Availability,
+           u.First_name, u.Last_name, u.Email, u.NIC_No, u.mobile_number, u.Address, u.user_img
+    FROM drivers d
+    JOIN users u ON d.User_ID = u.user_ID
+    WHERE d.Driver_ID = driverID;
+END $$
+
+DELIMITER ;

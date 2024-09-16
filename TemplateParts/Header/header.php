@@ -17,6 +17,7 @@
     <?php 
         include $rootPath . 'Functions/Common/PathHandler.php'; 
         showLinkOnProfilePage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/profile.css">');
+        showLinkOnMyRides('<link rel="stylesheet" href="/CityTaxi/Assets/Css/myrides.css">');
 
         // Include the SessionManager
         include $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/SessionManager.php';
@@ -43,7 +44,7 @@
                     <h5 class="mb-0">Welcome, <?php echo SessionManager::get('first_name') . ' ' . SessionManager::get('last_name'); ?>!</h5>
                 </div>
                 <!-- Logout Button -->
-                <a href="TemplateParts/Passenger/profile.php" class="btn btn-secondary btn-sm ml-3 " id="myprofile-hide-btn">Visit My Profile</a>
+                <a href="Pages/Passenger/profile.php" class="btn btn-secondary btn-sm ml-3 " id="myprofile-hide-btn">Visit My Profile</a>
                 <!-- Logout Button -->
                 <a href="javascript:void(0);" onclick="confirmLogout();" class="btn btn-outline-secondary btn-sm ml-3">Logout</a>
             <?php else: ?>

@@ -3,6 +3,7 @@ $rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/';
 
 include_once $rootPath . 'Functions/Common/Database.php';
 include_once $rootPath . 'Functions/Common/Users.php';
+include_once $rootPath . 'Functions/Driver/Driver.php';
 
 class Passenger {
     private $db;
@@ -29,6 +30,7 @@ class Passenger {
         return null;
     }
 
+
     // Get Passenger Details using the stored procedure
     public function getPassengerDetails($userID) {
         // Get Passenger ID from User ID
@@ -50,6 +52,13 @@ class Passenger {
             $results[] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } while ($stmt->nextRowset());
 
+        // Add driver names to the results
+        $driver = new Driver(); // Create a new Driver object
+        foreach ($results[2] as &$ride) { // Assuming rides are in the third result set
+            $driverDetails = $driver->getDriverDetails($ride['Driver_ID']);
+            $ride['Driver_Name'] = $driverDetails['First_name'] . ' ' . $driverDetails['Last_name'];
+        }
+
         return $results;
     }
 
@@ -60,3 +69,4 @@ class Passenger {
     }
 }
 ?>
+
