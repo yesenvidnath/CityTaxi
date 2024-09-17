@@ -9,15 +9,20 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-    
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
     <!-- Main CSS -->
     <link rel="stylesheet" href="/CityTaxi/Assets/Css/style.css">
 
     <?php 
+        $rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/'; 
+        
         include $rootPath . 'Functions/Common/PathHandler.php'; 
         showLinkOnProfilePage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/profile.css">');
         showLinkOnMyRides('<link rel="stylesheet" href="/CityTaxi/Assets/Css/myrides.css">');
+        showLinkOnRide('<link rel="stylesheet" href="/CityTaxi/Assets/Css/ride.css">');
 
         // Include the SessionManager
         include $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/SessionManager.php';

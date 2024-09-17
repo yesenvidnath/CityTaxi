@@ -43,6 +43,7 @@ CREATE TABLE Drivers (
     Driver_ID INT IDENTITY(1,1) PRIMARY KEY,
     User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
     Licence_ID INT FOREIGN KEY REFERENCES License(License_ID),
+    Current_Location VARCHAR(255),
     Availability BIT  -- 1 for available, 0 for unavailable
 );
 
