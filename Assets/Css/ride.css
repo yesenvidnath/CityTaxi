@@ -50,3 +50,66 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.autocomplete-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  z-index: 1000;
+  width: 35%;
+}
+
+.autocomplete-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.autocomplete-list li:hover {
+  background-color: #f0f0f0;
+}
+
+
+.taxi-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.taxi-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  text-align: center;
+  width: 200px;
+}
+
+.taxi-card img {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.taxi-card h3 {
+  font-size: 18px;
+}
+
+#changeRouteBtn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #17a2b8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#changeRouteBtn:hover {
+  background-color: #138496;
+}
+

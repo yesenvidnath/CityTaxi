@@ -123,6 +123,15 @@ CREATE TABLE Admin (
     Description VARCHAR(255)
 );
 
+CREATE TABLE `DriverVehicleAssignment` (
+    `Assignment_ID` INT AUTO_INCREMENT PRIMARY KEY,
+    `Driver_ID` INT NOT NULL,
+    `Taxi_ID` INT NOT NULL,
+    `Assignment_Date` DATE NOT NULL,
+    FOREIGN KEY (`Driver_ID`) REFERENCES `drivers`(`Driver_ID`),
+    FOREIGN KEY (`Taxi_ID`) REFERENCES `taxis`(`Taxi_ID`)
+);
+
 
 
 
@@ -190,7 +199,10 @@ INSERT INTO Admin (User_ID, Permission, Description)
 VALUES 
 (3, 'Full Access', 'Main administrator');
 
-
+-- Insert into DriverVehicleAssignment table
+INSERT INTO `DriverVehicleAssignment` (`Driver_ID`, `Taxi_ID`, `Assignment_Date`) 
+VALUES 
+(1, 1, CURDATE())
 
 
 ## Stored Prosedures 
@@ -239,6 +251,19 @@ BEGIN
     FROM drivers d
     JOIN users u ON d.User_ID = u.user_ID
     WHERE d.Driver_ID = driverID;
+END $$
+
+DELIMITER ;
+
+
+04.
+Prosedure Name : GetTaxiTypes
+DELIMITER $$
+
+CREATE PROCEDURE GetTaxiTypes()
+BEGIN
+    SELECT `Taxi_ID`, `Taxi_type`, `Vehicle_Img` 
+    FROM `taxis`;
 END $$
 
 DELIMITER ;
