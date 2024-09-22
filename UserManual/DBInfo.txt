@@ -58,7 +58,8 @@ CREATE TABLE Taxis (
     Insurance_info VARCHAR(255),
     Revenue_licence_Img VARCHAR(255),
     Insurance_Card_Img VARCHAR(255),
-    Vehicle_Img VARCHAR(255)
+    Vehicle_Img VARCHAR(255),
+    Rate_per_Km DECIMAL(10, 2) 
 );
 
 -- Reservations Table
@@ -264,6 +265,20 @@ CREATE PROCEDURE GetTaxiTypes()
 BEGIN
     SELECT `Taxi_ID`, `Taxi_type`, `Vehicle_Img` 
     FROM `taxis`;
+END $$
+
+DELIMITER ;
+
+
+05. 
+Prosedure Name : GetTaxiRatesByType
+DELIMITER $$
+
+CREATE PROCEDURE GetTaxiRatesByType()
+BEGIN
+    SELECT `Taxi_type`, `Rate_per_Km`
+    FROM `taxis`
+    GROUP BY `Taxi_type`; -- Ensures unique taxi types
 END $$
 
 DELIMITER ;

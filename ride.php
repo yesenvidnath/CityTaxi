@@ -9,14 +9,31 @@ $openCageApiKey = $dotenv['OpenCage_API_Key'];
 $tomTomApiKey = $dotenv['TomTom_API_Key']; // Fetch TomTom API Key
 
 // Include the ride functions
-include_once 'Functions/Common/ride.php';
+include_once 'Functions/Common/Ride.php';
 
-// Step 2: Fetch the taxi types using the stored procedure
+// Fetch the taxi types and rates
+$ride = new Ride();
 $taxiTypes = getTaxiTypes();
+$taxiRates = getTaxiRatesByType();
 
+// Map the rates to taxi types for easy access
+$taxiRatesMap = [];
+foreach ($taxiRates as $rate) {
+    $taxiRatesMap[$rate['Taxi_type']] = $rate;
+}
+
+// Get available drivers after the route is confirmed
+$availableDrivers = [];
+if (isset($_POST['startLat']) && isset($_POST['startLng']) && isset($_POST['taxiType'])) {
+    $startLat = $_POST['startLat'];
+    $startLng = $_POST['startLng'];
+    $taxiType = $_POST['taxiType'];
+    $radius = 10; // 10 km radius
+    $availableDrivers = $ride->getAvailableDriversByVehicleType($taxiType, $startLat, $startLng, $radius);
+}
 ?>
 
-<!-- Main content -->
+
 <!-- Main content -->
 <section class="ride-info-section">
     <div class="driver-info" id="step1">
@@ -42,18 +59,48 @@ $taxiTypes = getTaxiTypes();
     <div class="taxi-selection-section" id="step2" style="display: none;">
         <h2>Select Your Taxi Type</h2>
         <div class="row">
-            <?php foreach ($taxiTypes as $taxi): ?>
+            <?php
+            // Array to keep track of already displayed taxi types
+            $displayedTypes = [];
+
+            foreach ($taxiTypes as $taxi):
+                // Check if this taxi type has already been displayed
+                if (!in_array($taxi['Taxi_type'], $displayedTypes)):
+                    // Add the taxi type to the displayedTypes array
+                    $displayedTypes[] = $taxi['Taxi_type'];
+                    
+                    // Get the rate details for the taxi type
+                    $ratePerKM = isset($taxiRatesMap[$taxi['Taxi_type']]) ? $taxiRatesMap[$taxi['Taxi_type']]['Rate_per_Km'] : 'N/A';
+            ?>
                 <div class="col-lg-4">
                     <div class="taxi-card">
                         <img src="Assets/img/taxis/<?php echo $taxi['Taxi_type'] == 'Car' ? 'car.png' : $taxi['Vehicle_Img']; ?>" alt="<?php echo $taxi['Taxi_type']; ?>" class="img-fluid">
                         <h3><?php echo $taxi['Taxi_type']; ?></h3>
+                        <p>Rate per KM: <?php echo $ratePerKM; ?></p>
+                        <p>Total Price: <span id="price-<?php echo $taxi['Taxi_type']; ?>"></span></p>
                         <button class="btn btn-warning" onclick="selectTaxiType('<?php echo $taxi['Taxi_type']; ?>')">Select</button>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php
+                endif;
+            endforeach;
+            ?>
         </div>
         <!-- Change Route Button -->
         <button class="btn btn-danger" id="changeRouteBtn" onclick="confirmChangeRoute()">Change Route</button>
+    </div>
+
+    <div class="driver-availability-section" id="step3" style="display: none;">
+        <h2>Available Drivers Nearby</h2>
+        <div id="map-drivers" style="width: 800px; height: 600px;"></div>
+        <div id="driverDetails">
+            <h4>Driver Details</h4>
+            <ul id="availableDriversList">
+                <?php foreach ($availableDrivers as $driver): ?>
+                    <li><?php echo $driver['First_name'] . ' ' . $driver['Last_name']; ?> (<?php echo $driver['Taxi_type']; ?>)</li>
+                <?php endforeach; ?>
+            </ul>
+        </div>  
     </div>
 
     <div class="map-info">
@@ -64,8 +111,6 @@ $taxiTypes = getTaxiTypes();
         </div>
     </div>
 </section>
-
-
 
 <!-- Display SweetAlert alerts if status is passed -->
 <?php 
@@ -83,12 +128,26 @@ $taxiTypes = getTaxiTypes();
 ?>
 
 <script>
+    const availableDrivers = <?php echo json_encode($availableDrivers); ?>;
+    const tomTomApiKey = '<?php echo $tomTomApiKey; ?>';
+    
     const openRouteServiceApiKey = '<?php echo $openRouteServiceApiKey; ?>';
     const openCageApiKey = '<?php echo $openCageApiKey; ?>';
     const tomTomApiKey = '<?php echo $tomTomApiKey; ?>';
+    var totalDistance = 0; 
+
+    // Function to update the taxi prices based on the total distance
+    function updateTaxiPrices() {
+        <?php foreach ($taxiRates as $rate): ?>
+            var ratePerKM = <?php echo $rate['Rate_per_Km']; ?>;
+            var totalPrice = (totalDistance * ratePerKM).toFixed(2);
+            document.getElementById('price-<?php echo $rate['Taxi_type']; ?>').textContent = totalPrice + ' LKR';
+        <?php endforeach; ?>
+    }
+
 </script>
 
 <?php 
-include 'TemplateParts/Shared/NavMenu.php'; 
-include 'TemplateParts/Footer/footer.php'; 
+    include 'TemplateParts/Shared/NavMenu.php'; 
+    include 'TemplateParts/Footer/footer.php'; 
 ?>

@@ -1,6 +1,9 @@
 // Initialize the map using TomTom's base layer
 var map = L.map('map').setView([7.8731, 80.7718], 7); // Centered on Sri Lanka
 
+// Global variable to store the total distance of the route
+var totalDistance = 0; 
+
 // Set up the TomTom layer with the language set to English (en-GB)
 L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${tomTomApiKey}&language=en-GB`, {
     maxZoom: 19,
@@ -76,36 +79,43 @@ function showRoute() {
     var startLocation = document.getElementById('startLocation').value;
     var endLocation = document.getElementById('endLocation').value;
 
+    // Get coordinates for both locations
     getCoordinates(startLocation, function(startCoords) {
         getCoordinates(endLocation, function(endCoords) {
+            // Request the route from OpenRouteService API
             fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=${openRouteServiceApiKey}&start=${startCoords[1]},${startCoords[0]}&end=${endCoords[1]},${endCoords[0]}`)
                 .then(response => response.json())
                 .then(routeData => {
-                    // Do not remove the route layer if already confirmed
-                    if (!routeLayer) {
-                        // Get the coordinates for the route
-                        var routeCoords = routeData.features[0].geometry.coordinates.map(function(coord) {
-                            return [coord[1], coord[0]];
-                        });
-
-                        // Draw the route on the map
-                        routeLayer = L.polyline(routeCoords, { color: 'blue' }).addTo(map);
+                    if (routeLayer) {
+                        map.removeLayer(routeLayer);
                     }
 
-                    // Add markers and adjust the map view
+                    // Get the coordinates for the route
+                    var routeCoords = routeData.features[0].geometry.coordinates.map(function(coord) {
+                        return [coord[1], coord[0]];
+                    });
+
+                    // Draw the route on the map
+                    routeLayer = L.polyline(routeCoords, { color: 'blue' }).addTo(map);
+
+                    // Add markers
                     L.marker(startCoords).addTo(map).bindPopup('Start Location');
                     L.marker(endCoords).addTo(map).bindPopup('End Location');
+
+                    // Fit the map to show the entire route
                     map.fitBounds(routeLayer.getBounds());
 
-                    // Show route details
-                    var distance = routeData.features[0].properties.segments[0].distance / 1000; // Convert to km
-                    var duration = routeData.features[0].properties.segments[0].duration / 60; // Convert to minutes
+                    // Store the total distance (in kilometers)
+                    totalDistance = routeData.features[0].properties.segments[0].distance / 1000;
+
+                    // Display route details
                     document.getElementById('routeDetails').innerHTML = `
-                        Total Distance: ${distance.toFixed(2)} km<br>
-                        Estimated Travel Time: ${duration.toFixed(2)} minutes
+                        Total Distance: ${totalDistance.toFixed(2)} km<br>
+                        Estimated Travel Time: ${routeData.features[0].properties.segments[0].duration / 60} minutes
                     `;
 
-                    document.getElementById('confirmRouteBtn').style.display = 'inline-block'; // Show confirm button
+                    // Show confirm button for route
+                    document.getElementById('confirmRouteBtn').style.display = 'inline-block';
                 })
                 .catch(error => {
                     alert('Error fetching route: ' + error);
@@ -113,6 +123,7 @@ function showRoute() {
         });
     });
 }
+
 
 // Function to get the user's current location using TomTom API
 function useTomTomLocation() {
@@ -182,7 +193,7 @@ function selectTaxiType(taxiType) {
 var routeLayer = null; 
 var currentLocationMarker = null;
 
-// Function to confirm the selected route
+// Call this function after the route is confirmed to update prices
 function confirmRoute() {
     swal({
         title: "Confirm Route",
@@ -196,6 +207,7 @@ function confirmRoute() {
         swal("Confirmed!", "Route has been confirmed.", "success");
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
+        updateTaxiPrices(); // Update the prices after route confirmation
     });
 }
 
