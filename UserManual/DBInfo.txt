@@ -282,3 +282,20 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+06.
+Prosedure Name : GetAvailableDrivers
+DELIMITER $$
+
+CREATE PROCEDURE GetAvailableDrivers()
+BEGIN
+    SELECT d.Driver_ID, d.Current_Location, u.First_name, u.Last_name, t.Taxi_type
+    FROM drivers d
+    JOIN users u ON d.User_ID = u.user_ID
+    JOIN drivervehicleassignment dva ON d.Driver_ID = dva.Driver_ID
+    JOIN taxis t ON dva.Taxi_ID = t.Taxi_ID
+    WHERE d.Availability = 1;
+END $$
+
+DELIMITER ;

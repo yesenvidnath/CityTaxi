@@ -12,7 +12,6 @@ $tomTomApiKey = $dotenv['TomTom_API_Key']; // Fetch TomTom API Key
 include_once 'Functions/Common/Ride.php';
 
 // Fetch the taxi types and rates
-$ride = new Ride();
 $taxiTypes = getTaxiTypes();
 $taxiRates = getTaxiRatesByType();
 
@@ -20,16 +19,6 @@ $taxiRates = getTaxiRatesByType();
 $taxiRatesMap = [];
 foreach ($taxiRates as $rate) {
     $taxiRatesMap[$rate['Taxi_type']] = $rate;
-}
-
-// Get available drivers after the route is confirmed
-$availableDrivers = [];
-if (isset($_POST['startLat']) && isset($_POST['startLng']) && isset($_POST['taxiType'])) {
-    $startLat = $_POST['startLat'];
-    $startLng = $_POST['startLng'];
-    $taxiType = $_POST['taxiType'];
-    $radius = 10; // 10 km radius
-    $availableDrivers = $ride->getAvailableDriversByVehicleType($taxiType, $startLat, $startLng, $radius);
 }
 ?>
 
@@ -90,19 +79,6 @@ if (isset($_POST['startLat']) && isset($_POST['startLng']) && isset($_POST['taxi
         <button class="btn btn-danger" id="changeRouteBtn" onclick="confirmChangeRoute()">Change Route</button>
     </div>
 
-    <div class="driver-availability-section" id="step3" style="display: none;">
-        <h2>Available Drivers Nearby</h2>
-        <div id="map-drivers" style="width: 800px; height: 600px;"></div>
-        <div id="driverDetails">
-            <h4>Driver Details</h4>
-            <ul id="availableDriversList">
-                <?php foreach ($availableDrivers as $driver): ?>
-                    <li><?php echo $driver['First_name'] . ' ' . $driver['Last_name']; ?> (<?php echo $driver['Taxi_type']; ?>)</li>
-                <?php endforeach; ?>
-            </ul>
-        </div>  
-    </div>
-
     <div class="map-info">
         <div id="map" style="width: 800px; height: 600px;"></div>
         <div id="details">
@@ -128,13 +104,10 @@ if (isset($_POST['startLat']) && isset($_POST['startLng']) && isset($_POST['taxi
 ?>
 
 <script>
-    const availableDrivers = <?php echo json_encode($availableDrivers); ?>;
-    const tomTomApiKey = '<?php echo $tomTomApiKey; ?>';
-    
     const openRouteServiceApiKey = '<?php echo $openRouteServiceApiKey; ?>';
     const openCageApiKey = '<?php echo $openCageApiKey; ?>';
     const tomTomApiKey = '<?php echo $tomTomApiKey; ?>';
-    var totalDistance = 0; 
+    var totalDistance = 0; // Global variable to store the total distance
 
     // Function to update the taxi prices based on the total distance
     function updateTaxiPrices() {
@@ -144,7 +117,6 @@ if (isset($_POST['startLat']) && isset($_POST['startLng']) && isset($_POST['taxi
             document.getElementById('price-<?php echo $rate['Taxi_type']; ?>').textContent = totalPrice + ' LKR';
         <?php endforeach; ?>
     }
-
 </script>
 
 <?php 

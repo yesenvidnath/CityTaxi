@@ -211,7 +211,7 @@ function confirmRoute() {
     });
 }
 
-// Function to confirm changing the route
+//Function to confirm changing the route
 function confirmChangeRoute() {
     swal({
         title: "Change Route",
