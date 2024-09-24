@@ -22,7 +22,6 @@ foreach ($taxiRates as $rate) {
 }
 ?>
 
-
 <!-- Main content -->
 <section class="ride-info-section">
     <div class="driver-info" id="step1">
@@ -77,6 +76,12 @@ foreach ($taxiRates as $rate) {
         </div>
         <!-- Change Route Button -->
         <button class="btn btn-danger" id="changeRouteBtn" onclick="confirmChangeRoute()">Change Route</button>
+    </div>
+
+    <div class="selection-summary-section" id="step3" style="display: none;">
+        <h2>Your Selection</h2>
+        <p id="selectionDetails"></p>
+        <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
     </div>
 
     <div class="map-info">

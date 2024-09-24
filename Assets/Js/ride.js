@@ -4,6 +4,12 @@ var map = L.map('map').setView([7.8731, 80.7718], 7); // Centered on Sri Lanka
 // Global variable to store the total distance of the route
 var totalDistance = 0; 
 
+
+// Global variables to store start location and selected vehicle type
+var startLocationValue = '';
+var selectedVehicleType = '';
+
+
 // Set up the TomTom layer with the language set to English (en-GB)
 L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${tomTomApiKey}&language=en-GB`, {
     maxZoom: 19,
@@ -185,16 +191,38 @@ function useTomTomLocation() {
 }
 
 
+// Function to select taxi type
 function selectTaxiType(taxiType) {
+    selectedVehicleType = taxiType; // Store the selected vehicle type
     swal("Taxi Selected", `You have selected ${taxiType}.`, "success");
+
+    // Move to Step 3
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'block'; // Show Step 3
+    displaySelection(); // Display selected values
 }
+
+
+// Function to display the selected values in Step 3
+function displaySelection() {
+    var selectionDetails = document.getElementById('selectionDetails');
+    selectionDetails.innerHTML = `
+        <h2>Your Selection</h2>
+        <p>Start Location: ${startLocationValue}</p>
+        <p>Vehicle Type: ${selectedVehicleType}</p>
+    `;
+}
+
 
 // Keep the route layer global so it's not removed when switching sections
 var routeLayer = null; 
 var currentLocationMarker = null;
 
-// Call this function after the route is confirmed to update prices
+// Function to confirm the route and store values
 function confirmRoute() {
+    var startLocation = document.getElementById('startLocation').value;
+    startLocationValue = startLocation; // Store the start location
+
     swal({
         title: "Confirm Route",
         text: "Are you sure you want to confirm this route?",
@@ -227,3 +255,13 @@ function confirmChangeRoute() {
         document.getElementById('step1').style.display = 'block';
     });
 }
+
+
+// Confirm booking function
+function confirmBooking() {
+    // Logic for confirming the booking (e.g., send to server)
+    swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
+}
+
+
+

@@ -27,4 +27,5 @@ class Driver {
         return $driverDetails;
     }
 }
+
 ?>

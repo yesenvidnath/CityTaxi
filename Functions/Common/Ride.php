@@ -38,6 +38,7 @@ function getTaxiRatesByType() {
     }
 }
 
+
 class Ride {
 
     private $db;
@@ -47,20 +48,37 @@ class Ride {
     }
 
     // Function to get available drivers within a radius of the start location
-    public function getAvailableDriversByVehicleType($taxiType, $startLat, $startLng, $radius) {
-        $conn = $this->db->getConnection();
-        $stmt = $conn->prepare("CALL GetAvailableDriversByVehicleType(:taxiType, :startLat, :startLng, :radius)");
-        $stmt->bindParam(':taxiType', $taxiType, PDO::PARAM_STR);
-        $stmt->bindParam(':startLat', $startLat);
-        $stmt->bindParam(':startLng', $startLng);
-        $stmt->bindParam(':radius', $radius);
-
-        if ($stmt->execute()) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } else {
+    function getAvailableDriversByVehicleType($taxiType, $startLat, $startLng, $radius) {
+        $db = new Database();
+        $conn = $db->getConnection();
+    
+        try {
+            // Call the stored procedure to get drivers within a radius
+            $stmt = $conn->prepare("CALL GetAvailableDrivers()");
+            $stmt->execute();
+            
+            // Fetch drivers
+            $drivers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            return $drivers;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
             return [];
+        } finally {
+            $db->close();
         }
     }
+}
+
+
+// Function to fetch available drivers
+function getAvailableDrivers() {
+    $db = new Database();
+    $conn = $db->getConnection();
+    $query = "CALL GetAvailableDrivers()";
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 ?>
