@@ -15,31 +15,31 @@ include_once 'Functions/Common/Ride.php';
 $taxiTypes = getTaxiTypes();
 $taxiRates = getTaxiRatesByType();
 
+// Fetch available drivers
+$availableDrivers = getAvailableDrivers();
+
 // Map the rates to taxi types for easy access
 $taxiRatesMap = [];
 foreach ($taxiRates as $rate) {
     $taxiRatesMap[$rate['Taxi_type']] = $rate;
 }
 ?>
-
+<!-- Main content -->
 <!-- Main content -->
 <section class="ride-info-section">
     <div class="driver-info" id="step1">
         <h2>Buckle Up For The Ride</h2>
-
         <div class="form-group" id="manualLocationSection">
             <label for="startLocation">Start Location</label>
             <input type="text" class="form-control" id="startLocation" placeholder="Enter Start Location">
             <ul id="startLocationList" class="autocomplete-list"></ul>
             <button class="btn btn-info" onclick="useTomTomLocation()">Use Current Location</button>
         </div>
-
         <div class="form-group">
             <label for="endLocation">End Location</label>
             <input type="text" class="form-control" id="endLocation" placeholder="Enter End Location">
             <ul id="endLocationList" class="autocomplete-list"></ul> 
         </div>
-
         <button class="btn btn-warning" onclick="showRoute()">Show Route</button>
         <button class="btn btn-success" id="confirmRouteBtn" style="display: none;" onclick="confirmRoute()">Confirm Route</button>
     </div>
@@ -48,16 +48,10 @@ foreach ($taxiRates as $rate) {
         <h2>Select Your Taxi Type</h2>
         <div class="row">
             <?php
-            // Array to keep track of already displayed taxi types
             $displayedTypes = [];
-
             foreach ($taxiTypes as $taxi):
-                // Check if this taxi type has already been displayed
                 if (!in_array($taxi['Taxi_type'], $displayedTypes)):
-                    // Add the taxi type to the displayedTypes array
                     $displayedTypes[] = $taxi['Taxi_type'];
-                    
-                    // Get the rate details for the taxi type
                     $ratePerKM = isset($taxiRatesMap[$taxi['Taxi_type']]) ? $taxiRatesMap[$taxi['Taxi_type']]['Rate_per_Km'] : 'N/A';
             ?>
                 <div class="col-lg-4">
@@ -74,15 +68,31 @@ foreach ($taxiRates as $rate) {
             endforeach;
             ?>
         </div>
-        <!-- Change Route Button -->
         <button class="btn btn-danger" id="changeRouteBtn" onclick="confirmChangeRoute()">Change Route</button>
     </div>
 
     <div class="selection-summary-section" id="step3" style="display: none;">
-        <h2>Your Selection</h2>
-        <p id="selectionDetails"></p>
-        <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+        <h2 class="text-center">Your Selection</h2>
+        <p id="selectionDetails" class="text-center"></p>
+        
+        <h3 class="text-center">Available Drivers</h3>
+        <div id="driverList" class="driver-list">
+            <?php foreach ($availableDrivers as $driver): ?>
+                <div class="driver-card card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title"><?php echo $driver['First_name'] . ' ' . $driver['Last_name']; ?></h4>
+                        <p class="card-text">Location: <?php echo $driver['Current_Location']; ?></p>
+                        <p class="card-text">Vehicle Type: <?php echo $driver['Taxi_type']; ?></p>
+                        <button class="btn btn-success" onclick="confirmDriverSelection('<?php echo $driver['Driver_ID']; ?>')">Select Driver</button>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+        </div>
     </div>
+
 
     <div class="map-info">
         <div id="map" style="width: 800px; height: 600px;"></div>

@@ -113,3 +113,42 @@ input:checked + .slider:before {
   background-color: #138496;
 }
 
+
+
+
+
+
+
+.selection-summary-section {
+  padding: 20px;
+  background-color: #f8f9fa; /* Light background color */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.driver-list {
+  max-height: 500px; /* Set max height for the driver list */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.driver-card {
+  background-color: #ffc107;
+  border-radius: 10px;
+  width: 100%;
+  min-height: 30px !important;
+  text-align: center;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.driver-card:hover {
+  transform: scale(1.02); /* Slightly scale up on hover */
+}
+
+.card-title {
+  font-size: 1.25rem; /* Slightly larger title */
+}
+
+.card-text {
+  font-size: 1rem; /* Standard text size */
+}

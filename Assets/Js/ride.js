@@ -34,7 +34,7 @@ function autocompleteLocation(inputId, listId) {
     document.getElementById(inputId).addEventListener('input', function() {
         var query = this.value;
         if (query.length > 2) {
-            // Query TomTom API for both address and POI (Point of Interest) searches, limited to Sri Lanka
+            // Query TomTom API for both address and POI
             fetch(`https://api.tomtom.com/search/2/search/${encodeURIComponent(query)}.json?key=${tomTomApiKey}&limit=5&countrySet=LKA&language=en-GB&typeahead=true&idxSet=Geo,POI`)
                 .then(response => response.json())
                 .then(data => {
@@ -88,7 +88,6 @@ function showRoute() {
     // Get coordinates for both locations
     getCoordinates(startLocation, function(startCoords) {
         getCoordinates(endLocation, function(endCoords) {
-            // Request the route from OpenRouteService API
             fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=${openRouteServiceApiKey}&start=${startCoords[1]},${startCoords[0]}&end=${endCoords[1]},${endCoords[0]}`)
                 .then(response => response.json())
                 .then(routeData => {
@@ -96,31 +95,21 @@ function showRoute() {
                         map.removeLayer(routeLayer);
                     }
 
-                    // Get the coordinates for the route
                     var routeCoords = routeData.features[0].geometry.coordinates.map(function(coord) {
                         return [coord[1], coord[0]];
                     });
 
-                    // Draw the route on the map
                     routeLayer = L.polyline(routeCoords, { color: 'blue' }).addTo(map);
-
-                    // Add markers
                     L.marker(startCoords).addTo(map).bindPopup('Start Location');
                     L.marker(endCoords).addTo(map).bindPopup('End Location');
-
-                    // Fit the map to show the entire route
                     map.fitBounds(routeLayer.getBounds());
 
-                    // Store the total distance (in kilometers)
                     totalDistance = routeData.features[0].properties.segments[0].distance / 1000;
-
-                    // Display route details
                     document.getElementById('routeDetails').innerHTML = `
                         Total Distance: ${totalDistance.toFixed(2)} km<br>
                         Estimated Travel Time: ${routeData.features[0].properties.segments[0].duration / 60} minutes
                     `;
 
-                    // Show confirm button for route
                     document.getElementById('confirmRouteBtn').style.display = 'inline-block';
                 })
                 .catch(error => {
@@ -200,17 +189,55 @@ function selectTaxiType(taxiType) {
     document.getElementById('step2').style.display = 'none';
     document.getElementById('step3').style.display = 'block'; // Show Step 3
     displaySelection(); // Display selected values
+    // Moved the driver fetching to the next step
+    displayAvailableDrivers(); // Fetch drivers only after vehicle type is selected
 }
 
 
-// Function to display the selected values in Step 3
 function displaySelection() {
-    var selectionDetails = document.getElementById('selectionDetails');
-    selectionDetails.innerHTML = `
-        <h2>Your Selection</h2>
-        <p>Start Location: ${startLocationValue}</p>
-        <p>Vehicle Type: ${selectedVehicleType}</p>
-    `;
+    var startLocation = document.getElementById('startLocation').value;
+    var details = `Start Location: ${startLocation}<br>Selected Taxi Type: ${selectedVehicleType}`;
+    var selectionDetailsElement = document.getElementById('selectionDetails');
+
+    if (selectionDetailsElement) {
+        selectionDetailsElement.innerHTML = details; // Safely set innerHTML
+    } else {
+        console.error("Element with ID 'selectionDetails' not found.");
+    }
+}
+
+
+
+// Ensure this function is called only after selecting the taxi type
+function displayAvailableDrivers() {
+    fetch('Functions/Common/Ride.php') // Update with the correct path to your PHP file
+        .then(response => response.json())
+        .then(drivers => {
+            const driverList = document.getElementById('driverList');
+            driverList.innerHTML = ''; // Clear previous drivers
+            drivers.forEach(driver => {
+                driverList.innerHTML += `
+                    <div class="col-lg-4">
+                        <div class="driver-card">
+                            <h4>${driver.First_name} ${driver.Last_name}</h4>
+                            <p>Location: ${driver.Current_Location}</p>
+                            <p>Vehicle Type: ${driver.Taxi_type}</p>
+                            <button class="btn btn-success" onclick="confirmDriverSelection('${driver.Driver_ID}')">Select Driver</button>
+                        </div>
+                    </div>
+                `;
+            });
+            // Ensure the driver list is visible
+            document.getElementById('step3').style.display = 'block'; // Show driver selection
+        })
+        .catch(error => {
+            console.error('Error fetching drivers:', error);
+        });
+}
+
+function confirmDriverSelection(driverID) {
+    // Confirm driver selection logic here
+    swal("Driver Selected", `You have selected Driver ID: ${driverID}.`, "success");
 }
 
 

@@ -39,47 +39,24 @@ function getTaxiRatesByType() {
 }
 
 
-class Ride {
 
-    private $db;
-
-    public function __construct() {
-        $this->db = new Database();
-    }
-
-    // Function to get available drivers within a radius of the start location
-    function getAvailableDriversByVehicleType($taxiType, $startLat, $startLng, $radius) {
-        $db = new Database();
-        $conn = $db->getConnection();
-    
-        try {
-            // Call the stored procedure to get drivers within a radius
-            $stmt = $conn->prepare("CALL GetAvailableDrivers()");
-            $stmt->execute();
-            
-            // Fetch drivers
-            $drivers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            return $drivers;
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            return [];
-        } finally {
-            $db->close();
-        }
-    }
-}
 
 
 // Function to fetch available drivers
 function getAvailableDrivers() {
     $db = new Database();
     $conn = $db->getConnection();
-    $query = "CALL GetAvailableDrivers()";
-    $stmt = $conn->prepare($query);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $query = "CALL GetAvailableDrivers()";
+        $stmt = $conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error fetching available drivers: " . $e->getMessage());
+        return []; // Return an empty array on error
+    }
 }
+
 
 ?>
 
