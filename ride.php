@@ -23,6 +23,8 @@ $taxiRatesMap = [];
 foreach ($taxiRates as $rate) {
     $taxiRatesMap[$rate['Taxi_type']] = $rate;
 }
+
+
 ?>
 <!-- Main content -->
 <!-- Main content -->

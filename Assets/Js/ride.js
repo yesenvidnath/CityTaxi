@@ -207,17 +207,20 @@ function displaySelection() {
 }
 
 
-
-// Ensure this function is called only after selecting the taxi type
 function displayAvailableDrivers() {
-    fetch('Functions/Common/Ride.php') // Update with the correct path to your PHP file
+    fetch('Functions/Common/Ride.php?fetch_drivers=true') // Adjusted to call the correct PHP file
         .then(response => response.json())
         .then(drivers => {
             const driverList = document.getElementById('driverList');
             driverList.innerHTML = ''; // Clear previous drivers
+            
             drivers.forEach(driver => {
+                // Parse the current location to get latitude and longitude
+                const [latitude, longitude] = driver.Current_Location.replace(/[()]/g, '').split(',').map(coord => parseFloat(coord.trim()));
+
+                // Create a driver card in the list
                 driverList.innerHTML += `
-                    <div class="col-lg-4">
+                    <div class="col-lg-12">
                         <div class="driver-card">
                             <h4>${driver.First_name} ${driver.Last_name}</h4>
                             <p>Location: ${driver.Current_Location}</p>
@@ -226,14 +229,21 @@ function displayAvailableDrivers() {
                         </div>
                     </div>
                 `;
+
+                // Add a marker for the driver on the map
+                const driverIcon = getIconByTaxiType(driver.Taxi_type);
+                const marker = L.marker([latitude, longitude], { icon: driverIcon }).addTo(map);
+                marker.bindPopup(`${driver.First_name} ${driver.Last_name} - ${driver.Taxi_type}`);
             });
-            // Ensure the driver list is visible
+
+            document.getElementById('step2').style.display = 'none'; // Hide taxi selection
             document.getElementById('step3').style.display = 'block'; // Show driver selection
         })
         .catch(error => {
             console.error('Error fetching drivers:', error);
         });
 }
+
 
 function confirmDriverSelection(driverID) {
     // Confirm driver selection logic here
@@ -291,4 +301,13 @@ function confirmBooking() {
 }
 
 
+// Icons for different taxi types (dynamic by Taxi_type)
+function getIconByTaxiType(taxiType) {
+    return L.icon({
+        iconUrl: `/CityTaxi/Assets/img/taxi_icons/${taxiType.toLowerCase()}.png`,
+        iconSize: [30, 30],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    });
+}
 
