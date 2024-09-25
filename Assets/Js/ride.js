@@ -244,6 +244,49 @@ function displayAvailableDrivers() {
         });
 }
 
+function fetchVehiclesNearStartLocation() {
+    var startLocation = document.getElementById('startLocation').value;
+
+    getCoordinates(startLocation, function(coords) {
+        var latitude = coords[0];
+        var longitude = coords[1];
+
+        // Fetch vehicles near the location
+        fetch(`/CityTaxi/Functions/Common/Ride.php?action=getVehiclesNearLocation&latitude=${latitude}&longitude=${longitude}`)
+            .then(response => response.json())
+            .then(vehicles => {
+                displayVehiclesOnMap(vehicles, latitude, longitude);
+            })
+            .catch(error => {
+                console.error('Error fetching vehicles:', error);
+            });
+    });
+}
+
+
+    // Function to display vehicles on the map
+    function displayVehiclesOnMap(vehicles) {
+        vehicles.forEach(vehicle => {
+            var icon = getIconByTaxiType(vehicle.Taxi_type);
+            var vehicleLocation = vehicle.Current_Location.split(',').map(Number); // Split and convert to numbers
+
+            L.marker(vehicleLocation, { icon: icon })
+                .addTo(map)
+                .bindPopup(`Vehicle Type: ${vehicle.Taxi_type}<br>Location: ${vehicle.Current_Location}`);
+        });
+    }
+
+
+// Icons for different taxi types (dynamic by Taxi_type)
+function getIconByTaxiType(taxiType) {
+    return L.icon({
+        iconUrl: `/CityTaxi/Assets/img/taxi_icons/${taxiType.toLowerCase()}.png`,
+        iconSize: [30, 30],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+    });
+}
+
 
 function confirmDriverSelection(driverID) {
     // Confirm driver selection logic here
@@ -255,11 +298,11 @@ function confirmDriverSelection(driverID) {
 var routeLayer = null; 
 var currentLocationMarker = null;
 
-// Function to confirm the route and store values
+
+// Call fetchVehiclesNearStartLocation() after confirming the route
 function confirmRoute() {
     var startLocation = document.getElementById('startLocation').value;
     startLocationValue = startLocation; // Store the start location
-
     swal({
         title: "Confirm Route",
         text: "Are you sure you want to confirm this route?",
@@ -273,8 +316,10 @@ function confirmRoute() {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
         updateTaxiPrices(); // Update the prices after route confirmation
+        fetchVehiclesNearStartLocation(); // Fetch vehicles near the start location
     });
 }
+
 
 //Function to confirm changing the route
 function confirmChangeRoute() {
@@ -299,15 +344,3 @@ function confirmBooking() {
     // Logic for confirming the booking (e.g., send to server)
     swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
 }
-
-
-// Icons for different taxi types (dynamic by Taxi_type)
-function getIconByTaxiType(taxiType) {
-    return L.icon({
-        iconUrl: `/CityTaxi/Assets/img/taxi_icons/${taxiType.toLowerCase()}.png`,
-        iconSize: [30, 30],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]
-    });
-}
-

@@ -38,6 +38,10 @@ function getTaxiRatesByType() {
     }
 }
 
+
+
+
+
 // Function to fetch available drivers
 function getAvailableDrivers() {
     $db = new Database();
@@ -60,6 +64,5 @@ if (isset($_GET['fetch_drivers']) && $_GET['fetch_drivers'] === 'true') {
     echo json_encode($availableDrivers);
     exit;
 }
-
 ?>
 
