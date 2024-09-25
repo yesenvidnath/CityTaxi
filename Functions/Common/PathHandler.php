@@ -13,12 +13,12 @@ function showLinkOnProfilePage($link) {
     }
 }
 
-// DIsplay the CSS if the page equal to profile
+// DIsplay the CSS if the page equal to MyRides
 function showLinkOnMyRides($link) {
     // Get the current page's filename
     $currentPage = basename($_SERVER['PHP_SELF']);
 
-    // Check if the current page is 'profile.php'
+    // Check if the current page is 'MyRides.php'
     if ($currentPage === 'MyRides.php') {
         // Echo the link tag
         echo $link;
@@ -26,13 +26,26 @@ function showLinkOnMyRides($link) {
 }
 
 
-// DIsplay the CSS if the page equal to profile
+// DIsplay the CSS if the page equal to ride
 function showLinkOnRide($link) {
     // Get the current page's filename
     $currentPage = basename($_SERVER['PHP_SELF']);
 
-    // Check if the current page is 'profile.php'
+    // Check if the current page is 'ride.php'
     if ($currentPage === 'ride.php') {
+        // Echo the link tag
+        echo $link;
+    }
+}
+
+
+// DIsplay the CSS if the page equal to dashboard
+function showLinkOnDashboard($link) {
+    // Get the current page's filename
+    $currentPage = basename($_SERVER['PHP_SELF']);
+
+    // Check if the current page is 'profile.php'
+    if ($currentPage === 'dashboard.php') {
         // Echo the link tag
         echo $link;
     }
