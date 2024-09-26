@@ -92,6 +92,7 @@ foreach ($taxiRates as $rate) {
         </div>
         <div class="text-center mt-4">
             <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+            <button class="btn btn-secondary" onclick="changeVehicleType()">Change Vehicle Type</button>
         </div>
     </div>
 

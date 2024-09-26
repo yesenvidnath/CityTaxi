@@ -10,6 +10,7 @@ var startLocationValue = '';
 var selectedVehicleType = '';
 
 
+
 // Set up the TomTom layer with the language set to English (en-GB)
 L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${tomTomApiKey}&language=en-GB`, {
     maxZoom: 19,
@@ -189,8 +190,7 @@ function selectTaxiType(taxiType) {
     document.getElementById('step2').style.display = 'none';
     document.getElementById('step3').style.display = 'block'; // Show Step 3
     displaySelection(); // Display selected values
-    // Moved the driver fetching to the next step
-    displayAvailableDrivers(); // Fetch drivers only after vehicle type is selected
+    displayAvailableDrivers(); // Fetch and display available drivers
 }
 
 
@@ -207,42 +207,78 @@ function displaySelection() {
 }
 
 
+
 function displayAvailableDrivers() {
-    fetch('Functions/Common/Ride.php?fetch_drivers=true') // Adjusted to call the correct PHP file
-        .then(response => response.json())
-        .then(drivers => {
-            const driverList = document.getElementById('driverList');
-            driverList.innerHTML = ''; // Clear previous drivers
-            
-            drivers.forEach(driver => {
-                // Parse the current location to get latitude and longitude
-                const [latitude, longitude] = driver.Current_Location.replace(/[()]/g, '').split(',').map(coord => parseFloat(coord.trim()));
+    // Get coordinates for the start location first
+    getCoordinatesFromLocation(startLocationValue, function(coords) {
+        const startLat = coords[0];
+        const startLon = coords[1];
 
-                // Create a driver card in the list
-                driverList.innerHTML += `
-                    <div class="col-lg-12">
-                        <div class="driver-card">
-                            <h4>${driver.First_name} ${driver.Last_name}</h4>
-                            <p>Location: ${driver.Current_Location}</p>
-                            <p>Vehicle Type: ${driver.Taxi_type}</p>
-                            <button class="btn btn-success" onclick="confirmDriverSelection('${driver.Driver_ID}')">Select Driver</button>
+        fetch('Functions/Common/Ride.php?fetch_drivers=true') // Fetch available drivers
+            .then(response => response.json())
+            .then(drivers => {
+                const driverList = document.getElementById('driverList');
+                driverList.innerHTML = ''; // Clear previous drivers
+                
+                // Function to calculate distance
+                function haversineDistance(lat1, lon1, lat2, lon2) {
+                    const R = 6371; // Radius of the Earth in km
+                    const dLat = (lat2 - lat1) * Math.PI / 180;
+                    const dLon = (lon2 - lon1) * Math.PI / 180;
+                    const a = 
+                        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    return R * c; // Distance in km
+                }
+
+                // Specify the maximum distance from the start location (e.g., 500 km)
+                const maxDistance = 500;
+
+                // Filter drivers by selected vehicle type and proximity to the start location
+                const filteredDrivers = drivers.filter(driver => {
+                    const [driverLat, driverLon] = driver.Current_Location.replace(/[()]/g, '').split(',').map(coord => parseFloat(coord.trim()));
+                    const distance = haversineDistance(startLat, startLon, driverLat, driverLon);
+                    return driver.Taxi_type === selectedVehicleType && distance <= maxDistance;
+                });
+
+                // Check if any drivers are available
+                if (filteredDrivers.length === 0) {
+                    driverList.innerHTML = '<p>No available drivers for the selected vehicle type near your location.</p>';
+                    return;
+                }
+
+                // Display the filtered drivers
+                filteredDrivers.forEach(driver => {
+                    const [latitude, longitude] = driver.Current_Location.replace(/[()]/g, '').split(',').map(coord => parseFloat(coord.trim()));
+                    driverList.innerHTML += `
+                        <div class="col-lg-12">
+                            <div class="driver-card">
+                                <h4>${driver.First_name} ${driver.Last_name}</h4>
+                                <p>Location: ${driver.Current_Location}</p>
+                                <p>Vehicle Type: ${driver.Taxi_type}</p>
+                                <button class="btn btn-success" onclick="confirmDriverSelection('${driver.Driver_ID}')">Select Driver</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
-                // Add a marker for the driver on the map
-                const driverIcon = getIconByTaxiType(driver.Taxi_type);
-                const marker = L.marker([latitude, longitude], { icon: driverIcon }).addTo(map);
-                marker.bindPopup(`${driver.First_name} ${driver.Last_name} - ${driver.Taxi_type}`);
+                    // Add a marker for the driver on the map
+                    const driverIcon = getIconByTaxiType(driver.Taxi_type);
+                    const marker = L.marker([latitude, longitude], { icon: driverIcon }).addTo(map);
+                    marker.bindPopup(`${driver.First_name} ${driver.Last_name} - ${driver.Taxi_type}`);
+                });
+
+                document.getElementById('step2').style.display = 'none'; // Hide taxi selection
+                document.getElementById('step3').style.display = 'block'; // Show driver selection
+            })
+            .catch(error => {
+                console.error('Error fetching drivers:', error);
             });
-
-            document.getElementById('step2').style.display = 'none'; // Hide taxi selection
-            document.getElementById('step3').style.display = 'block'; // Show driver selection
-        })
-        .catch(error => {
-            console.error('Error fetching drivers:', error);
-        });
+    });
 }
+
+
 
 function fetchVehiclesNearStartLocation() {
     var startLocation = document.getElementById('startLocation').value;
@@ -264,17 +300,16 @@ function fetchVehiclesNearStartLocation() {
 }
 
 
-    // Function to display vehicles on the map
-    function displayVehiclesOnMap(vehicles) {
-        vehicles.forEach(vehicle => {
-            var icon = getIconByTaxiType(vehicle.Taxi_type);
-            var vehicleLocation = vehicle.Current_Location.split(',').map(Number); // Split and convert to numbers
-
-            L.marker(vehicleLocation, { icon: icon })
-                .addTo(map)
-                .bindPopup(`Vehicle Type: ${vehicle.Taxi_type}<br>Location: ${vehicle.Current_Location}`);
-        });
-    }
+// Function to display vehicles on the map
+function displayVehiclesOnMap(vehicles) {
+    vehicles.forEach(vehicle => {
+        var icon = getIconByTaxiType(vehicle.Taxi_type);
+        var vehicleLocation = vehicle.Current_Location.split(',').map(Number); // Split and convert to numbers
+        L.marker(vehicleLocation, { icon: icon })
+            .addTo(map)
+            .bindPopup(`Vehicle Type: ${vehicle.Taxi_type}<br>Location: ${vehicle.Current_Location}`);
+    });
+}
 
 
 // Icons for different taxi types (dynamic by Taxi_type)
@@ -287,10 +322,33 @@ function getIconByTaxiType(taxiType) {
     });
 }
 
+// Function to get coordinates from a location name
+function getCoordinatesFromLocation(locationName, callback) {
+    fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(locationName)}&key=${openCageApiKey}&countrycode=LK`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                const coords = data.results[0].geometry;
+                callback([coords.lat, coords.lng]);
+            } else {
+                alert('Location not found: ' + locationName);
+            }
+        })
+        .catch(error => {
+            alert('Error fetching coordinates: ' + error);
+        });
+}
+
 
 function confirmDriverSelection(driverID) {
     // Confirm driver selection logic here
     swal("Driver Selected", `You have selected Driver ID: ${driverID}.`, "success");
+}
+
+
+function changeVehicleType() {
+    document.getElementById('step3').style.display = 'none'; // Hide Step 3
+    document.getElementById('step2').style.display = 'block'; // Show Step 2
 }
 
 
