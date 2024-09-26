@@ -19,6 +19,14 @@ class Users {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Fetch all the information of all users from the database
+    public function fetchAllInfoFromUsers() {
+        $query = "SELECT user_ID, user_type, First_name, Last_name, Email, NIC_No, mobile_number, Address FROM Users";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Fetch user by email using stored procedure
     public function fetchUserByEmail($email) {
         $query = "CALL GetUserByEmail(:email)";
@@ -61,6 +69,39 @@ class Users {
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } else {
             return null; // User not found
+        }
+    }
+
+    // Update User Information
+    public function updateUser($userID, $first_name, $last_name, $email, $nic_no, $mobile, $address, $user_img) {
+        try {
+            $query = "UPDATE Users SET First_name = :first_name, Last_name = :last_name, Email = :email, NIC_No = :nic_no, mobile_number = :mobile, Address = :address, user_img = :user_img WHERE user_ID = :userID";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':first_name', $first_name);
+            $stmt->bindParam(':last_name', $last_name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':nic_no', $nic_no);
+            $stmt->bindParam(':mobile', $mobile);
+            $stmt->bindParam(':address', $address);
+            $stmt->bindParam(':user_img', $user_img);
+            $stmt->bindParam(':userID', $userID);
+            $stmt->execute();
+            return $stmt->rowCount(); // Returns the number of rows affected
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    // Delete User
+    public function deleteUser($userID) {
+        try {
+            $query = "DELETE FROM Users WHERE user_ID = :userID";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->rowCount(); // Returns the number of rows affected
+        } catch (PDOException $e) {
+            return false;
         }
     }
 }
