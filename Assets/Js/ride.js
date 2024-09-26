@@ -4,12 +4,12 @@ var map = L.map('map').setView([7.8731, 80.7718], 7); // Centered on Sri Lanka
 // Global variable to store the total distance of the route
 var totalDistance = 0; 
 
-
 // Global variables to store start location and selected vehicle type
 var startLocationValue = '';
 var selectedVehicleType = '';
 
-
+var startLocationMarker = null; 
+var endLocationMarker = null;
 
 // Set up the TomTom layer with the language set to English (en-GB)
 L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${tomTomApiKey}&language=en-GB`, {
@@ -93,18 +93,28 @@ function showRoute() {
                 .then(response => response.json())
                 .then(routeData => {
                     if (routeLayer) {
-                        map.removeLayer(routeLayer);
+                        map.removeLayer(routeLayer); // Remove previous route layer
                     }
 
                     var routeCoords = routeData.features[0].geometry.coordinates.map(function(coord) {
                         return [coord[1], coord[0]];
                     });
 
+                    // Draw the route on the map
                     routeLayer = L.polyline(routeCoords, { color: 'blue' }).addTo(map);
-                    L.marker(startCoords).addTo(map).bindPopup('Start Location');
-                    L.marker(endCoords).addTo(map).bindPopup('End Location');
+
+                    // Check if start and end markers already exist before adding them
+                    if (!startLocationMarker) {
+                        startLocationMarker = L.marker(startCoords).addTo(map).bindPopup('Start Location');
+                    }
+                    if (!endLocationMarker) {
+                        endLocationMarker = L.marker(endCoords).addTo(map).bindPopup('End Location');
+                    }
+
+                    // Fit the map to show the entire route
                     map.fitBounds(routeLayer.getBounds());
 
+                    // Store total distance
                     totalDistance = routeData.features[0].properties.segments[0].distance / 1000;
                     document.getElementById('routeDetails').innerHTML = `
                         Total Distance: ${totalDistance.toFixed(2)} km<br>
@@ -119,6 +129,7 @@ function showRoute() {
         });
     });
 }
+
 
 
 // Function to get the user's current location using TomTom API
@@ -234,7 +245,7 @@ function displayAvailableDrivers() {
                 }
 
                 // Specify the maximum distance from the start location (e.g., 500 km)
-                const maxDistance = 500;
+                const maxDistance = 10;
 
                 // Filter drivers by selected vehicle type and proximity to the start location
                 const filteredDrivers = drivers.filter(driver => {
@@ -347,8 +358,29 @@ function confirmDriverSelection(driverID) {
 
 
 function changeVehicleType() {
+    // Clear the selected vehicle type value
+    selectedVehicleType = ''; // Remove the selected vehicle type
+
+    // Hide Step 3 and show Step 2
     document.getElementById('step3').style.display = 'none'; // Hide Step 3
     document.getElementById('step2').style.display = 'block'; // Show Step 2
+
+    // Clear the driver list in Step 3
+    document.getElementById('driverList').innerHTML = ''; // Clear the driver list
+
+    // Remove existing vehicle markers, but keep the start and end location markers
+    map.eachLayer(function(layer) {
+        // Check if the layer is a marker and is not the current location markers (start and end)
+        if (layer instanceof L.Marker && layer !== startLocationMarker && layer !== endLocationMarker && layer !== currentLocationMarker) {
+            map.removeLayer(layer); // Remove only vehicle markers
+        }
+    });
+
+    // Optionally, you may want to re-fetch vehicles based on the current start location
+    if (startLocationValue) {
+        // Fetch vehicles near the start location again
+        displayAvailableDrivers(); // Call to display available drivers based on the updated vehicle type
+    }
 }
 
 
