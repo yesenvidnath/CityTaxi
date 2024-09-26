@@ -1,6 +1,3 @@
-// Initialize the map using TomTom's base layer
-var map = L.map('map').setView([7.8731, 80.7718], 7); // Centered on Sri Lanka
-
 // Global variable to store the total distance of the route
 var totalDistance = 0; 
 
@@ -10,6 +7,22 @@ var selectedVehicleType = '';
 
 var startLocationMarker = null; 
 var endLocationMarker = null;
+
+//var radiusCircle;
+
+// To store the route line
+var routeLayer;
+
+// To store the current location marker
+var currentLocationMarker; 
+
+// Keep the route layer global so it's not removed when switching sections
+var routeLayer = null; 
+var currentLocationMarker = null;
+
+
+// Initialize the map using TomTom's base layer
+var map = L.map('map').setView([7.8731, 80.7718], 7); // Centered on Sri Lanka
 
 // Set up the TomTom layer with the language set to English (en-GB)
 L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=${tomTomApiKey}&language=en-GB`, {
@@ -27,8 +40,7 @@ map.on('drag', function() {
     map.panInsideBounds(sriLankaBounds, { animate: false });
 });
 
-var routeLayer; // To store the route line
-var currentLocationMarker; // To store the current location marker
+
 
 // Autocomplete Suggestions for Location Input Fields (limited to Sri Lanka and includes places like landmarks)
 function autocompleteLocation(inputId, listId) {
@@ -225,6 +237,20 @@ function displayAvailableDrivers() {
         const startLat = coords[0];
         const startLon = coords[1];
 
+        // Clear any existing circle
+        if (window.radiusCircle) {
+            map.removeLayer(window.radiusCircle);
+        }
+
+        // Create a new circle with a specified radius and color
+        const maxDistance = 10; // Max distance in kilometers
+        window.radiusCircle = L.circle([startLat, startLon], {
+            color: 'blue',        // Circle color
+            fillColor: '#30f',    // Fill color
+            fillOpacity: 0.3,     // Fill opacity
+            radius: maxDistance * 1000 // Radius in meters
+        }).addTo(map);
+
         fetch('Functions/Common/Ride.php?fetch_drivers=true') // Fetch available drivers
             .then(response => response.json())
             .then(drivers => {
@@ -243,9 +269,6 @@ function displayAvailableDrivers() {
                     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                     return R * c; // Distance in km
                 }
-
-                // Specify the maximum distance from the start location (e.g., 500 km)
-                const maxDistance = 10;
 
                 // Filter drivers by selected vehicle type and proximity to the start location
                 const filteredDrivers = drivers.filter(driver => {
@@ -288,7 +311,6 @@ function displayAvailableDrivers() {
             });
     });
 }
-
 
 
 function fetchVehiclesNearStartLocation() {
@@ -384,9 +406,6 @@ function changeVehicleType() {
 }
 
 
-// Keep the route layer global so it's not removed when switching sections
-var routeLayer = null; 
-var currentLocationMarker = null;
 
 
 // Call fetchVehiclesNearStartLocation() after confirming the route
