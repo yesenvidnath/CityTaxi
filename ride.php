@@ -178,8 +178,7 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
         
         swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
     }
-
-
+    
 </script>
 
 <?php 
