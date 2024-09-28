@@ -1,5 +1,6 @@
 <?php
 include_once 'Database.php';
+include_once 'SessionManager.php';
 
 class Users {
     private $db;
@@ -51,7 +52,7 @@ class Users {
     // Fetch user information by user_ID (New Method)
     public function fetchUserByID($userID) {
         // SQL query to get user details by user_ID
-        $query = "SELECT `user_ID`, `user_type`, `password`, `Email`, `First_name`, `Last_name`, `NIC_No`, `Address`, `user_img` FROM `users` WHERE `user_ID` = :userID";
+        $query = "SELECT user_ID, user_type, password, Email, First_name, Last_name, NIC_No, Address,mobile_number,  user_img FROM users WHERE user_ID = :userID";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
@@ -63,4 +64,16 @@ class Users {
             return null; // User not found
         }
     }
+}
+
+// Add this section in Users.php to fetch user details by ID
+if (isset($_GET['fetch_user_id'])) {
+    $userID = $_GET['fetch_user_id'];
+    $users = new Users(); // Assuming Users is the class name
+    $userDetails = $users->fetchUserByID($userID);
+    
+    // Return the user details as JSON
+    header('Content-Type: application/json');
+    echo json_encode($userDetails);
+    exit();
 }

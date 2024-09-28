@@ -10,6 +10,7 @@ $tomTomApiKey = $dotenv['TomTom_API_Key']; // Fetch TomTom API Key
 
 // Include the ride functions
 include_once 'Functions/Common/Ride.php';
+include_once 'Functions/Passenger/Passenger.php';
 
 // Fetch the taxi types and rates
 $taxiTypes = getTaxiTypes();
@@ -24,12 +25,30 @@ foreach ($taxiRates as $rate) {
     $taxiRatesMap[$rate['Taxi_type']] = $rate;
 }
 
+// Start the session and get the user ID using SessionManager
+SessionManager::startSession();
+// Retrieve user ID from session
+$userID = SessionManager::get('user_ID'); 
+if (!SessionManager::isLoggedIn() || !$userID) {
+    header("Location: /CityTaxi/login.php?status=error&message=Please log in first!");
+    exit();
+}
+
+// Fetch user information
+$user = new Users(); // Assuming you have a Users class to handle user operations
+$userInfo = $user->fetchUserByID($userID); // Fetch user information
+
+// Store user information in variables
+$firstName = $userInfo['First_name'] ?? '';
+$lastName = $userInfo['Last_name'] ?? '';
+$mobileNumber = $userInfo['mobile_number'] ?? '';
 
 ?>
 <!-- Main content -->
 <!-- Main content -->
 <section class="ride-info-section">
     <div class="driver-info" id="step1">
+        
         <h2>Buckle Up For The Ride</h2>
         <div class="form-group" id="manualLocationSection">
             <label for="startLocation">Start Location</label>
@@ -119,13 +138,16 @@ foreach ($taxiRates as $rate) {
         </script>
         ";
     }
+
 ?>
 
 <script>
+
     const openRouteServiceApiKey = '<?php echo $openRouteServiceApiKey; ?>';
     const openCageApiKey = '<?php echo $openCageApiKey; ?>';
     const tomTomApiKey = '<?php echo $tomTomApiKey; ?>';
     var totalDistance = 0; // Global variable to store the total distance
+    
 
     // Function to update the taxi prices based on the total distance
     function updateTaxiPrices() {
@@ -135,6 +157,29 @@ foreach ($taxiRates as $rate) {
             document.getElementById('price-<?php echo $rate['Taxi_type']; ?>').textContent = totalPrice + ' LKR';
         <?php endforeach; ?>
     }
+
+    function confirmBooking() {
+        // Store user information and trip details in JavaScript variables
+        const startLocation = startLocationValue; // Use the global variable for start location
+        const endLocation = document.getElementById('endLocation').value; // Get the end location from the input field
+        const tripPrice = document.getElementById(`price-${selectedVehicleType}`).textContent; // Get the price displayed
+
+        const userInfo = {
+            firstName: '<?php echo $firstName; ?>',
+            lastName: '<?php echo $lastName; ?>',
+            mobileNumber: '<?php echo $mobileNumber; ?>',
+            startLocation: startLocation,
+            endLocation: endLocation,
+            tripPrice: tripPrice
+        };
+
+        // Display the user information and trip details in the console
+        console.log('User Information and Trip Details:', userInfo);
+        
+        swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
+    }
+
+
 </script>
 
 <?php 

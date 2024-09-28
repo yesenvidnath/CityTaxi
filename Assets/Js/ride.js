@@ -243,7 +243,7 @@ function displayAvailableDrivers() {
         }
 
         // Create a new circle with a specified radius and color
-        const maxDistance = 10; // Max distance in kilometers
+        const maxDistance = 10;
         window.radiusCircle = L.circle([startLat, startLon], {
             color: 'blue',        // Circle color
             fillColor: '#30f',    // Fill color
@@ -407,7 +407,6 @@ function changeVehicleType() {
 
 
 
-
 // Call fetchVehiclesNearStartLocation() after confirming the route
 function confirmRoute() {
     var startLocation = document.getElementById('startLocation').value;
@@ -449,7 +448,7 @@ function confirmChangeRoute() {
 
 
 // Confirm booking function
-function confirmBooking() {
-    // Logic for confirming the booking (e.g., send to server)
-    swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
-}
+// function confirmBooking() {
+//     // Logic for confirming the booking (e.g., send to server)
+//     swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
+// }
