@@ -1,5 +1,6 @@
 <?php
 include_once 'Database.php';
+include_once 'SessionManager.php';
 
 class Users {
     private $db;
@@ -59,7 +60,7 @@ class Users {
     // Fetch user information by user_ID (New Method)
     public function fetchUserByID($userID) {
         // SQL query to get user details by user_ID
-        $query = "SELECT `user_ID`, `user_type`, `password`, `Email`, `First_name`, `Last_name`, `NIC_No`, `Address`, `user_img` FROM `users` WHERE `user_ID` = :userID";
+        $query = "SELECT user_ID, user_type, password, Email, First_name, Last_name, NIC_No, Address,mobile_number,  user_img FROM users WHERE user_ID = :userID";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
@@ -71,37 +72,3 @@ class Users {
             return null; // User not found
         }
     }
-
-    // Update User Information
-    public function updateUser($userID, $first_name, $last_name, $email, $nic_no, $mobile, $address, $user_img) {
-        try {
-            $query = "UPDATE Users SET First_name = :first_name, Last_name = :last_name, Email = :email, NIC_No = :nic_no, mobile_number = :mobile, Address = :address, user_img = :user_img WHERE user_ID = :userID";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':first_name', $first_name);
-            $stmt->bindParam(':last_name', $last_name);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':nic_no', $nic_no);
-            $stmt->bindParam(':mobile', $mobile);
-            $stmt->bindParam(':address', $address);
-            $stmt->bindParam(':user_img', $user_img);
-            $stmt->bindParam(':userID', $userID);
-            $stmt->execute();
-            return $stmt->rowCount(); // Returns the number of rows affected
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-    
-    // Delete User
-    public function deleteUser($userID) {
-        try {
-            $query = "DELETE FROM Users WHERE user_ID = :userID";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->rowCount(); // Returns the number of rows affected
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-}
