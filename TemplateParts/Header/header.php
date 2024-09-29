@@ -17,6 +17,9 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="/CityTaxi/Assets/Css/style.css">
 
+<!-- Font Awesome Icon CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" />
+
     <?php 
         $rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/'; 
         
@@ -24,6 +27,7 @@
         showLinkOnProfilePage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/profile.css">');
         showLinkOnMyRides('<link rel="stylesheet" href="/CityTaxi/Assets/Css/myrides.css">');
         showLinkOnRide('<link rel="stylesheet" href="/CityTaxi/Assets/Css/ride.css">');
+        showLinkOnDashboard('<link rel="stylesheet" href="/CityTaxi/Assets/Css/dashboard.css">');
 
         // Include the SessionManager
         include $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/SessionManager.php';

@@ -20,6 +20,14 @@ class Users {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Fetch all the information of all users from the database
+    public function fetchAllInfoFromUsers() {
+        $query = "SELECT user_ID, user_type, First_name, Last_name, Email, NIC_No, mobile_number, Address FROM Users";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Fetch user by email using stored procedure
     public function fetchUserByEmail($email) {
         $query = "CALL GetUserByEmail(:email)";
@@ -64,16 +72,3 @@ class Users {
             return null; // User not found
         }
     }
-}
-
-// Add this section in Users.php to fetch user details by ID
-if (isset($_GET['fetch_user_id'])) {
-    $userID = $_GET['fetch_user_id'];
-    $users = new Users(); // Assuming Users is the class name
-    $userDetails = $users->fetchUserByID($userID);
-    
-    // Return the user details as JSON
-    header('Content-Type: application/json');
-    echo json_encode($userDetails);
-    exit();
-}
