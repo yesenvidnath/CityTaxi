@@ -44,7 +44,7 @@ $lastName = $userInfo['Last_name'] ?? '';
 $mobileNumber = $userInfo['mobile_number'] ?? '';
 
 ?>
-<!-- Main content -->
+
 <!-- Main content -->
 <section class="ride-info-section">
     <div class="driver-info" id="step1">

@@ -60,4 +60,5 @@ if (isset($_GET['fetch_drivers']) && $_GET['fetch_drivers'] === 'true') {
     echo json_encode($availableDrivers);
     exit;
 }
+
 ?>
