@@ -39,12 +39,13 @@ $user = new Users(); // Assuming you have a Users class to handle user operation
 $userInfo = $user->fetchUserByID($userID); // Fetch user information
 
 // Store user information in variables
+$PassengeruserID = $userInfo['user_ID'] ?? '';
 $firstName = $userInfo['First_name'] ?? '';
 $lastName = $userInfo['Last_name'] ?? '';
 $mobileNumber = $userInfo['mobile_number'] ?? '';
 
 ?>
-<!-- Main content -->
+
 <!-- Main content -->
 <section class="ride-info-section">
     <div class="driver-info" id="step1">
@@ -163,25 +164,57 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
         const startLocation = startLocationValue; // Use the global variable for start location
         const endLocation = document.getElementById('endLocation').value; // Get the end location from the input field
         const tripPrice = document.getElementById(`price-${selectedVehicleType}`).textContent; // Get the price displayed
+        const rideID = generateUniqueRideID(); // You may want to implement a function to create a unique ride ID
 
         const userInfo = {
+            PassengerUserID: '<?php echo $PassengeruserID; ?>',
             firstName: '<?php echo $firstName; ?>',
             lastName: '<?php echo $lastName; ?>',
             mobileNumber: '<?php echo $mobileNumber; ?>',
             startLocation: startLocation,
             endLocation: endLocation,
-            tripPrice: tripPrice
+            tripPrice: tripPrice,
+            rideID: rideID, // Include rideID
+            driverIDs: window.driverIDs // Add the driver IDs to the user info
         };
 
         // Display the user information and trip details in the console
         console.log('User Information and Trip Details:', userInfo);
-        
-        swal("Booking Confirmed!", "Your ride has been booked successfully.", "success");
+        console.log('Available Driver IDs:', userInfo.driverIDs); // Log the driver IDs
+
+        // Change alert to a waiting message
+        swal("Waiting for Driver Response...", "", "info");
+
+        // Send ride details to drivers via WebSocket
+        const socket = new WebSocket('ws://localhost:8080/ws');
+        socket.onopen = function() {
+            userInfo.driverIDs.forEach(driverID => {
+                const message = `A new ride has been booked from ${startLocation} to ${endLocation} for a price of ${tripPrice}.`;
+                socket.send(JSON.stringify({
+                    action: 'sendMessage',
+                    driverID: driverID,
+                    rideDetails: userInfo // Send complete ride details including rideID
+                }));
+            });
+        };
+
+        socket.onmessage = function(event) {
+            const response = JSON.parse(event.data);
+            if (response.status === 'confirmed') {
+                console.log(`Driver Response: ${response.message}`);
+                swal("Booking Confirmed!", response.message, "success");
+            } else if (response.status === 'rejected') {
+                swal("Driver has rejected the ride. Please try another vehicle type.", "", "error");
+            }
+        };
     }
-    
+
+    function generateUniqueRideID() {
+        return 'ride-' + Date.now(); // Simple unique ID based on current timestamp
+    }
 </script>
 
 <?php 
     include 'TemplateParts/Shared/NavMenu.php'; 
-    include 'TemplateParts/Footer/footer.php'; 
+    include 'TemplateParts/Footer/footer.php';   
 ?>

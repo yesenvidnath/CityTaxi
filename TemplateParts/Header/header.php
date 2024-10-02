@@ -53,15 +53,19 @@
                 <div class="mr-3">
                     <h5 class="mb-0">Welcome, <?php echo SessionManager::get('first_name') . ' ' . SessionManager::get('last_name'); ?>!</h5>
                 </div>
-                <!-- Logout Button -->
-                <a href="Pages/Passenger/profile.php" class="btn btn-secondary btn-sm ml-3 " id="myprofile-hide-btn">Visit My Profile</a>
+                <!-- Dynamic Profile Button -->
+                <?php 
+                    $userType = SessionManager::get('user_type');
+                    $profileLink = ($userType === 'Passenger') ? 'Pages/Passenger/profile.php' : 'Pages/Driver/profile.php';
+                ?>
+                <a href="<?php echo $profileLink; ?>" class="btn btn-secondary btn-sm ml-3" id="myprofile-hide-btn">Visit My Profile</a>
                 <!-- Logout Button -->
                 <a href="javascript:void(0);" onclick="confirmLogout();" class="btn btn-outline-secondary btn-sm ml-3">Logout</a>
             <?php else: ?>
                 <!-- Login Button -->
                 <a href="login.php" class="btn btn-outline-secondary btn-sm ml-3">Login</a>
             <?php endif; ?>
-
+            
             <!-- Ride With Call Button -->
             <a href="#" class="btn btn-warning btn-sm ml-3">Ride With Call</a>
         </div>

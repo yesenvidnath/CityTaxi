@@ -323,3 +323,42 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+07. 
+Prosedure Name : GetAssignedRides
+DELIMITER $$
+
+CREATE PROCEDURE GetAssignedRides(IN driverID INT)
+BEGIN
+    SELECT r.Ride_ID, r.Taxi_ID, r.Driver_ID, r.Passenger_ID, r.Type, r.Start_Location,
+           r.End_Location, r.Start_time, r.End_time, r.Start_date, r.End_date,
+           r.Total_distance, r.Amount, r.Status
+    FROM rides r
+    WHERE r.Driver_ID = driverID;
+END $$
+
+DELIMITER ;
+
+
+08. 
+Prosedure Name : GetDriverDetailsByUserID
+DELIMITER $$
+
+CREATE PROCEDURE GetDriverDetailsByUserID(IN userID INT)
+BEGIN
+    -- Fetch driver details
+    SELECT d.Driver_ID, d.User_ID, d.Current_Location, d.Availability,
+           u.First_name, u.Last_name, u.Email, u.NIC_No, u.mobile_number, u.Address, u.user_img
+    FROM drivers d
+    JOIN users u ON d.User_ID = u.user_ID
+    WHERE d.User_ID = userID;
+
+    -- Fetch assigned rides for the driver
+    SELECT r.Ride_ID, r.Taxi_ID, r.Start_Location, r.End_Location, r.Status
+    FROM rides r
+    WHERE r.Driver_ID = (SELECT Driver_ID FROM drivers WHERE User_ID = userID);
+END $$
+
+DELIMITER ;
+
