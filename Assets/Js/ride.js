@@ -256,6 +256,7 @@ function displayAvailableDrivers() {
             .then(drivers => {
                 const driverList = document.getElementById('driverList');
                 driverList.innerHTML = ''; // Clear previous drivers
+                const driverIDs = []; // Array to hold driver IDs
                 
                 // Function to calculate distance
                 function haversineDistance(lat1, lon1, lat2, lon2) {
@@ -274,7 +275,14 @@ function displayAvailableDrivers() {
                 const filteredDrivers = drivers.filter(driver => {
                     const [driverLat, driverLon] = driver.Current_Location.replace(/[()]/g, '').split(',').map(coord => parseFloat(coord.trim()));
                     const distance = haversineDistance(startLat, startLon, driverLat, driverLon);
-                    return driver.Taxi_type === selectedVehicleType && distance <= maxDistance;
+                    const isSelectedVehicleType = driver.Taxi_type === selectedVehicleType;
+
+                    // If the driver meets the conditions, add their ID to the array
+                    if (isSelectedVehicleType && distance <= maxDistance) {
+                        driverIDs.push(driver.Driver_ID);
+                    }
+
+                    return isSelectedVehicleType && distance <= maxDistance;
                 });
 
                 // Check if any drivers are available
@@ -305,12 +313,16 @@ function displayAvailableDrivers() {
 
                 document.getElementById('step2').style.display = 'none'; // Hide taxi selection
                 document.getElementById('step3').style.display = 'block'; // Show driver selection
+
+                // You can now pass the driverIDs array to the confirmBooking function or store it globally
+                window.driverIDs = driverIDs; // Store it globally for access in confirmBooking
             })
             .catch(error => {
                 console.error('Error fetching drivers:', error);
             });
     });
 }
+
 
 
 function fetchVehiclesNearStartLocation() {

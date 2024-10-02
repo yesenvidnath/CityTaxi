@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             });
-        });
+        })
         .catch(error => console.error('Error fetching ride statistics:', error));
 
     var ctxPerformance = document.getElementById('driverPerformanceChart').getContext('2d');
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             });
-        });
+        })
         .catch(error => console.error('Error fetching driver performance:', error));
 });
 </script>
