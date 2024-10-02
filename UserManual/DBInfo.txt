@@ -134,6 +134,30 @@ CREATE TABLE `DriverVehicleAssignment` (
 );
 
 
+## Database Changes
+
+-- Code to Remove Licence_ID column from Vehicle_Owner table
+-- Because License Table already have a column for User_ID
+
+ALTER TABLE Vehicle_Owner
+DROP COLUMN Licence_ID;
+
+-- Code to Remove Driver_ID and Taxi_ID columns from Payments table
+-- Because Payments table has Ride_ID (FK) that already have the driver and taxi ids in the Rides table
+
+ALTER TABLE Payments
+DROP COLUMN Driver_ID,
+DROP COLUMN Taxi_ID;
+
+-- Code to Remove Driver_ID and Passenger_ID from Ratings table and add Ride_ID (FK) column
+-- Because the rating should be added after completing a ride and the Rides table has the Driver_ID and the Passenger_ID
+
+ALTER TABLE Ratings
+DROP COLUMN Driver_ID,
+DROP COLUMN Passenger_ID,
+ADD Ride_ID INT,
+ADD CONSTRAINT FK_Ratings_Ride_ID FOREIGN KEY (Ride_ID) REFERENCES Rides(Ride_ID);
+
 
 
 ## Sample Data For the DB 
