@@ -40,18 +40,23 @@ class WebSocketServer implements MessageComponentInterface {
                 case 'sendMessage':
                     $this->handleRideBooking($data);
                     break;
-
+    
                 case 'acceptRide':
-                    $this->handleDriverResponse($data['rideDetails']['rideID'], $data['driverID'], 'accepted');
+                    $driverInfo = [
+                        'driverName' => $data['driverName'],
+                        'driverLocation' => $data['driverLocation'],
+                        'driverMobile' => $data['driverMobile']
+                    ];
+                    $this->handleDriverResponse($data['rideDetails']['rideID'], $data['driverID'], 'accepted', $driverInfo);
                     break;
-
+    
                 case 'rejectRide':
                     $this->handleDriverResponse($data['rideDetails']['rideID'], $data['driverID'], 'rejected');
                     break;
             }
         }
     }
-
+    
     public function onClose(ConnectionInterface $conn) {
         // Remove the connection when it closes
         foreach ($this->driverConnections as $driverID => $client) {
@@ -101,7 +106,7 @@ class WebSocketServer implements MessageComponentInterface {
         if (isset($this->driverConnections[$driverID])) {
             $this->driverConnections[$driverID]->send(json_encode([
                 'status' => 'rideOffer',
-                'message' => "New ride available from {$rideDetails['startLocation']} to {$rideDetails['endLocation']}. Price: {$rideDetails['tripPrice']}",
+                'message' => "New ride available from {$rideDetails['startLocation']} to {$rideDetails['endLocation']}. Price: {$rideDetails['tripPrice']}. Do you accept this ride?",
                 'rideDetails' => $rideDetails
             ]));
         } else {
@@ -109,19 +114,15 @@ class WebSocketServer implements MessageComponentInterface {
         }
     }
 
-    private function handleDriverResponse($rideID, $driverID, $response) {
-        // Store the response from the driver
+    private function handleDriverResponse($rideID, $driverID, $response, $driverInfo = null) {
         $this->pendingRides[$rideID]['responses'][$driverID] = $response;
     
-        // Check if all drivers have responded
         if (count($this->pendingRides[$rideID]['responses']) === count($this->driverConnections)) {
             $acceptedDriver = array_search('accepted', $this->pendingRides[$rideID]['responses']);
             
             if ($acceptedDriver !== false) {
-                // Notify all passengers about the accepted ride
-                $this->notifyPassenger($this->pendingRides[$rideID]['details'], $acceptedDriver);
+                $this->notifyPassenger($this->pendingRides[$rideID]['details'], $acceptedDriver, $driverInfo);
             } else {
-                // Notify all passengers that all drivers rejected the ride
                 foreach ($this->passengerConnections as $passengerConnection) {
                     $passengerConnection->send(json_encode([
                         'status' => 'rejected',
@@ -129,18 +130,22 @@ class WebSocketServer implements MessageComponentInterface {
                     ]));
                 }
             }
-            // Clean up the pending ride
             unset($this->pendingRides[$rideID]);
         }
     }
     
 
-    private function notifyPassenger($rideDetails, $driverID) {
-        // Notify the passenger that the ride has been accepted
+    private function notifyPassenger($rideDetails, $driverID, $driverInfo) {
         foreach ($this->passengerConnections as $passengerConnection) {
             $passengerConnection->send(json_encode([
                 'status' => 'confirmed',
-                'message' => "Your ride has been accepted by Driver ID: {$driverID} from {$rideDetails['startLocation']} to {$rideDetails['endLocation']}."
+                'message' => "Your ride has been accepted by {$driverInfo['driverName']} (Driver ID: {$driverID}).",
+                'driverDetails' => [
+                    'name' => $driverInfo['driverName'],
+                    'location' => $driverInfo['driverLocation'],
+                    'mobile' => $driverInfo['driverMobile']
+                ],
+                'rideDetails' => $rideDetails
             ]));
         }
     }
@@ -154,6 +159,8 @@ class WebSocketServer implements MessageComponentInterface {
             ]));
         }
     }
+
+    
 }
 
 // Create the WebSocket server and run it

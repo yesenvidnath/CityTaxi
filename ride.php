@@ -189,7 +189,7 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
         const socket = new WebSocket('ws://localhost:8080/ws');
         socket.onopen = function() {
             userInfo.driverIDs.forEach(driverID => {
-                const message = `A new ride has been booked from ${startLocation} to ${endLocation} for a price of ${tripPrice}.`;
+                const message = "A new ride has been booked. From " + startLocation + " to " + endLocation + " for a price of " + tripPrice + ". Do you accept this ride?";
                 socket.send(JSON.stringify({
                     action: 'sendMessage',
                     driverID: driverID,
@@ -200,7 +200,39 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
 
         socket.onmessage = function(event) {
             const response = JSON.parse(event.data);
-            if (response.status === 'confirmed') {
+            if (response.status === 'rideOffer') {
+                // Display SweetAlert for driver confirmation
+                swal({
+                    title: "New Ride Request",
+                    text: response.message,
+                    icon: "info",
+                    buttons: {
+                        accept: {
+                            text: "Accept",
+                            value: "accept",
+                        },
+                        reject: {
+                            text: "Reject",
+                            value: "reject",
+                        }
+                    },
+                    dangerMode: true // Optional: to style the reject button
+                }).then((value) => {
+                    if (value === "accept") {
+                        socket.send(JSON.stringify({
+                            action: 'acceptRide',
+                            driverID: driverID,
+                            rideDetails: response.rideDetails // Send accepted ride details
+                        }));
+                    } else {
+                        socket.send(JSON.stringify({
+                            action: 'rejectRide',
+                            driverID: driverID,
+                            rideDetails: response.rideDetails
+                        }));
+                    }
+                });
+            } else if (response.status === 'confirmed') {
                 console.log(`Driver Response: ${response.message}`);
                 swal("Booking Confirmed!", response.message, "success");
             } else if (response.status === 'rejected') {
