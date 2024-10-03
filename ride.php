@@ -246,6 +246,7 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
     }
 </script>
 
+
 <?php 
     include 'TemplateParts/Shared/NavMenu.php'; 
     include 'TemplateParts/Footer/footer.php';   
