@@ -6,12 +6,6 @@
     include $rootPath . 'TemplateParts/Header/header.php'; 
     include_once $rootPath . 'Functions/Driver/Driver.php';
 
-    // Attempt to include Alerts.php and check for existence
-    if (file_exists($rootPath . 'Functions/Driver/Alerts.php')) {
-        include_once $rootPath . 'Functions/Driver/Alerts.php';
-    } else {
-        die("Error: Alerts.php file not found.");
-    }
 
     // Retrieve user ID from session
     $userID = SessionManager::get('user_ID'); 
@@ -134,10 +128,12 @@
     });
 
 
-    // WebSocket connection code
     const driverID = '<?php echo $Driver_ID; ?>';
+    const driverName = '<?php echo $driverFirstName . ' ' . $driverLastName; ?>';
+    const driverLocation = '<?php echo $driverLocation; ?>';
+    const driverMobile = '<?php echo $driverMobile; ?>';
 
-    const socket = new WebSocket(`ws://localhost:8080/ws?driverID=${driverID}`); // Pass Driver ID as a query parameter
+    const socket = new WebSocket(`ws://localhost:8080/ws?driverID=${driverID}`);
 
     socket.onopen = function() {
         console.log('Connected to WebSocket server as Driver ID: ' + driverID);
@@ -145,55 +141,50 @@
 
     socket.onmessage = function(event) {
         const response = JSON.parse(event.data);
-        console.log('Received response:', response); // Debugging
+        console.log('Received response:', response);
 
         if (response.status === 'rideOffer') {
-            // Display SweetAlert with ride details and custom buttons
-            swal({
+            sweetAlert({
                 title: "New Ride Available",
                 text: response.message,
-                icon: "info",
-                buttons: {
-                    accept: {
-                        text: "Accept",
-                        value: "accept",
-                    },
-                    reject: {
-                        text: "Reject",
-                        value: "reject",
-                    }
-                },
-                dangerMode: true // Optional: Style it to indicate danger for reject
-            }).then((value) => {
-                if (value === "accept") {
-                    // Send acceptance back to the server
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Accept",
+                cancelButtonText: "Reject",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            function(isConfirm){
+                if (isConfirm) {
                     socket.send(JSON.stringify({
                         action: 'acceptRide',
                         driverID: driverID,
-                        rideDetails: response.rideDetails // Send the accepted ride details
+                        driverName: driverName,
+                        driverLocation: driverLocation,
+                        driverMobile: driverMobile,
+                        rideDetails: response.rideDetails
                     }));
+                    sweetAlert("Accepted!", "You have accepted the ride.", "success");
                 } else {
-                    // Send rejection back to the server
                     socket.send(JSON.stringify({
                         action: 'rejectRide',
                         driverID: driverID,
                         rideDetails: response.rideDetails
                     }));
+                    sweetAlert("Rejected", "You have rejected the ride.", "info");
                 }
             });
         } else if (response.status === 'confirmed') {
-            // Handle confirmation from the server
-            swal("Booking Confirmed!", response.message, "success");
+            sweetAlert("Booking Confirmed!", response.message, "success");
         } else if (response.status === 'rejected') {
-            // Handle rejection message
-            swal("All drivers are busy. Please select another vehicle type.", "", "error");
+            sweetAlert("Ride Rejected", "The passenger has been notified.", "info");
         }
     };
 
     socket.onerror = function(error) {
         console.error('WebSocket Error:', error);
     };
-
 </script>
 
 <?php 
