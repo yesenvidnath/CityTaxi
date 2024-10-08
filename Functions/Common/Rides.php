@@ -1,5 +1,8 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/Database.php';
+
+include_once __DIR__ . '/Database.php';
+
+//include_once $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/Database.php';
 
 class Ride {
     private $db;
@@ -36,6 +39,18 @@ class Ride {
         $stmt->execute();
         return $stmt->rowCount(); // Returns the number of rows affected
     }
+
+    // Method to get driver vehicle by driver ID
+    public function getDriverVehicleById($driverId) {
+        $query = "CALL GetDriverVehicleInfo(:driverId)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':driverId', $driverId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        // Fetch a single result
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Change this line to fetch a single row
+    }
+ 
 }
 
 ?>

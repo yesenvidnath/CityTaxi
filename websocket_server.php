@@ -1,6 +1,10 @@
 <?php
 require __DIR__ . '/vendor/autoload.php'; // Adjust the path if needed
 
+// Include the Rides class to access the methods __DIR__ .
+require __DIR__ . '/Functions/Common/Rides.php';
+require __DIR__ . '/Functions/Common/Texts.php';
+
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
@@ -135,22 +139,41 @@ class WebSocketServer implements MessageComponentInterface {
     }
 
     private function notifyPassenger($rideDetails, $driverID, $driverInfo) {
+        // Fetch the vehicle information for the driver
+        $ride = new Ride();
+        $vehicleInfo = $ride->getDriverVehicleById($driverID); // This now returns a single associative array
+    
+        // Check if vehicle information is returned
+        if ($vehicleInfo) {
+            // Access properties from the associative array
+            $plateNumber = $vehicleInfo['Plate_number']; // Get the plate number
+            $taxiType = $vehicleInfo['Taxi_type']; // Get the taxi type
+        } else {
+            // Default values in case no vehicle info is found
+            $plateNumber = 'N/A';
+            $taxiType = 'N/A';
+        }
+    
         // Notify the passenger that the ride has been accepted
         foreach ($this->passengerConnections as $passengerConnection) {
             $passengerConnection->send(json_encode([
                 'status' => 'confirmed',
-                'message' => "Your ride has been accepted by Driver: {$driverInfo['driverName']}  {$driverID} from {$rideDetails['startLocation']} to {$rideDetails['endLocation']}."
+                'message' => "Your ride has been accepted by Driver: {$driverInfo['driverName']} (ID: {$driverID}) from {$rideDetails['startLocation']} to {$rideDetails['endLocation']}.\n"
+                            . "Vehicle Type: {$taxiType}\n"
+                            . "Plate Number: {$plateNumber}."
             ]));
-            
+    
             // Send SMS to the passenger
             $passengerUserID = $rideDetails['PassengerUserID']; // Extract passenger ID
             $mobileNumber = $rideDetails['mobileNumber']; // Extract mobile number
-            
+    
             // Create an instance of the Texts class and send SMS
             $texts = new Texts();
-            $texts->sendSms($mobileNumber, $driverID, $rideDetails);
+            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber); // Pass the additional parameters
         }
     }
+    
+    
 
     private function notifyPassengerRejection($driverID) {
         // Notify the passenger that the ride has been rejected
