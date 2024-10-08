@@ -141,17 +141,22 @@ class WebSocketServer implements MessageComponentInterface {
     private function notifyPassenger($rideDetails, $driverID, $driverInfo) {
         // Fetch the vehicle information for the driver
         $ride = new Ride();
-        $vehicleInfo = $ride->getDriverVehicleById($driverID); 
+        $vehicleInfo = $ride->getDriverVehicleById($driverID); // This now returns a single associative array
     
+        // Check if vehicle information is returned
         if ($vehicleInfo) {
-            $plateNumber = $vehicleInfo['Plate_number'];
-            $taxiType = $vehicleInfo['Taxi_type'];
+            // Access properties from the associative array
+            $plateNumber = $vehicleInfo['Plate_number']; // Get the plate number
+            $taxiID = $vehicleInfo['Taxi_ID']; // Get the taxi ID
+            $taxiType = $vehicleInfo['Taxi_type']; // Get the taxi type
         } else {
+            // Default values in case no vehicle info is found
             $plateNumber = 'N/A';
+            $taxiID = null; // Set taxiID to null if not found
             $taxiType = 'N/A';
         }
     
-        // Notify the passenger
+        // Notify the passenger that the ride has been accepted
         foreach ($this->passengerConnections as $passengerConnection) {
             $passengerConnection->send(json_encode([
                 'status' => 'confirmed',
@@ -161,16 +166,29 @@ class WebSocketServer implements MessageComponentInterface {
             ]));
     
             // Send SMS to the passenger
-            $passengerUserID = $rideDetails['PassengerUserID']; 
-            $mobileNumber = $rideDetails['mobileNumber'];
+            $passengerUserID = $rideDetails['PassengerUserID']; // Extract passenger ID
+            $mobileNumber = $rideDetails['mobileNumber']; // Extract mobile number
     
+            // Create an instance of the Texts class and send SMS
             $texts = new Texts();
-            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber, $driverInfo['driverName']);
+            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber, $driverInfo['driverName']); // Pass the additional parameters
+    
+            // Add the new ride to the rides table
+            $startTime = date('Y-m-d H:i:s'); // Current time as start time
+            $endTime = null; // End time is null for now
+            $startDate = date('Y-m-d'); // Current date as start date
+            $endDate = null; // End date is null for now
+            $totalDistance = $rideDetails['totalDistance']; // Get total distance from ride details
+            $amount = $rideDetails['tripPrice']; // Assuming trip price is the amount
+            
+            // Add the ride to the rides table
+            $ride->addRide($taxiID, $driverID, $passengerUserID, $taxiType, $rideDetails['startLocation'], $rideDetails['endLocation'], $startTime, $endTime, $startDate, $endDate, $totalDistance, $amount, 'Accepted');
     
             // Update the driver's availability
-            $ride->updateDriverAvailability($driverID, 0); // Set availability to 0
+            $ride->updateDriverAvailability($driverID, 0); // Set availability to 0 (unavailable)
         }
     }
+    
     
     
     private function notifyPassengerRejection($driverID) {

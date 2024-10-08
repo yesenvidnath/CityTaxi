@@ -75,6 +75,31 @@ class Ride {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    // Method to add a new ride
+    public function addRide($taxiID, $driverID, $passengerID, $type, $startLocation, $endLocation, $startTime, $endTime, $startDate, $endDate, $totalDistance, $amount, $status) {
+        // Prepare and execute the stored procedure
+        $query = "CALL AddRide(:taxiID, :driverID, :passengerID, :type, :startLocation, :endLocation, :startTime, :endTime, :startDate, :endDate, :totalDistance, :amount, :status)";
+        $stmt = $this->conn->prepare($query);
+
+        // Bind parameters
+        $stmt->bindParam(':taxiID', $taxiID, PDO::PARAM_INT);
+        $stmt->bindParam(':driverID', $driverID, PDO::PARAM_INT);
+        $stmt->bindParam(':passengerID', $passengerID, PDO::PARAM_INT);
+        $stmt->bindParam(':type', $type, PDO::PARAM_STR);
+        $stmt->bindParam(':startLocation', $startLocation, PDO::PARAM_STR);
+        $stmt->bindParam(':endLocation', $endLocation, PDO::PARAM_STR);
+        $stmt->bindParam(':startTime', $startTime, PDO::PARAM_STR);
+        $stmt->bindParam(':endTime', $endTime, PDO::PARAM_STR);
+        $stmt->bindParam(':startDate', $startDate, PDO::PARAM_STR);
+        $stmt->bindParam(':endDate', $endDate, PDO::PARAM_STR);
+        $stmt->bindParam(':totalDistance', $totalDistance, PDO::PARAM_STR);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+        $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+
+        // Execute the stored procedure
+        return $stmt->execute();
+    }
     
 }
 

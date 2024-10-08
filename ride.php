@@ -44,6 +44,9 @@ $firstName = $userInfo['First_name'] ?? '';
 $lastName = $userInfo['Last_name'] ?? '';
 $mobileNumber = $userInfo['mobile_number'] ?? '';
 
+// Check if the ride has been accepted
+$rideAccepted = isset($_SESSION['ride_accepted']) ? $_SESSION['ride_accepted'] : false;
+
 ?>
 
 <!-- Main content -->
@@ -110,10 +113,17 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
                 </div>
             <?php endforeach; ?>
         </div>
-        <div class="text-center mt-4">
+
+        <div class="text-center mt-4" id="bookingButtons" style="<?php echo $rideAccepted ? 'display:none;' : ''; ?>">
             <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
             <button class="btn btn-secondary" onclick="changeVehicleType()">Change Vehicle Type</button>
         </div>
+
+        <!-- Display Visit Your Profile button when ride is accepted -->
+        <div class="text-center mt-4" id="visitProfileButton" style="<?php echo $rideAccepted ? 'display:block;' : 'display:none;'; ?>">
+            <a href="/CityTaxi/Pages/Driver/profile.php" class="btn btn-info">Visit Your Profile</a>
+        </div>
+
     </div>
 
 
@@ -175,7 +185,8 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
             endLocation: endLocation,
             tripPrice: tripPrice,
             rideID: rideID, // Include rideID
-            driverIDs: window.driverIDs // Add the driver IDs to the user info
+            driverIDs: window.driverIDs, // Add the driver IDs to the user info
+            totalDistance: totalDistance // Include the total distance
         };
 
         // Display the user information and trip details in the console
@@ -189,11 +200,11 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
         const socket = new WebSocket('ws://localhost:8080/ws');
         socket.onopen = function() {
             userInfo.driverIDs.forEach(driverID => {
-                const message = "A new ride has been booked. From " + startLocation + " to " + endLocation + " for a price of " + tripPrice + ". Do you accept this ride?";
+                const message = "A new ride has been booked. From " + startLocation + " to " + endLocation + " for a price of " + tripPrice + ". Total distance: " + totalDistance.toFixed(2) + " km. Do you accept this ride?";
                 socket.send(JSON.stringify({
                     action: 'sendMessage',
                     driverID: driverID,
-                    rideDetails: userInfo // Send complete ride details including rideID
+                    rideDetails: userInfo // Send complete ride details including rideID and totalDistance
                 }));
             });
         };
@@ -235,6 +246,10 @@ $mobileNumber = $userInfo['mobile_number'] ?? '';
             } else if (response.status === 'confirmed') {
                 console.log(`Driver Response: ${response.message}`);
                 swal("Booking Confirmed!", response.message, "success");
+                // Hide the booking buttons and show the profile button
+                document.getElementById('bookingButtons').style.display = 'none';
+                document.getElementById('visitProfileButton').style.display = 'block';
+
             } else if (response.status === 'rejected') {
                 swal("Driver has rejected the ride. Please try another vehicle type.", "", "error");
             }
