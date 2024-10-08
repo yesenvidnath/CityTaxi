@@ -169,12 +169,13 @@ class WebSocketServer implements MessageComponentInterface {
     
             // Create an instance of the Texts class and send SMS
             $texts = new Texts();
-            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber); // Pass the additional parameters
+            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber, $driverInfo['driverName']); // Pass the driver's name as the sixth parameter
         }
     }
     
     
-
+    
+    
     private function notifyPassengerRejection($driverID) {
         // Notify the passenger that the ride has been rejected
         foreach ($this->passengerConnections as $passengerConnection) {
