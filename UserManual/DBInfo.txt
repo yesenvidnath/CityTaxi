@@ -381,6 +381,34 @@ BEGIN
         taxis t ON dva.Taxi_ID = t.Taxi_ID
     WHERE 
         dva.Driver_ID = driverId;
+END $$
+
+DELIMITER ;
+
+
+10.
+Prosedure Name : UpdateDriverAvailability 
+DELIMITER //
+
+CREATE PROCEDURE UpdateDriverAvailability(IN driverID INT, IN availability INT)
+BEGIN
+    UPDATE drivers 
+    SET Availability = availability 
+    WHERE Driver_ID = driverID;
+END //
+
+DELIMITER ;
+
+
+11.
+Prosedure Name : GetDriverAvailability
+DELIMITER //
+
+CREATE PROCEDURE GetDriverAvailability(IN driverID INT)
+BEGIN
+    SELECT Availability 
+    FROM drivers 
+    WHERE Driver_ID = driverID;
 END //
 
 DELIMITER ;

@@ -50,7 +50,32 @@ class Ride {
         // Fetch a single result
         return $stmt->fetch(PDO::FETCH_ASSOC); // Change this line to fetch a single row
     }
- 
+
+    public function setDriverAvailability($driverID, $availability) {
+        $query = "UPDATE drivers SET Availability = :availability WHERE Driver_ID = :driverID";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':availability', $availability, PDO::PARAM_INT);
+        $stmt->bindParam(':driverID', $driverID, PDO::PARAM_INT);
+        
+        return $stmt->execute();
+    }  
+    
+    public function updateDriverAvailability($driverID, $availability) {
+        $query = "CALL UpdateDriverAvailability(:driverID, :availability)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':driverID', $driverID, PDO::PARAM_INT);
+        $stmt->bindParam(':availability', $availability, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function getDriverAvailability($driverID) {
+        $query = "CALL GetDriverAvailability(:driverID)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':driverID', $driverID, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
 }
 
 ?>

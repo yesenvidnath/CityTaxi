@@ -141,20 +141,17 @@ class WebSocketServer implements MessageComponentInterface {
     private function notifyPassenger($rideDetails, $driverID, $driverInfo) {
         // Fetch the vehicle information for the driver
         $ride = new Ride();
-        $vehicleInfo = $ride->getDriverVehicleById($driverID); // This now returns a single associative array
+        $vehicleInfo = $ride->getDriverVehicleById($driverID); 
     
-        // Check if vehicle information is returned
         if ($vehicleInfo) {
-            // Access properties from the associative array
-            $plateNumber = $vehicleInfo['Plate_number']; // Get the plate number
-            $taxiType = $vehicleInfo['Taxi_type']; // Get the taxi type
+            $plateNumber = $vehicleInfo['Plate_number'];
+            $taxiType = $vehicleInfo['Taxi_type'];
         } else {
-            // Default values in case no vehicle info is found
             $plateNumber = 'N/A';
             $taxiType = 'N/A';
         }
     
-        // Notify the passenger that the ride has been accepted
+        // Notify the passenger
         foreach ($this->passengerConnections as $passengerConnection) {
             $passengerConnection->send(json_encode([
                 'status' => 'confirmed',
@@ -164,16 +161,16 @@ class WebSocketServer implements MessageComponentInterface {
             ]));
     
             // Send SMS to the passenger
-            $passengerUserID = $rideDetails['PassengerUserID']; // Extract passenger ID
-            $mobileNumber = $rideDetails['mobileNumber']; // Extract mobile number
+            $passengerUserID = $rideDetails['PassengerUserID']; 
+            $mobileNumber = $rideDetails['mobileNumber'];
     
-            // Create an instance of the Texts class and send SMS
             $texts = new Texts();
-            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber, $driverInfo['driverName']); // Pass the driver's name as the sixth parameter
+            $texts->sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber, $driverInfo['driverName']);
+    
+            // Update the driver's availability
+            $ride->updateDriverAvailability($driverID, 0); // Set availability to 0
         }
     }
-    
-    
     
     
     private function notifyPassengerRejection($driverID) {

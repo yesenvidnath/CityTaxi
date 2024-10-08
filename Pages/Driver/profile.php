@@ -5,6 +5,7 @@
 
     include $rootPath . 'TemplateParts/Header/header.php'; 
     include_once $rootPath . 'Functions/Driver/Driver.php';
+    include_once $rootPath . 'Functions/Common/Rides.php'; 
 
 
     // Retrieve user ID from session
@@ -40,6 +41,26 @@
 
     // Debug: Check session contents
     error_log("Session Contents: " . print_r($_SESSION, true));
+
+    // Initialize Driver class and get driver details and assigned rides
+    $driver = new Driver();
+    $driverInfo = $driver->getDriverDetailsByUserID($userID);
+    $assignedRides = $driver->getAssignedRides($driverInfo['Driver_ID']); // Use the Driver_ID from driverInfo
+
+    // Create an instance of the Ride class
+    $ride = new Ride(); // Ensure the Ride class is instantiated
+
+    // Get driver's availability
+    $availabilityInfo = $ride->getDriverAvailability($driverInfo['Driver_ID']); // Use the Driver_ID
+
+    if ($availabilityInfo) {
+        $availabilityText = $availabilityInfo['Availability'] == 1 ? "Available" : "Unavailable";
+    } else {
+        $availabilityText = "Status Unknown";
+    }
+
+    // Display in your HTML
+    echo "<p>Driver Status: <strong>{$availabilityText}</strong></p>";
 
 ?>
 
