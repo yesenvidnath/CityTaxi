@@ -362,3 +362,25 @@ END $$
 
 DELIMITER ;
 
+
+09. 
+Prosedure Name : GetDriverVehicleInfo
+DELIMITER $$
+
+CREATE PROCEDURE GetDriverVehicleInfo(IN driverId INT)
+BEGIN
+    SELECT 
+        dva.Assignment_ID, 
+        dva.Driver_ID, 
+        dva.Taxi_ID, 
+        t.Plate_number,    -- Use the correct column name
+        t.Taxi_type        -- Use the correct column name
+    FROM 
+        drivervehicleassignment dva
+    JOIN 
+        taxis t ON dva.Taxi_ID = t.Taxi_ID
+    WHERE 
+        dva.Driver_ID = driverId;
+END //
+
+DELIMITER ;
