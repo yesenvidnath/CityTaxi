@@ -1,48 +1,59 @@
 <?php
 
-    // Define the root path for the includes
-    $rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/'; 
+// Define the root path for the includes
+$rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/'; 
 
-    include $rootPath . 'TemplateParts/Header/header.php'; 
-    include_once $rootPath . 'Functions/Driver/Driver.php';
+include $rootPath . 'TemplateParts/Header/header.php'; 
+include_once $rootPath . 'Functions/Driver/Driver.php';
+include_once $rootPath . 'Functions/Common/Rides.php'; 
 
+// Retrieve user ID from session
+$userID = SessionManager::get('user_ID'); 
 
-    // Retrieve user ID from session
-    $userID = SessionManager::get('user_ID'); 
+if (!SessionManager::isLoggedIn() || !$userID) {
+    header("Location: /CityTaxi/login.php?status=error&message=Please log in first!");
+    exit();
+}
 
-    if (!SessionManager::isLoggedIn() || !$userID) {
-        header("Location: /CityTaxi/login.php?status=error&message=Please log in first!");
-        exit();
-    }
+// Fetch API keys from the .env file
+$dotenv = parse_ini_file($_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/env/.env');
+$openRouteServiceApiKey = $dotenv['OpenRouteService_API_Key'];
+$openCageApiKey = $dotenv['OpenCage_API_Key'];
+$tomTomApiKey = $dotenv['TomTom_API_Key']; // Fetch TomTom API Key
 
-    // Fetch API keys from the .env file
-    $dotenv = parse_ini_file($_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/env/.env');
-    $openRouteServiceApiKey = $dotenv['OpenRouteService_API_Key'];
-    $openCageApiKey = $dotenv['OpenCage_API_Key'];
-    $tomTomApiKey = $dotenv['TomTom_API_Key']; // Fetch TomTom API Key
+// Initialize Driver class and get driver details and assigned rides
+$driver = new Driver();
+$driverInfo = $driver->getDriverDetailsByUserID($userID);
+$assignedRides = $driver->getAssignedRides($driverInfo['Driver_ID']); // Use the Driver_ID from driverInfo
 
-    // Initialize Driver class and get driver details and assigned rides
-    $driver = new Driver();
-    $driverInfo = $driver->getDriverDetailsByUserID($userID);
-    $assignedRides = $driver->getAssignedRides($driverInfo['Driver_ID']); // Use the Driver_ID from driverInfo
+// Assign driver info to variables for easy use
+$Driver_ID = $driverInfo['Driver_ID'] ?? 'N/A';
+$driverFirstName = $driverInfo['First_name'] ?? 'N/A';
+$driverLastName = $driverInfo['Last_name'] ?? 'N/A';
+$driverMobile = $driverInfo['mobile_number'] ?? 'N/A';
+$driverEmail = $driverInfo['Email'] ?? 'N/A';
+$driverLocation = $driverInfo['Current_Location'] ?? '0,0'; 
+$userImage = $driverInfo['user_img'] ?? 'default.jpg'; 
 
-    // Assign driver info to variables for easy use
-    $Driver_ID = $driverInfo['Driver_ID'] ?? 'N/A';
-    $driverFirstName = $driverInfo['First_name'] ?? 'N/A';
-    $driverLastName = $driverInfo['Last_name'] ?? 'N/A';
-    $driverMobile = $driverInfo['mobile_number'] ?? 'N/A';
-    $driverEmail = $driverInfo['Email'] ?? 'N/A';
-    $driverLocation = $driverInfo['Current_Location'] ?? '0,0'; 
-    $userImage = $driverInfo['user_img'] ?? 'default.jpg'; 
+// Construct the image path
+$imagePath = "/CityTaxi/Assets/Img/Driver/" . $userImage;
 
-    // Construct the image path
-    $imagePath = "/CityTaxi/Assets/Img/Driver/" . $userImage;
+// Debug: Check session contents
+error_log("Session Contents: " . print_r($_SESSION, true));
 
-    // Debug: Check session contents
-    error_log("Session Contents: " . print_r($_SESSION, true));
+// Create an instance of the Ride class
+$ride = new Ride(); // Ensure the Ride class is instantiated
+
+// Get driver's availability
+$availabilityInfo = $ride->getDriverAvailability($driverInfo['Driver_ID']); // Use the Driver_ID
+
+if ($availabilityInfo) {
+    $availabilityText = $availabilityInfo['Availability'] == 1 ? "Available" : "Unavailable";
+} else {
+    $availabilityText = "Status Unknown";
+}
 
 ?>
-
 
 <div class="container profile-page">
     <div class="row">
@@ -54,6 +65,14 @@
                 <p>Email Address: <?php echo $driverEmail; ?></p>
                 <p>Current Location: <?php echo $driverLocation; ?></p>
             </div>
+        </div>
+
+        <!-- Driver Availability Section -->
+        <div class="col-lg-12">
+            <h3>Driver Availability</h3>
+            <p id="driverAvailability" class="availability-status">
+                <?php echo $availabilityText; // Display initial availability status ?>
+            </p>
         </div>
 
         <!-- Rides Information Column -->
@@ -72,7 +91,6 @@
         </div>
     </div>
 
-    
     <!-- Alerts Section -->
     <div class="row">
         <div class="col-lg-12">
@@ -91,7 +109,6 @@
             </ul>
         </div>
     </div>
-
 
     <!-- Map Section -->
     <div class="map-info">
@@ -126,7 +143,6 @@
             .bindPopup('Driver Location: <?php echo $driverFirstName . " " . $driverLastName; ?>')
             .openPopup();
     });
-
 
     const driverID = '<?php echo $Driver_ID; ?>';
     const driverName = '<?php echo $driverFirstName . ' ' . $driverLastName; ?>';
@@ -166,6 +182,9 @@
                         rideDetails: response.rideDetails
                     }));
                     sweetAlert("Accepted!", "You have accepted the ride.", "success");
+
+                    // Update availability status
+                    document.getElementById('driverAvailability').innerText = "Unavailable"; // Update availability status
                 } else {
                     socket.send(JSON.stringify({
                         action: 'rejectRide',
@@ -179,6 +198,9 @@
             sweetAlert("Booking Confirmed!", response.message, "success");
         } else if (response.status === 'rejected') {
             sweetAlert("Ride Rejected", "The passenger has been notified.", "info");
+        } else if (response.status === 'availabilityUpdate') {
+            // Update the availability status based on the received message
+            document.getElementById('driverAvailability').innerText = response.availability === 1 ? "Available" : "Unavailable";
         }
     };
 
