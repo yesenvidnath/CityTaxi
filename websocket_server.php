@@ -133,20 +133,22 @@ class WebSocketServer implements MessageComponentInterface {
             unset($this->pendingRides[$rideID]);
         }
     }
-    
 
     private function notifyPassenger($rideDetails, $driverID, $driverInfo) {
+        // Notify the passenger that the ride has been accepted
         foreach ($this->passengerConnections as $passengerConnection) {
             $passengerConnection->send(json_encode([
                 'status' => 'confirmed',
-                'message' => "Your ride has been accepted by {$driverInfo['driverName']} (Driver ID: {$driverID}).",
-                'driverDetails' => [
-                    'name' => $driverInfo['driverName'],
-                    'location' => $driverInfo['driverLocation'],
-                    'mobile' => $driverInfo['driverMobile']
-                ],
-                'rideDetails' => $rideDetails
+                'message' => "Your ride has been accepted by Driver: {$driverInfo['driverName']}  {$driverID} from {$rideDetails['startLocation']} to {$rideDetails['endLocation']}."
             ]));
+            
+            // Send SMS to the passenger
+            $passengerUserID = $rideDetails['PassengerUserID']; // Extract passenger ID
+            $mobileNumber = $rideDetails['mobileNumber']; // Extract mobile number
+            
+            // Create an instance of the Texts class and send SMS
+            $texts = new Texts();
+            $texts->sendSms($mobileNumber, $driverID, $rideDetails);
         }
     }
 
@@ -160,7 +162,6 @@ class WebSocketServer implements MessageComponentInterface {
         }
     }
 
-    
 }
 
 // Create the WebSocket server and run it
