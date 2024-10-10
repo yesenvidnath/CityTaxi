@@ -142,13 +142,13 @@ class WebSocketServer implements MessageComponentInterface {
         // Fetch the vehicle information for the driver
         $ride = new Ride();
         $vehicleInfo = $ride->getDriverVehicleById($driverID); // This now returns a single associative array
-    
+        
         // Check if vehicle information is returned
         if ($vehicleInfo) {
             // Access properties from the associative array
-            $plateNumber = $vehicleInfo['Plate_number']; // Get the plate number
-            $taxiID = $vehicleInfo['Taxi_ID']; // Get the taxi ID
-            $taxiType = $vehicleInfo['Taxi_type']; // Get the taxi type
+            $plateNumber = $vehicleInfo['Plate_number']; 
+            $taxiID = $vehicleInfo['Taxi_ID']; 
+            $taxiType = $vehicleInfo['Taxi_type']; 
         } else {
             // Default values in case no vehicle info is found
             $plateNumber = 'N/A';
@@ -189,8 +189,6 @@ class WebSocketServer implements MessageComponentInterface {
         }
     }
     
-    
-    
     private function notifyPassengerRejection($driverID) {
         // Notify the passenger that the ride has been rejected
         foreach ($this->passengerConnections as $passengerConnection) {
@@ -200,7 +198,6 @@ class WebSocketServer implements MessageComponentInterface {
             ]));
         }
     }
-
 }
 
 // Create the WebSocket server and run it

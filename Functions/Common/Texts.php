@@ -5,7 +5,7 @@ class Texts {
 
     public function __construct() {
         // Set the API URL for sending SMS
-        $this->apiUrl = "https://smsserver-ff1bf5b1a1d5.herokuapp.com/send_sms"; // Your Heroku endpoint
+        $this->apiUrl = "https://smsserver-ff1bf5b1a1d5.herokuapp.com/send_sms"; 
     }
 
     public function sendSms($mobileNumber, $driverID, $rideDetails, $taxiType, $plateNumber, $driverName) {
@@ -37,5 +37,4 @@ class Texts {
             echo "SMS sent response: " . $response; // Optional: Log the response for debugging
         }
     }
-    
 }

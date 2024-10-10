@@ -87,7 +87,7 @@ CREATE TABLE Rides (
     End_date DATE,
     Total_distance DECIMAL(10, 2),
     Amount DECIMAL(10, 2),
-    Status VARCHAR(50)  -- Accepted, Rejected, Canceled, Rescheduled
+    Status VARCHAR(50)  -- Accepted, Rejected, Canceled, Rescheduled, Finished
 );
 
 -- Payments Table
@@ -436,6 +436,22 @@ CREATE PROCEDURE AddRide(
 BEGIN
     INSERT INTO rides (Taxi_ID, Driver_ID, Passenger_ID, Type, Start_Location, End_Location, Start_time, End_time, Start_date, End_date, Total_distance, Amount, Status)
     VALUES (p_Taxi_ID, p_Driver_ID, p_Passenger_ID, p_Type, p_Start_Location, p_End_Location, p_Start_Time, p_End_Time, p_Start_Date, p_End_Date, p_Total_Distance, p_Amount, p_Status);
+END //
+
+DELIMITER ;
+
+
+12.
+Prosedure Name : FinishRide
+DELIMITER //
+
+CREATE PROCEDURE FinishRide(IN rideID INT, IN driverID INT)
+BEGIN
+    -- Update the ride status
+    UPDATE rides SET Status = 'Finished' WHERE Ride_ID = rideID;
+
+    -- Set the driver availability to 1 (available)
+    UPDATE drivers SET Availability = 1 WHERE Driver_ID = driverID;
 END //
 
 DELIMITER ;

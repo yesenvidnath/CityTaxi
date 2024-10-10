@@ -71,24 +71,36 @@ if ($availabilityInfo) {
         <div class="col-lg-12">
             <h3>Driver Availability</h3>
             <p id="driverAvailability" class="availability-status">
-                <?php echo $availabilityText; // Display initial availability status ?>
+                <?php echo $availabilityText; ?>
             </p>
         </div>
 
         <!-- Rides Information Column -->
         <div class="col-lg-6 rides-card">
-            <h3>Assigned Rides</h3>
-            <ul class="list-group">
-                <?php foreach ($assignedRides as $ride): ?>
-                    <li class="list-group-item">
-                        <strong>Ride ID:</strong> <?php echo $ride['Ride_ID']; ?><br>
-                        <strong>Start Location:</strong> <?php echo $ride['Start_Location']; ?><br>
-                        <strong>End Location:</strong> <?php echo $ride['End_Location']; ?><br>
-                        <strong>Status:</strong> <?php echo $ride['Status']; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+        <h3>Assigned Rides</h3>
+        
+        <div class="row">
+            <?php foreach ($assignedRides as $ride): ?>
+                <div class="col-lg-6">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Ride ID: <?php echo $ride['Ride_ID']; ?></h5>
+                            <p class="card-text"><strong>Start Location:</strong> <?php echo $ride['Start_Location']; ?></p>
+                            <p class="card-text"><strong>End Location:</strong> <?php echo $ride['End_Location']; ?></p>
+                            <p class="card-text"><strong>Status:</strong> <?php echo $ride['Status']; ?></p>
+                            <?php if ($ride['Status'] === 'Accepted'): ?>
+                                <button class="btn btn-danger finish-ride" data-ride-id="<?php echo $ride['Ride_ID']; ?>">Finish Ride</button>
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
+
+        
+    </div>
+
     </div>
 
     <!-- Alerts Section -->
@@ -208,6 +220,69 @@ if ($availabilityInfo) {
         console.error('WebSocket Error:', error);
     };
 </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Finish Ride button click
+        const finishRideButtons = document.querySelectorAll('.finish-ride');
+        finishRideButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const rideID = this.getAttribute('data-ride-id');
+                const driverID = '<?php echo $Driver_ID; ?>'; // Get Driver ID from PHP
+                
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to finish this ride?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                }, function(isConfirm) {
+                    if (isConfirm) {
+                        // Get the current date and time
+                        const now = new Date();
+                        const endDate = now.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                        const endTime = now.toTimeString().split(' ')[0]; // Format as HH:MM:SS
+
+                        // Send AJAX request to finish the ride
+                        fetch('/CityTaxi/Functions/Common/Rides.php', {  // Updated path
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                action: 'finishRide',
+                                rideID: rideID,
+                                driverID: driverID,
+                                endDate: endDate, // Send the end date
+                                endTime: endTime  // Send the end time
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // Update the UI
+                                button.closest('.card').style.display = 'none'; // Hide the button
+                                swal("Ride Finished!", "The ride status has been updated to 'Completed'.", "success");
+                            } else {
+                                swal("Error", "There was an error finishing the ride. Please try again.", "error");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            swal("Error", "An error occurred while finishing the ride.", "error");
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 
 <?php 
     include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
