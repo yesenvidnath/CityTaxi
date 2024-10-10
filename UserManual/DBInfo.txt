@@ -445,10 +445,15 @@ DELIMITER ;
 Prosedure Name : FinishRide
 DELIMITER //
 
-CREATE PROCEDURE FinishRide(IN rideID INT, IN driverID INT)
+CREATE PROCEDURE FinishRide(IN rideID INT, IN driverID INT, IN endDate DATE, IN endTime TIME)
 BEGIN
     -- Update the ride status
-    UPDATE rides SET Status = 'Finished' WHERE Ride_ID = rideID;
+    UPDATE rides 
+    SET 
+        Status = 'Completed', 
+        End_date = endDate, 
+        End_time = endTime 
+    WHERE Ride_ID = rideID;
 
     -- Set the driver availability to 1 (available)
     UPDATE drivers SET Availability = 1 WHERE Driver_ID = driverID;
