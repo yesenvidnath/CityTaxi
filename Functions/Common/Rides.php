@@ -100,7 +100,47 @@ class Ride {
         // Execute the stored procedure
         return $stmt->execute();
     }
+
+    // Finish Ride functionality
+    public function finishRide($rideID, $driverID, $endDate, $endTime) {
+        $query = "CALL FinishRide(:rideID, :driverID, :endDate, :endTime)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':rideID', $rideID, PDO::PARAM_INT);
+        $stmt->bindParam(':driverID', $driverID, PDO::PARAM_INT);
+        $stmt->bindParam(':endDate', $endDate, PDO::PARAM_STR);
+        $stmt->bindParam(':endTime', $endTime, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+    
     
 }
+
+// Check if the script is being accessed via an HTTP request
+if (php_sapi_name() == "cli-server" || php_sapi_name() == "apache2handler") {
+    // Check for AJAX requests
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (isset($data['action']) && $data['action'] === 'finishRide') {
+            $rideID = $data['rideID'];
+            $driverID = $data['driverID'];
+            $endDate = $data['endDate']; // Get the end date from the request
+            $endTime = $data['endTime']; // Get the end time from the request
+
+            // Create an instance of the Ride class
+            $ride = new Ride();
+
+            // Call the finishRide method with endDate and endTime
+            if ($ride->finishRide($rideID, $driverID, $endDate, $endTime)) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error']);
+            }
+            exit; // Terminate the script after handling the request
+        }
+    }
+}
+
+
 
 ?>

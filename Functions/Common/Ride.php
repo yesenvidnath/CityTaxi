@@ -61,4 +61,6 @@ if (isset($_GET['fetch_drivers']) && $_GET['fetch_drivers'] === 'true') {
     exit;
 }
 
+
+
 ?>
