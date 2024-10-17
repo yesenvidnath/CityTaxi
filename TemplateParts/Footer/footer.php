@@ -25,6 +25,7 @@
 
     <?php 
         showLinkOnRide('<script src="/CityTaxi/Assets/Js/ride.js"></script>');
+        showLinkOnRegister('<script src="/CityTaxi/Assets/Js/register.js"></script>')
     ?> 
 </body>
 </html>
