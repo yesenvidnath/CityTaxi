@@ -3,83 +3,229 @@
 include 'TemplateParts/Header/header.php'; 
 ?>
 
-<div class="container register-page center-content">
-    <div class="row">
-        <div class="col-lg-6 form-section">
-            <h1>Drive. Earn. Enjoy. Repeat.</h1>
+<div class="container-fluid">
 
-            <form id="registrationForm" action="Functions/Common/LoginRegistration.php" method="post" enctype="multipart/form-data">
-                <!-- Add a hidden input to specify the registration process -->
-                <input type="hidden" name="registration" value="true">
-                <!-- Existing form fields... -->
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="first_name" placeholder="Enter First Name" required data-msg="Please enter your first name">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="last_name" placeholder="Enter Last Name" required data-msg="Please enter your last name">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="email" class="form-control" name="email_address" placeholder="Enter Email Address" required data-msg="Please enter a valid email address">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Create Password" required data-msg="Please provide a password">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required data-msg="Please confirm your password" data-rule-equalTo="#password">
-                            <button type="button" onclick="togglePasswordVisibility()">Show/Hide</button>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="nic_no" placeholder="Enter NIC No">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="address" placeholder="Enter Address">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add image upload field -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label for="user_img">Upload Profile Image:</label>
-                            <input type="file" class="form-control" name="user_img" id="user_img" required data-msg="Please upload an image">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="submit" class="btn btn-warning">Apply to Drive</button>
-                </div>
-            </form>
+    <div class="container">
+        <div>
+            <h1 class="mt-5 mb-4">Drive. Earn. Enjoy. Repeat.</h1>
         </div>
-        <div class="col-lg-6 image-section">
-            <img src="Assets/Img/register_page_image.png" alt="Drive Image" class="img-fluid">
-        </div>
+    </div>
+    <br>
+
+    <!-- General Information Section -->
+    
+    <div class="form-outer">
+        <form action="#">
+
+            <!-- General User Registration -->
+
+            <div class="page slide-page">
+                <div class="container">
+                    
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="profile-pic" class="font-weight-bold p-2">Profile Picture</label>
+                            </div>
+                            <div class="col-9">
+                                <div class="row align-items-center">
+                                    <div class="col-6 px-5">
+                                        <div class="card card-image p-2">
+                                            <img src="" alt="" id="img-pic" class="card-image-top">
+                                        </div>
+                                    </div>
+                                    <div class="col-6 px-5">
+                                        <div class="card card-profile-pic p-2">
+                                            <input type="file" class="form-control-file p-2" id="profile-pic" accept=".png,.jpg,.jpeg">
+                                        </div>
+                                        <button id="remove-profile-pic" class="btn btn-danger mt-3" type="button">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="full-name" class="font-weight-bold p-2">Full Name</label>
+                            </div>
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" placeholder="First Name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" placeholder="Last Name">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="nic-no" class="font-weight-bold p-2">NIC No</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" placeholder="NIC No">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="contact-no" class="font-weight-bold p-2">Contact No</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" placeholder="Contact No">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="address" class="font-weight-bold p-2">Address</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" placeholder="Address">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col-auto mr-auto"></div>
+                        <div class="col-auto">
+                            <button type="button" class="firstNext btn btn-warning font-weight-bold px-5">Next</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Driver and Vehicle Owner Registration -->
+
+            <div class="page slide-page">
+                <div class="container">
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="full-name" class="font-weight-bold p-2">NIC Images</label>
+                            </div>
+                            
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row ml-5">
+                                            <div class="card card-image">
+                                                <div class="center">
+                                                    <div class="dropzone">
+                                                        <img src="http://100dayscss.com/codepen/upload.svg" id="img-nic-front" class="upload-icon" />
+                                                        <p class="nic-dec">NIC Front</p>
+                                                        <input type="file" class="upload-input" id="nic-front" accept=".png,.jpg,.jpeg"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row ml-5">
+                                            <button id="remove-nic-front" class="btn btn-danger" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="card card-image">
+                                                <div class="center">
+                                                    <div class="dropzone">
+                                                        <img src="http://100dayscss.com/codepen/upload.svg" id="img-nic-back" class="upload-icon" />
+                                                        <p class="nic-dec">NIC Back</p>
+                                                        <input type="file" class="upload-input" id="nic-back" accept=".png,.jpg,.jpeg"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <button id="remove-nic-back" class="btn btn-danger" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="full-name" class="font-weight-bold p-2">Driver's Licence No</label>
+                            </div>
+                            
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-10 align-self-center ml-4">
+                                        <input type="text" class="form-control" placeholder="Driver's Licence No">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="full-name" class="font-weight-bold p-2">Driver's Licence No</label>
+                            </div>
+                            
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row ml-5">
+                                            <div class="card card-image">
+                                                <div class="center">
+                                                    <div class="dropzone">
+                                                        <img src="http://100dayscss.com/codepen/upload.svg" id="img-license-front" class="upload-icon" />
+                                                        <p class="nic-dec">Licence Front</p>
+                                                        <input type="file" class="upload-input" id="license-front" accept=".png,.jpg,.jpeg"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row ml-5">
+                                            <button id="remove-license-front" class="btn btn-danger" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="card card-image">
+                                                <div class="center">
+                                                    <div class="dropzone">
+                                                        <img src="http://100dayscss.com/codepen/upload.svg" id="img-license-back" class="upload-icon" />
+                                                        <p class="nic-dec">Licence Back</p>
+                                                        <input type="file" class="upload-input" id="license-back" accept=".png,.jpg,.jpeg"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <button id="remove-license-back" class="btn btn-danger" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <br>
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col-auto mr-auto">
+                            <button type="button" class="prev-1 btn btn-warning font-weight-bold px-5">Back</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="submit btn btn-warning font-weight-bold px-5">Submit</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
     </div>
 </div>
 
