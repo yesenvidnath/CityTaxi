@@ -67,6 +67,14 @@ if ($availabilityInfo) {
             </div>
         </div>
 
+        <!-- New Full-Width Banner with Availability Toggle Button -->
+        <div class="col-lg-12">
+            <div class="alert alert-info text-center" style="width: 100%;">
+                <h4>Driver Availability: <span id="driverAvailabilityStatus"><?php echo $availabilityText; ?></span></h4>
+                <button class="btn btn-primary" id="changeAvailabilityBtn" data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>">Change Availability</button>
+            </div>
+        </div>
+
         <!-- Driver Availability Section -->
         <div class="col-lg-12">
             <h3>Driver Availability</h3>
@@ -77,59 +85,32 @@ if ($availabilityInfo) {
 
         <!-- Rides Information Column -->
         <div class="col-lg-6 rides-card">
-        <h3>Assigned Rides</h3>
-        
-        <div class="row">
-
-            <?php foreach ($assignedRides as $ride): ?>
-                <div class="col-lg-6">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <h5 class="card-title">Ride ID: <?php echo $ride['Ride_ID']; ?></h5>
-                            <h5 class="card-title">Passenger ID: <?php echo $ride['Passenger_ID']; ?></h5>
-                            <p class="card-text"><strong>Start Location:</strong> <?php echo $ride['Start_Location']; ?></p>
-                            <p class="card-text"><strong>End Location:</strong> <?php echo $ride['End_Location']; ?></p>
-                            <p class="card-text"><strong>Total amount :</strong> <?php echo $ride['Amount']; ?></p>
-                            <p class="card-text"><strong>Status:</strong> <?php echo $ride['Status']; ?></p>
-                            
-                            <!-- Add the Taxi_ID as a data attribute to the button -->
-                            <?php if ($ride['Status'] === 'Accepted'): ?>
-                                <button class="btn btn-danger finish-ride" 
-                                        data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>"
-                                        data-ride-id="<?php echo $ride['Ride_ID']; ?>"
-                                        data-passenger-id="<?php echo $ride['Passenger_ID']; ?>"
-                                        data-amount="<?php echo $ride['Amount']; ?>"
-                                        data-taxi-id="<?php echo $ride['Taxi_ID']; ?>">Finish Ride</button>
-                            <?php endif; ?>
+            <h3>Assigned Rides</h3>
+            <div class="row">
+                <?php foreach ($assignedRides as $ride): ?>
+                    <div class="col-lg-6">
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h5 class="card-title">Ride ID: <?php echo $ride['Ride_ID']; ?></h5>
+                                <h5 class="card-title">Passenger ID: <?php echo $ride['Passenger_ID']; ?></h5>
+                                <p class="card-text"><strong>Start Location:</strong> <?php echo $ride['Start_Location']; ?></p>
+                                <p class="card-text"><strong>End Location:</strong> <?php echo $ride['End_Location']; ?></p>
+                                <p class="card-text"><strong>Total amount :</strong> <?php echo $ride['Amount']; ?></p>
+                                <p class="card-text"><strong>Status:</strong> <?php echo $ride['Status']; ?></p>
+                                
+                                <?php if ($ride['Status'] === 'Accepted'): ?>
+                                    <button class="btn btn-danger finish-ride" 
+                                            data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>"
+                                            data-ride-id="<?php echo $ride['Ride_ID']; ?>"
+                                            data-passenger-id="<?php echo $ride['Passenger_ID']; ?>"
+                                            data-amount="<?php echo $ride['Amount']; ?>"
+                                            data-taxi-id="<?php echo $ride['Taxi_ID']; ?>">Finish Ride</button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-
-
-        </div>
-
-        
-    </div>
-
-    </div>
-
-    <!-- Alerts Section -->
-    <div class="row">
-        <div class="col-lg-12">
-            <h3>Alerts</h3>
-            <ul class="list-group">
-                <?php if (!empty($alerts)): ?>
-                    <?php foreach ($alerts as $alert): ?>
-                        <li class="list-group-item">
-                            <?php echo $alert; ?>
-                        </li>
-                    <?php endforeach; ?>
-                    <?php unset($_SESSION['alerts']); // Clear alerts after displaying ?>
-                <?php else: ?>
-                    <li class="list-group-item">No new alerts.</li>
-                <?php endif; ?>
-            </ul>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 
@@ -238,6 +219,44 @@ if ($availabilityInfo) {
             console.error('WebSocket connection died');
         }
     };
+
+
+    document.getElementById('changeAvailabilityBtn').addEventListener('click', function() {
+        const driverId = this.getAttribute('data-driver-id');
+        
+        // Use AJAX to change availability
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/CityTaxi/Functions/Driver/Driver.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                const response = JSON.parse(xhr.responseText);
+                
+                if (response.status === 'success') {
+                    // Update availability status in the DOM
+                    const newAvailabilityText = response.newAvailability == 1 ? 'Available' : 'Unavailable';
+                    document.getElementById('driverAvailabilityStatus').textContent = newAvailabilityText;
+
+                    // Show SweetAlert for success
+                    swal({
+                        title: "Success!",
+                        text: "Driver availability updated to " + newAvailabilityText,
+                        icon: "success",
+                        button: "OK"
+                    });
+                } else {
+                    // Show SweetAlert for error with custom message
+                    swal({
+                        title: "Error!",
+                        text: response.message, // Display the custom error message
+                        icon: "error",
+                        button: "OK"
+                    });
+                }
+            }
+        };
+        xhr.send(`action=changeAvailability&driverId=${driverId}`);
+    });
 </script>
 
 

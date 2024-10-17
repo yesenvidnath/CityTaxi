@@ -647,3 +647,27 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+21.
+DELIMITER $$
+
+CREATE PROCEDURE UpdateDriverAvailabilityByRideStatus(
+    IN driverId INT,
+    IN newAvailability INT
+)
+BEGIN
+    -- Check if there are any active rides for the driver with status 'Accepted'
+    IF (SELECT COUNT(*) FROM rides WHERE Driver_ID = driverId AND Status = 'Accepted') = 0 THEN
+        -- No active rides found, proceed with updating the availability
+        UPDATE drivers
+        SET Availability = newAvailability
+        WHERE Driver_ID = driverId;
+    ELSE
+        -- Active rides found, do not allow the update
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot update availability. Active rides exist with status Accepted.';
+    END IF;
+END$$
+
+DELIMITER ;
+
