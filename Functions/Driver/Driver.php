@@ -39,7 +39,7 @@ class Driver {
     // Get Assigned Rides for the driver
     public function getAssignedRides($driverID) {
         // Fetch rides assigned to the driver
-        $query = "SELECT Ride_ID, Taxi_ID, Start_Location, End_Location, Status FROM rides WHERE Driver_ID = :driverID";
+        $query = "SELECT Passenger_ID, Ride_ID, Taxi_ID, Start_Location, End_Location, Amount, Status FROM rides WHERE Driver_ID = :driverID";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':driverID', $driverID, PDO::PARAM_INT);
         $stmt->execute();
