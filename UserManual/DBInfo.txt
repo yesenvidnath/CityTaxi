@@ -521,3 +521,143 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+17.
+Prosedure Name : RegisterPassenger
+DELIMITER //
+
+CREATE PROCEDURE RegisterPassenger(
+    IN p_user_type VARCHAR(50),
+    IN p_password VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_first_name VARCHAR(255),
+    IN p_last_name VARCHAR(255),
+    IN p_nic_no VARCHAR(20),
+    IN p_mobile_number VARCHAR(20),
+    IN p_address VARCHAR(255),
+    IN p_user_img VARCHAR(255)
+)
+BEGIN
+    -- Insert into 'users' table
+    INSERT INTO users (user_type, password, Email, First_name, Last_name, NIC_No, mobile_number, Address, user_img)
+    VALUES (p_user_type, p_password, p_email, p_first_name, p_last_name, p_nic_no, p_mobile_number, p_address, p_user_img);
+
+    -- Get the last inserted user ID
+    SET @last_user_id = LAST_INSERT_ID();
+
+    -- Insert into 'passengers' table using the last inserted user ID
+    INSERT INTO passengers (User_ID)
+    VALUES (@last_user_id);
+END //
+
+DELIMITER ;
+
+
+18.
+Prosedure Name : RegisterDriver
+DELIMITER //
+
+CREATE PROCEDURE RegisterDriver(
+    IN d_user_type VARCHAR(50),
+    IN d_password VARCHAR(255),
+    IN d_email VARCHAR(255),
+    IN d_first_name VARCHAR(255),
+    IN d_last_name VARCHAR(255),
+    IN d_nic_no VARCHAR(20),
+    IN d_mobile_number VARCHAR(20),
+    IN d_address VARCHAR(255),
+    IN d_user_img VARCHAR(255),
+    IN d_nic_img_front VARCHAR(255),
+    IN d_nic_img_back VARCHAR(255),
+    IN d_license_front VARCHAR(255),
+    IN d_license_back VARCHAR(255),
+    IN d_current_location VARCHAR(255)
+)
+BEGIN
+    -- Insert into 'users' table
+    INSERT INTO users (user_type, password, Email, First_name, Last_name, NIC_No, mobile_number, Address, user_img)
+    VALUES (d_user_type, d_password, d_email, d_first_name, d_last_name, d_nic_no, d_mobile_number, d_address, d_user_img);
+
+    -- Get the last inserted user ID
+    SET @last_user_id = LAST_INSERT_ID();
+
+    -- Insert into 'license' table
+    INSERT INTO license (User_ID, NIC_Img_Front, NIC_Img_Back, Drivers_license_Front_ID, Drivers_license_Back_ID)
+    VALUES (@last_user_id, d_nic_img_front, d_nic_img_back, d_license_front, d_license_back);
+
+    -- Get the last inserted License ID
+    SET @last_license_id = LAST_INSERT_ID();
+
+    -- Insert into 'drivers' table using the last inserted User ID and License ID
+    INSERT INTO drivers (User_ID, Licence_ID, Current_Location, Availability)
+    VALUES (@last_user_id, @last_license_id, d_current_location, 0);
+END //
+
+DELIMITER ;
+
+
+19. 
+Prosedure Name : AddRating
+DELIMITER $$
+
+CREATE PROCEDURE AddRating(
+    IN rideId INT,
+    IN driverId INT,
+    IN rate INT,
+    IN comment TEXT
+)
+BEGIN
+    -- Check if a rating already exists for this ride
+    IF (SELECT COUNT(*) FROM ratings WHERE Ride_ID = rideId) = 0 THEN
+        -- If no rating exists for this ride, insert the new rating
+        INSERT INTO ratings (Ride_ID, Driver_ID, Rate, Comment, Passenger_ID)
+        VALUES (rideId, driverId, rate, comment, (SELECT Passenger_ID FROM rides WHERE Ride_ID = rideId));
+    ELSE
+        -- If a rating already exists, do nothing (or handle it as needed)
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Rating already exists for this ride.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+20.
+Prosedure Name : CheckRatingExists
+DELIMITER $$
+
+CREATE PROCEDURE CheckRatingExists(
+    IN rideId INT
+)
+BEGIN
+    -- Return 1 if a rating exists for the given Ride_ID, otherwise return 0
+    SELECT COUNT(*) AS rating_exists 
+    FROM ratings 
+    WHERE Ride_ID = rideId;
+END$$
+
+DELIMITER ;
+
+
+21.
+DELIMITER $$
+
+CREATE PROCEDURE UpdateDriverAvailabilityByRideStatus(
+    IN driverId INT,
+    IN newAvailability INT
+)
+BEGIN
+    -- Check if there are any active rides for the driver with status 'Accepted'
+    IF (SELECT COUNT(*) FROM rides WHERE Driver_ID = driverId AND Status = 'Accepted') = 0 THEN
+        -- No active rides found, proceed with updating the availability
+        UPDATE drivers
+        SET Availability = newAvailability
+        WHERE Driver_ID = driverId;
+    ELSE
+        -- Active rides found, do not allow the update
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot update availability. Active rides exist with status Accepted.';
+    END IF;
+END$$
+
+DELIMITER ;
+
