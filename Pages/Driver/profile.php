@@ -55,68 +55,108 @@ if ($availabilityInfo) {
 
 ?>
 
-<div class="container profile-page">
-    <div class="row">
-        <!-- Driver Information Column -->
-        <div class="col-lg-6 profile-card text-center">
-            <h2><?php echo $driverFirstName . ' ' . $driverLastName; ?></h2>
-            <div class="contact-info">
-                <p>Mobile Number: <?php echo $driverMobile; ?></p>
-                <p>Email Address: <?php echo $driverEmail; ?></p>
-                <p>Current Location: <?php echo $driverLocation; ?></p>
+<div class="container py-4">
+    <!-- Profile Header -->
+    <div class="card mb-4">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
             </div>
-        </div>
-
-        <!-- New Full-Width Banner with Availability Toggle Button -->
-        <div class="col-lg-12">
-            <div class="alert alert-info text-center" style="width: 100%;">
-                <h4>Driver Availability: <span id="driverAvailabilityStatus"><?php echo $availabilityText; ?></span></h4>
-                <button class="btn btn-primary" id="changeAvailabilityBtn" data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>">Change Availability</button>
-            </div>
-        </div>
-
-        <!-- Driver Availability Section -->
-        <div class="col-lg-12">
-            <h3>Driver Availability</h3>
-            <p id="driverAvailability" class="availability-status">
+            <h2 class="mb-2"><?php echo $driverFirstName . ' ' . $driverLastName; ?></h2>
+            <div class="status-pill mb-3" id="driverAvailabilityStatus">
                 <?php echo $availabilityText; ?>
-            </p>
+            </div>
+            <div class="contact-info text-start">
+                <p><i class="fas fa-phone-alt"></i> <?php echo $driverMobile; ?></p>
+                <p><i class="fas fa-envelope"></i> <?php echo $driverEmail; ?></p>
+                <p><i class="fas fa-map-marker-alt"></i> <span id="driverLocation"><?php echo $driverLocation; ?></span></p>
+            </div>
+            <button class="btn btn-apple mt-3" id="changeAvailabilityBtn" data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>">
+                Toggle Availability
+            </button>
         </div>
+        
+        <!-- Stats Section -->
+        <div class="stats-container px-4 pb-4">
+            <div class="stat-card">
+                <div class="stat-value">4.9</div>
+                <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1,234</div>
+                <div class="stat-label">Trips</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2y 3m</div>
+                <div class="stat-label">Experience</div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Rides Information Column -->
-        <div class="col-lg-6 rides-card">
-            <h3>Assigned Rides</h3>
-            <div class="row">
+    <!-- Active Rides -->
+    <div class="card mb-4 p-4">
+        <h4 class="mb-3">Current Rides</h4>
+        <div class="row">
+            <?php if (!empty($assignedRides)): ?>
                 <?php foreach ($assignedRides as $ride): ?>
-                    <div class="col-lg-6">
-                        <div class="card mb-2">
+                    <div class="col-md-6 mb-3">
+                        <div class="card ride-card h-100">
                             <div class="card-body">
-                                <h5 class="card-title">Ride ID: <?php echo $ride['Ride_ID']; ?></h5>
-                                <h5 class="card-title">Passenger ID: <?php echo $ride['Passenger_ID']; ?></h5>
-                                <p class="card-text"><strong>Start Location:</strong> <?php echo $ride['Start_Location']; ?></p>
-                                <p class="card-text"><strong>End Location:</strong> <?php echo $ride['End_Location']; ?></p>
-                                <p class="card-text"><strong>Total amount :</strong> <?php echo $ride['Amount']; ?></p>
-                                <p class="card-text"><strong>Status:</strong> <?php echo $ride['Status']; ?></p>
-                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Ride #<?php echo $ride['Ride_ID']; ?></h5>
+                                    <span class="badge bg-primary rounded-pill"><?php echo $ride['Status']; ?></span>
+                                </div>
+                                <div class="ride-details">
+                                    <p class="mb-2"><i class="fas fa-user text-primary"></i> <?php echo $ride['Passenger_ID']; ?></p>
+                                    <p class="mb-2"><i class="fas fa-map-marker-alt text-success"></i> <?php echo $ride['Start_Location']; ?></p>
+                                    <p class="mb-2"><i class="fas fa-location-arrow text-danger"></i> <?php echo $ride['End_Location']; ?></p>
+                                    <p class="mb-2"><i class="fas fa-dollar-sign text-primary"></i> <?php echo $ride['Amount']; ?></p>
+                                </div>
                                 <?php if ($ride['Status'] === 'Accepted'): ?>
-                                    <button class="btn btn-danger finish-ride" 
-                                            data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>"
-                                            data-ride-id="<?php echo $ride['Ride_ID']; ?>"
-                                            data-passenger-id="<?php echo $ride['Passenger_ID']; ?>"
-                                            data-amount="<?php echo $ride['Amount']; ?>"
-                                            data-taxi-id="<?php echo $ride['Taxi_ID']; ?>">Finish Ride</button>
+                                    <button class="btn btn-apple w-100 mt-3 finish-ride" 
+                                        data-driver-id="<?php echo $driverInfo['Driver_ID']; ?>"
+                                        data-ride-id="<?php echo $ride['Ride_ID']; ?>"
+                                        data-passenger-id="<?php echo $ride['Passenger_ID']; ?>"
+                                        data-amount="<?php echo $ride['Amount']; ?>"
+                                        data-taxi-id="<?php echo $ride['Taxi_ID']; ?>">
+                                        Complete Ride
+                                    </button>
                                 <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
-            </div>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-car-side fa-3x mb-3"></i>
+                        <p>No active rides at the moment</p>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
+
+    <!-- Location Update Section -->
+    <div class="card mb-4 p-4">
+        <h4 class="mb-3">Update Location</h4>
+        <div class="input-group">
+            <input type="text" class="form-control rounded-pill" id="startLocation" placeholder="Enter location">
+            <ul id="startLocationList" class="autocomplete-list"></ul>
+            <button class="btn btn-apple ms-2" id="getCurrentLocationBtn">
+                <i class="fas fa-location-arrow"></i> Current Location
+            </button>
+            <button class="btn btn-apple ms-2" id="updateLocationBtn">
+                <i class="fas fa-map-marker-alt"></i> Update Location
+            </button>
+        </div>
+    </div>
+
+
     <!-- Map Section -->
-    <div class="map-info">
-        <div id="map" style="width: 100%; height: 400px;"></div>
+    <div class="card">
+        <div id="map" style="width: 100%; height: 400px;"></div>    
     </div>
 </div>
 
@@ -131,22 +171,10 @@ if ($availabilityInfo) {
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the map using TomTom's base layer
-        var driverLocationArray = "<?php echo $driverLocation; ?>".split(',');
-        var map = L.map('map').setView([parseFloat(driverLocationArray[0]), parseFloat(driverLocationArray[1])], 15); // Centered on driver's location
 
-        // Set up the TomTom layer with the language set to English (en-GB)
-        L.tileLayer(`https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=<?php echo $tomTomApiKey; ?>&language=en-GB`, {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.tomtom.com/copyright">TomTom</a>'
-        }).addTo(map);
-
-        // Add a marker for the driver's current location
-        L.marker([parseFloat(driverLocationArray[0]), parseFloat(driverLocationArray[1])]).addTo(map)
-            .bindPopup('Driver Location: <?php echo $driverFirstName . " " . $driverLastName; ?>')
-            .openPopup();
-    });
+    // Pass PHP variables to JavaScript
+    const openCageApiKey = "<?php echo $openCageApiKey; ?>";
+    const tomTomApiKey = "<?php echo $tomTomApiKey; ?>";
 
     const driverID = '<?php echo $Driver_ID; ?>';
     const driverName = '<?php echo $driverFirstName . ' ' . $driverLastName; ?>';
@@ -219,7 +247,6 @@ if ($availabilityInfo) {
             console.error('WebSocket connection died');
         }
     };
-
 
     document.getElementById('changeAvailabilityBtn').addEventListener('click', function() {
         const driverId = this.getAttribute('data-driver-id');

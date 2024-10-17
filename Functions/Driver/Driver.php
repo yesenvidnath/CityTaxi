@@ -79,6 +79,26 @@ class Driver {
             }
         }
     }
+
+    // Method to update the driver's location by Driver_ID
+    public function updateDriverLocation($driverId, $latitude, $longitude) {
+        try {
+            // Combine the latitude and longitude without parentheses
+            $location = "$latitude, $longitude";
+            
+            $query = "UPDATE drivers SET Current_Location = :location WHERE Driver_ID = :driverId";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':location', $location);
+            $stmt->bindParam(':driverId', $driverId);
+            $stmt->execute();
+
+            return ['status' => 'success', 'message' => 'Location updated successfully'];
+        } catch (PDOException $e) {
+            error_log("Failed to update driver location: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Failed to update location'];
+        }
+    }
+
 }
 
 // Handle AJAX request for changing availability
@@ -86,6 +106,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
     $driverId = $_POST['driverId'];
     $driver = new Driver();
     $result = $driver->updateDriverAvailability($driverId);
+
+    echo json_encode($result);
+}
+
+// Handle AJAX request for updating driver location
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] === 'updateLocation') {
+    $driverId = $_POST['driverId'];
+    $latitude = $_POST['latitude'];
+    $longitude = $_POST['longitude'];
+
+    $driver = new Driver();
+    $result = $driver->updateDriverLocation($driverId, $latitude, $longitude);
 
     echo json_encode($result);
 }
