@@ -439,13 +439,20 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
-12.
+ 
+  
+13.
 Prosedure Name : FinishRide
 DELIMITER //
 
-CREATE PROCEDURE FinishRide(IN rideID INT, IN driverID INT, IN endDate DATE, IN endTime TIME)
+CREATE PROCEDURE FinishRide(
+    IN rideID INT, 
+    IN driverID INT, 
+    IN endDate DATE, 
+    IN endTime TIME,
+    IN amount DECIMAL(10, 2), -- Add amount as an input parameter
+    IN taxiID INT             -- Add taxiID as an input parameter
+)
 BEGIN
     -- Update the ride status
     UPDATE rides 
@@ -457,6 +464,70 @@ BEGIN
 
     -- Set the driver availability to 1 (available)
     UPDATE drivers SET Availability = 1 WHERE Driver_ID = driverID;
+
+    -- Insert payment record
+    INSERT INTO payments (Payment_date, Payment_time, Amount, Driver_ID, Taxi_ID, Ride_ID)
+    VALUES (endDate, endTime, amount, driverID, taxiID, rideID);
 END //
+
+DELIMITER ;
+
+
+14.
+Prosedure Name : GetPassengerDetailsByID
+DELIMITER //
+
+CREATE PROCEDURE GetPassengerDetailsByID(IN passengerID INT)
+BEGIN
+    SELECT 
+        u.user_ID, 
+        u.Email, 
+        u.First_name, 
+        u.Last_name, 
+        u.NIC_No, 
+        u.mobile_number, 
+        u.Address, 
+        u.user_img 
+    FROM 
+        users u
+    JOIN 
+        passengers p ON u.user_ID = p.User_ID
+    WHERE 
+        p.Passenger_ID = passengerID;
+END //
+
+DELIMITER ;
+
+
+15. 
+Prosedure Name : GetRideLocationsByRideID
+DELIMITER //
+
+CREATE PROCEDURE GetRideLocationsByRideID(IN rideID INT)
+BEGIN
+    SELECT 
+        Start_Location, 
+        End_Location
+    FROM 
+        rides
+    WHERE 
+        Ride_ID = rideID;
+END //
+
+DELIMITER ;
+
+
+16.
+Prosedure Name : GetDriverDetailsByRideID
+DELIMITER $$
+
+CREATE PROCEDURE GetDriverDetailsByRideID(IN rideID INT)
+BEGIN
+    SELECT d.Driver_ID, u.User_ID, u.First_name, u.Last_name, u.email, u.mobile_number, d.Current_Location, d.Availability
+    FROM rides r
+    JOIN drivers d ON r.Driver_ID = d.Driver_ID
+    JOIN users u ON d.User_ID = u.User_ID
+    WHERE r.Ride_ID = rideID;
+END$$
 
 DELIMITER ;
