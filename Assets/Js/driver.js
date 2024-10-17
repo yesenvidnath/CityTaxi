@@ -229,6 +229,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         icon: "success",
                         button: "OK"
                     });
+
+                    // After success, update the map and location element
+                    updateMapAndLocationElement(identifiedLatitude, identifiedLongitude);
                 } else {
                     swal({
                         title: "Error!",
@@ -243,5 +246,320 @@ document.addEventListener('DOMContentLoaded', function() {
         // Send the driver ID and coordinates (without brackets) to the server
         xhr.send(`action=updateLocation&driverId=${driverID}&latitude=${identifiedLatitude}&longitude=${identifiedLongitude}`);
     }
+    
 
+    // Function to update the map and the driverLocation element after updating the location
+    function updateMapAndLocationElement(latitude, longitude) {
+        // Update the location in the span
+        document.getElementById('driverLocation').textContent = `${latitude}, ${longitude}`;
+
+        // Refresh the map marker with the new location
+        const newCoordinates = [latitude, longitude];
+
+        // Remove the existing marker and add a new one
+        if (currentLocationMarker) {
+            window.map.removeLayer(currentLocationMarker);
+        }
+
+        currentLocationMarker = L.marker(newCoordinates)
+            .addTo(window.map)
+            .bindPopup("Updated Driver's Location")
+            .openPopup();
+
+        // Re-center the map on the new location
+        window.map.setView(newCoordinates, 12);
+    }
+
+
+    const finishRideButtons = document.querySelectorAll('.finish-ride');
+    finishRideButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const rideID = this.getAttribute('data-ride-id');
+            const passengerID = this.getAttribute('data-passenger-id');
+            const totalAmount = this.getAttribute('data-amount');  // Get the amount from the button
+            const taxiID = this.getAttribute('data-taxi-id');
+            const driverID = this.getAttribute('data-driver-id');
+
+            console.log('Finish ride clicked. RideID:', rideID, 'PassengerID:', passengerID, 'Amount:', totalAmount, 'TaxiID:', taxiID, 'Driver ID:',driverID );
+
+
+            if (!driverID || !passengerID || !rideID || !totalAmount || !taxiID) {
+                console.error('Missing driverID, passengerID, rideID, totalAmount, or taxiID.');
+                return;
+            }
+
+            swal({
+                title: "Are you sure?",
+                text: "Do you want to finish this ride?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    socket.send(JSON.stringify({
+                        action: 'finishRide',
+                        rideID: rideID,
+                        driverID: driverID,
+                        passengerID: passengerID,
+                        totalAmount: totalAmount
+                    }));
+
+                    swal("Waiting", "Waiting for the passenger to proceed.", "info");
+
+                   // Listen for the passenger's payment method response and other actions
+                    socket.onmessage = function(event) {
+                        const response = JSON.parse(event.data);
+                        console.log('Driver received message:', response);
+
+                        if (response.action === 'passengerPaymentMethod' && response.rideID === rideID) {
+                            if (response.paymentMethod === 'cash') {
+                                swal({
+                                    title: "Cash Payment",
+                                    text: "Please confirm the correct amount of cash has been received.",
+                                    type: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonText: "Yes, correct",
+                                    cancelButtonText: "No, incorrect",
+                                    closeOnConfirm: false,
+                                    closeOnCancel: false
+                                }, function(confirmed) {
+                                    if (confirmed) {
+                                        // Call the new method to finish the ride and update the ride table
+                                        finishRideAndUpdateTable(rideID, driverID, totalAmount, taxiID, driverName, passengerID);
+
+                                        swal("Success", "Cash payment has been confirmed.", "success");
+                                    } else {
+                                        // Send a message to the passenger that the cash amount is incorrect
+                                        socket.send(JSON.stringify({
+                                            action: 'driverCashConfirmation',
+                                            confirmed: false, // Set confirmed to false
+                                            rideID: rideID,
+                                            passengerID: passengerID,
+                                            totalAmount: totalAmount
+                                        }));
+
+                                        swal("Waiting", "Notified passenger to recheck the cash amount.", "info");
+                                    }
+                                });
+                            } else if (response.paymentMethod === 'online') {
+                                swal("Online Payment", "The passenger is proceeding with online payment.", "info");
+                            }
+                        } else if (response.action === 'passengerRecheckedCash' && response.rideID === rideID) {
+                            // Handle passenger rechecking the cash
+                            console.log("Received 'passengerRecheckedCash' message.");
+                            swal({
+                                title: "Cash Re-checked",
+                                text: "The passenger has rechecked the cash amount. Do you confirm?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, correct",
+                                cancelButtonText: "No, incorrect",
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            }, function(confirmed) {
+                            if (confirmed) {
+                                // Call the method to finish the ride and update the ride table
+                                finishRideAndUpdateTable(rideID, driverID, totalAmount, taxiID, driverName, passengerID);
+
+                                // Notify the WebSocket server of cash payment success
+                                socket.send(JSON.stringify({
+                                    action: 'cashPaymentSuccess',  // New action for cash payment success
+                                    rideID: rideID,
+                                    passengerID: passengerID,
+                                    driverID: driverID,
+                                    totalAmount: totalAmount
+                                }));
+
+                                swal("Success", "Cash payment has been confirmed.", "success");
+                            } else {
+                                // Send a message to the passenger that the cash amount is incorrect
+                                socket.send(JSON.stringify({
+                                    action: 'driverCashConfirmation',
+                                    confirmed: false, // Set confirmed to false
+                                    rideID: rideID,
+                                    passengerID: passengerID,
+                                    totalAmount: totalAmount
+                                }));
+
+                                swal("Please ask the passenger to pay online.", "info");
+                            }
+                        });
+                        } else if (response.action === 'passengerOnlinePaymentSuccess' && response.rideID === rideID) {
+
+                            finishRideAndUpdateTable(rideID, driverID, totalAmount, taxiID, driverName, passengerID);
+                            swal({
+                                title: "Payment Completed",
+                                text: "The passenger has successfully completed the online payment.",
+                                type: "success",
+                                confirmButtonText: "OK"
+                            });//, function() {
+                            //     // Call the function to finish the ride and update the ride table
+                            //     finishRideAndUpdateTable(rideID, driverID, totalAmount, taxiID, driverName, passengerID);
+                            // }
+                        }
+                    };
+
+                }
+            });
+        });
+    });
+
+
+    // Method to finish the ride, update the ride table, insert into payments and invoices table
+    function finishRideAndUpdateTable(rideID, driverID, amount, taxiID, driverName, passengerID) {
+        // Get the current date and time
+        const now = new Date();
+        const endDate = now.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        const endTime = now.toTimeString().split(' ')[0]; // Format as HH:MM:SS
+
+        // Check if all required data is present before proceeding
+        if (!rideID || !driverID || !amount || !taxiID || !driverName || !passengerID) {
+            console.error('Missing required data to finish the ride.');
+            return;
+        }
+
+        // Send AJAX request to finish the ride, update the ride and insert into payments and invoices
+        fetch('/CityTaxi/Functions/Common/Rides.php', {  // Updated path
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'finishRide',
+                rideID: rideID,
+                driverID: driverID,
+                endDate: endDate,
+                endTime: endTime,
+                amount: amount,        // Send the amount for the payment
+                taxiID: taxiID,        // Send the taxiID for the payment
+                driverName: driverName, // Send the driver name
+                passengerID: passengerID // Send the passenger ID
+            })
+        })
+        .then(response => response.text())  // Get the full response as text for debugging
+        .then(text => {
+            try {
+                const data = JSON.parse(text);  // Try to parse the text into JSON
+                if (data.success) {
+                    console.log('Ride, payment, and invoice processed successfully:', data);
+                    swal("Success", "Ride has been completed and payment recorded.", "success");
+                } else {
+                    console.error('Error in processing ride, payment, and invoice:', data.message);
+                    swal("Error", "There was an issue processing the ride. Please try again.", "error");
+                }
+            } catch (err) {
+                console.error('Response is not valid JSON:', text);  // Log the entire response for debugging
+                swal("Error", "An unexpected error occurred. Please try again.", "error");
+            }
+        })
+        .catch(error => {
+            console.error('Error finishing ride, payment, and invoice:', error);
+            swal("Error", "An error occurred while processing the ride. Please try again.", "error");
+        });
+    }
+
+
+
+
+    socket.onmessage = function(event) {
+        const response = JSON.parse(event.data);
+        console.log('Received response:', response);
+
+        if (response.status === 'rideOffer') {
+            sweetAlert({
+                title: "New Ride Available",
+                text: response.message,
+                type: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Accept",
+                cancelButtonText: "Reject",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            function(isConfirm){
+                if (isConfirm) {
+                    socket.send(JSON.stringify({
+                        action: 'acceptRide',
+                        driverID: driverID,
+                        driverName: driverName,
+                        driverLocation: driverLocation,
+                        driverMobile: driverMobile,
+                        rideDetails: response.rideDetails
+                    }));
+                    sweetAlert("Accepted!", "You have accepted the ride.", "success");
+
+                    // Update availability status
+                    document.getElementById('driverAvailability').innerText = "Unavailable"; // Update availability status
+                } else {
+                    socket.send(JSON.stringify({
+                        action: 'rejectRide',
+                        driverID: driverID,
+                        rideDetails: response.rideDetails
+                    }));
+                    sweetAlert("Rejected", "You have rejected the ride.", "info");
+                }
+            });
+        } else if (response.status === 'confirmed') {
+            sweetAlert("Booking Confirmed!", response.message, "success");
+        } else if (response.status === 'rejected') {
+            sweetAlert("Ride Rejected", "The passenger has been notified.", "info");
+        } else if (response.status === 'availabilityUpdate') {
+            // Update the availability status based on the received message
+            document.getElementById('driverAvailability').innerText = response.availability === 1 ? "Available" : "Unavailable";
+        }
+    };
+
+    socket.onerror = function(error) {
+        console.error('WebSocket Error:', error);
+    };
+
+    socket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log(`WebSocket closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.error('WebSocket connection died');
+        }
+    };
+
+    document.getElementById('changeAvailabilityBtn').addEventListener('click', function() {
+        const driverId = this.getAttribute('data-driver-id');
+        
+        // Use AJAX to change availability
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/CityTaxi/Functions/Driver/Driver.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                const response = JSON.parse(xhr.responseText);
+                
+                if (response.status === 'success') {
+                    // Update availability status in the DOM
+                    const newAvailabilityText = response.newAvailability == 1 ? 'Available' : 'Unavailable';
+                    document.getElementById('driverAvailabilityStatus').textContent = newAvailabilityText;
+
+                    // Show SweetAlert for success
+                    swal({
+                        title: "Success!",
+                        text: "Driver availability updated to " + newAvailabilityText,
+                        icon: "success",
+                        button: "OK"
+                    });
+                } else {
+                    // Show SweetAlert for error with custom message
+                    swal({
+                        title: "Error!",
+                        text: response.message, // Display the custom error message
+                        icon: "error",
+                        button: "OK"
+                    });
+                }
+            }
+        };
+        xhr.send(`action=changeAvailability&driverId=${driverId}`);
+    });
 });
