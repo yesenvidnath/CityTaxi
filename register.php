@@ -15,11 +15,40 @@ include 'TemplateParts/Header/header.php';
     <!-- General Information Section -->
     
     <div class="form-outer">
-        <form action="#">
+        <form>
+
+            <!-- Seperate Registration -->
+
+            <div class="page slide-page">
+                <div class="container register-page center-content">
+                    
+                    <div class="row">
+
+                        <div class="col-6">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="firstNext btn btn-warning">Register as a Passenger</button>
+                            </div>
+                            <br>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="firstNext btn btn-warning">Register as a Driver</button>
+                            </div>
+                            <br>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="firstNext btn btn-warning">Register as a Vehicle Owner</button>
+                            </div>
+                        </div>
+
+                        <div class="col-6 image-section">
+                            <img src="Assets/Img/register_page_image.png" alt="Drive Image" class="img-fluid">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 
             <!-- General User Registration -->
 
-            <div class="page slide-page">
+            <div class="page">
                 <div class="container">
                     
                     <div class="form-group">
@@ -91,9 +120,11 @@ include 'TemplateParts/Header/header.php';
                     </div>
 
                     <div class="row mt-3 mb-3">
-                        <div class="col-auto mr-auto"></div>
+                        <div class="col-auto mr-auto">
+                            <button type="button" class="prev-1 btn btn-warning font-weight-bold px-5">Back</button>
+                        </div>
                         <div class="col-auto">
-                            <button type="button" class="firstNext btn btn-warning font-weight-bold px-5">Next</button>
+                            <button type="button" class="next-1 btn btn-warning font-weight-bold px-5">Next</button>
                         </div>
                     </div>
 
@@ -102,7 +133,7 @@ include 'TemplateParts/Header/header.php';
 
             <!-- Driver and Vehicle Owner Registration -->
 
-            <div class="page slide-page">
+            <div class="page">
                 <div class="container">
 
                     <div class="form-group">
@@ -207,6 +238,15 @@ include 'TemplateParts/Header/header.php';
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Toggle Button Section -->
+                                <div class="row mt-5 ml-5" id="toggleDriverSwitch" style="display: none;">
+                                    <div class="custom-control custom-switch">
+                                        <label class="custom-control-label" for="toggleDriverSwitch">Also want to become a Driver?</label>
+                                        <input type="checkbox" class="custom-control-input" id="toggleDriverSwitch">
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -215,7 +255,7 @@ include 'TemplateParts/Header/header.php';
 
                     <div class="row mt-3 mb-3">
                         <div class="col-auto mr-auto">
-                            <button type="button" class="prev-1 btn btn-warning font-weight-bold px-5">Back</button>
+                            <button type="button" class="prev-2 btn btn-warning font-weight-bold px-5">Back</button>
                         </div>
                         <div class="col-auto">
                             <button type="button" class="submit btn btn-warning font-weight-bold px-5">Submit</button>

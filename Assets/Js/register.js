@@ -57,47 +57,96 @@ const formPages = document.querySelectorAll('.page');
 // Initialize the current step and total steps
 let currentStep = 1;
 const totalSteps = formPages.length;
+let userType = ''; // This will track the selected user type
+
+// Get the toggle switch element
+const toggleDriverSwitch = document.getElementById('toggleDriverSwitch');
 
 // Initialize the form to show only the first step on load and scroll to the top
 function initializeForm() {
-  formPages.forEach((page, index) => {
-    page.style.display = index === 0 ? 'block' : 'none'; // Show only the first step
-  });
-  window.scrollTo(0, 0); // Scroll to the top of the page
+    formPages.forEach((page, index) => {
+        page.style.display = index === 0 ? 'block' : 'none'; // Show only the first step
+    });
+    window.scrollTo(0, 0); // Scroll to the top of the page
 }
 
 // Function to show the current step and scroll to the top
 function showStep(step) {
-  formPages.forEach((page, index) => {
-    page.style.display = index === step - 1 ? 'block' : 'none'; // Display the correct step
-  });
-  formPages[step - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll to the top
+    formPages.forEach((page, index) => {
+        page.style.display = index === step - 1 ? 'block' : 'none'; // Display the correct step
+    });
+    formPages[step - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll to the top
 }
 
-// Event listeners for the "Next" and "Back" buttons
+// Event listener for "Register as a Passenger" button
 document.querySelector('.firstNext').addEventListener('click', () => {
-    if (currentStep < totalSteps) {
-      currentStep++;
-      showStep(currentStep);
+    userType = 'Passenger'; // Set the user type as Passenger
+    currentStep = 1; // Move directly to the second page for Passenger
+    showStep(currentStep); // Show the second page
+    updateButtonText(); // Update button text based on user type
+});
+
+// Event listeners for registration buttons
+document.querySelectorAll('.firstNext').forEach((button, index) => {
+    button.addEventListener('click', () => {
+        if (index === 1) {
+            userType = 'Driver'; // Set user type as Driver
+            toggleDriverSwitch.style.display = 'none'; // Hide toggle switch for Drivers
+        } else if (index === 2) {
+            userType = 'Vehicle Owner'; // Set user type as Vehicle Owner
+            toggleDriverSwitch.style.display = 'block'; // Show toggle switch for Vehicle Owners
+        }
+        if (currentStep < totalSteps) {
+            currentStep++;
+            showStep(currentStep);
+            updateButtonText(); // Update button text based on user type
+        }
+    });
+});
+
+// Event listener for "Back" button
+document.querySelector('.prev-1').addEventListener('click', () => {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+        updateButtonText(); // Ensure button text is reset on "Back"
     }
-  });
-  
-  document.querySelector('.prev-1').addEventListener('click', () => {
+});
+
+// Function to update button text based on user type
+function updateButtonText() {
+    const nextButton = document.querySelector('.next-1');
+    if (userType === 'Passenger' && currentStep === 2) {
+        nextButton.textContent = 'Submit'; // Change "Next" to "Submit" for Passenger
+    } else {
+        nextButton.textContent = 'Next'; // Keep it "Next" for Driver/Vehicle Owner
+    }
+}
+
+document.querySelector('.prev-2').addEventListener('click', () => {
     if (currentStep > 1) {
       currentStep--;
       showStep(currentStep);
     }
   });
 
-  document.querySelector('.submit').addEventListener('click', () => {
-    // Optional: Delay the reload
-    setTimeout(() => {
-      location.reload();
-    }, 1000); // Delay of 1 second
-  });
+// Event listener for "Next" button
+document.querySelector('.next-1').addEventListener('click', () => {
+    if (currentStep < totalSteps) {
+        if (userType === 'Passenger' && currentStep === 2) {
+            // Submit functionality for Passenger
+            document.querySelector('form').submit(); // Submit the form
+        } else {
+            // Move to next step
+            currentStep++;
+            showStep(currentStep);
+        }
+    }
+});
 
-  // Initialize the form to show only the first step on load
+// Initialize the form to show only the first step on load
 initializeForm();
+
 
 // NIC Image preview section
 
