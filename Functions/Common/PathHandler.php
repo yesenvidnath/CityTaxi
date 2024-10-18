@@ -44,7 +44,7 @@ function showLinkOnDashboard($link) {
     $currentPage = basename($_SERVER['PHP_SELF']);
 
     // Check if the current page is 'AdminDashboard.php'
-    if ($currentPage === 'AdminDashboard.php') {
+    if ($currentPage === 'Pages/Admin/AdminDashboard.php') {
         // Echo the link tag
         echo $link;
     }

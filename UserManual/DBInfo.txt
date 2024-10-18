@@ -18,8 +18,6 @@ CREATE TABLE Users (
 CREATE TABLE Vehicle_Owner (
     Vehicle_Owner_ID INT IDENTITY(1,1) PRIMARY KEY,
     User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
-    Driving_Licence_No VARCHAR(50),
-    Licence_ID INT
 );
 
 -- Passengers Table
@@ -34,8 +32,9 @@ CREATE TABLE License (
     User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
     NIC_Img_Front VARCHAR(255),
     NIC_Img_Back VARCHAR(255),
-    Drivers_license_Front_ID VARCHAR(255),
-    Drivers_license_Back_ID VARCHAR(255)
+    Drivers_license_Front VARCHAR(255),
+    Drivers_license_Back VARCHAR(255),
+    Drivers_license_No INT
 );
 
 -- Drivers Table

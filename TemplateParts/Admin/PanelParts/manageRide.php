@@ -1,6 +1,6 @@
 <?php
-include_once 'Functions/Common/Database.php';
-include_once 'Functions/Common/Rides.php';
+include_once '../../Functions/Common/Database.php';
+include_once '../../Functions/Common/Rides.php';
 
 $ride = new Ride();
 
