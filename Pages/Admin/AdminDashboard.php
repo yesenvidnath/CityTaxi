@@ -1,6 +1,6 @@
 <?php 
 // Include the header part
-include 'TemplateParts/Header/header.php'; 
+include '../../TemplateParts/Header/header.php'; 
 ?>
 
 <!-- Side Navigation Bar -->
@@ -56,28 +56,28 @@ include 'TemplateParts/Header/header.php';
         $page = $_GET['page'];
         switch ($page) {
             case 'dashboard':
-                include('TemplateParts/Admin/PanelParts/dashboard.php');
+                include('../../TemplateParts/Admin/PanelParts/dashboard.php');
                 break;
             case 'manageUser':
-                include('TemplateParts/Admin/PanelParts/manageUser.php');
+                include('../../TemplateParts/Admin/PanelParts/manageUser.php');
                 break;
             case 'manageVehicle':
-                include('TemplateParts/Admin/PanelParts/manageVehicle.php');
+                include('../../TemplateParts/Admin/PanelParts/manageVehicle.php');
                 break;
             case 'manageRide':
-                include('TemplateParts/Admin/PanelParts/manageRide.php');
+                include('../../TemplateParts/Admin/PanelParts/manageRide.php');
                 break;
             case 'financials':
-                include('TemplateParts/Admin/PanelParts/financials.php');
+                include('../../TemplateParts/Admin/PanelParts/financials.php');
                 break;
             case 'ratingsFeedback':
-                include('TemplateParts/Admin/PanelParts/ratingsFeedback.php');
+                include('../../TemplateParts/Admin/PanelParts/ratingsFeedback.php');
                 break;
             case 'analytics':
-                include('TemplateParts/Admin/PanelParts/analytics.php');
+                include('../../TemplateParts/Admin/PanelParts/analytics.php');
                 break;
             default:
-                include('TemplateParts/Admin/PanelParts/dashboard.php');  // default page
+                include('../../TemplateParts/Admin/PanelParts/dashboard.php');  // default page
         }
     } else {
         include('dashboard.php');  // default page if no parameter is set

@@ -72,19 +72,20 @@
 
     <!-- SweetAlert JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-   
 
     <!-- jQuery Validation Plugin -->
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/additional-methods.min.js"></script>
 
+    <!-- jQuery library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- jQuery Validation Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
     <!-- Custom JS -->
     <script src="/CityTaxi/Assets/Js/main.js"></script>
 
-    <?php 
-        showLinkOnRide('<script src="/CityTaxi/Assets/Js/ride.js"></script>');
-        showLinkOnDriverProfilePage( '<script src="/CityTaxi/Assets/Js/driver.js"></script>');
-    ?> 
+
 </body>
 </html>

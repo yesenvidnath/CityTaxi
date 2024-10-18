@@ -1,6 +1,6 @@
 <?php
-include_once 'Functions/Common/Database.php';
-include_once 'Functions/Common/Ratings.php';
+include_once '../../Functions/Common/Database.php';
+include_once '../../Functions/Common/Ratings.php';
 
 $ratings = new Ratings();
 $ratingsList = $ratings->fetchAllRatings();

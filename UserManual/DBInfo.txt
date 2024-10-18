@@ -18,8 +18,6 @@ CREATE TABLE Users (
 CREATE TABLE Vehicle_Owner (
     Vehicle_Owner_ID INT IDENTITY(1,1) PRIMARY KEY,
     User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
-    Driving_Licence_No VARCHAR(50),
-    Licence_ID INT
 );
 
 -- Passengers Table
@@ -34,8 +32,9 @@ CREATE TABLE License (
     User_ID INT FOREIGN KEY REFERENCES Users(user_ID),
     NIC_Img_Front VARCHAR(255),
     NIC_Img_Back VARCHAR(255),
-    Drivers_license_Front_ID VARCHAR(255),
-    Drivers_license_Back_ID VARCHAR(255)
+    Drivers_license_Front VARCHAR(255),
+    Drivers_license_Back VARCHAR(255),
+    Drivers_license_No INT
 );
 
 -- Drivers Table
@@ -136,28 +135,18 @@ CREATE TABLE `DriverVehicleAssignment` (
 
 ## Database Changes
 
--- Code to Remove Licence_ID column from Vehicle_Owner table
--- Because License Table already have a column for User_ID
-
 ALTER TABLE Vehicle_Owner
-DROP COLUMN Licence_ID;
+DROP COLUMN Licence_ID,
+DROP COLUMN Driving_Licence_No;
 
--- Code to Remove Driver_ID and Taxi_ID columns from Payments table
--- Because Payments table has Ride_ID (FK) that already have the driver and taxi ids in the Rides table
+ALTER TABLE License
+CHANGE Drivers_license_Front_ID Drivers_license_Front VARCHAR(255);
 
-ALTER TABLE Payments
-DROP COLUMN Driver_ID,
-DROP COLUMN Taxi_ID;
+ALTER TABLE License
+CHANGE Drivers_license_Back_ID Drivers_license_Back VARCHAR(255);
 
--- Code to Remove Driver_ID and Passenger_ID from Ratings table and add Ride_ID (FK) column
--- Because the rating should be added after completing a ride and the Rides table has the Driver_ID and the Passenger_ID
-
-ALTER TABLE Ratings
-DROP COLUMN Driver_ID,
-DROP COLUMN Passenger_ID,
-ADD Ride_ID INT,
-ADD CONSTRAINT FK_Ratings_Ride_ID FOREIGN KEY (Ride_ID) REFERENCES Rides(Ride_ID);
-
+ALTER TABLE License
+ADD COLUMN Drivers_license_No INT;
 
 
 ## Sample Data For the DB 

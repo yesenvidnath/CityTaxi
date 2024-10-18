@@ -1,0 +1,105 @@
+.form-outer .container{
+    width: 100%;
+    height: 140vh;
+    padding-bottom: 20px;
+}
+
+.form-outer {
+    display: flex;
+    flex-direction: column;
+    height: auto; /* Let the form grow dynamically based on content */
+    max-height: 140vh;
+}
+
+.page.slide-page {
+    flex-grow: 1;
+}
+  
+.card-profile-pic{
+  border: solid 2px; 
+}
+
+.card-image{
+  width: 18rem;
+  height: 18rem;
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+}
+.card {
+  max-width: 60rem;
+  border: 1px solid #ccc;
+  padding: 10px;
+  display: inline-flex; /* Allows the card to adjust to its content */
+}
+
+.card img {
+  width: auto; /* Retain the original width */
+  height: auto; /* Retain the original height */
+  max-height: 17rem;
+  max-width: 17rem;
+}
+
+.btn-warning{
+  color: white;
+}
+
+/* NIC Image Upload */
+
+.dropzone {
+    width: 100px;
+    height: 80px;
+    border: 1px dashed #999;
+    border-radius: 3px;
+    text-align: center;
+  }
+  
+  .upload-icon {
+    margin: 25px 2px 2px 2px;
+  }
+  
+  .upload-input {
+    position: relative;
+    top: -62px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 3px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+  
+  .center .upload-icon{
+    position: absolute;
+    top: 20%;
+    bottom: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 10px;
+    width: auto; /* Retain the original width */
+    height: auto; /* Retain the original height */
+    max-height: 17rem;
+    max-width: 17rem;
+  }
+  
+  .nic-dec {
+    width: 100%;
+    /* height: 50px; */
+    text-align: center;
+    color: #ccc;
+    font-size: 16px;
+    font-weight: 300;
+    color: #666;
+  }

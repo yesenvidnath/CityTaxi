@@ -1,6 +1,6 @@
 <?php
-include_once 'Functions/Common/Database.php';
-include_once 'Functions/Common/Taxi.php';
+include_once '../../Functions/Common/Database.php';
+include_once '../../Functions/Common/Taxi.php';
 
 $taxi = new Taxi();
 $taxiList = $taxi->fetchAllTaxis();
