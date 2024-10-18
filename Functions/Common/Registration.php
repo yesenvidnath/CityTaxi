@@ -1,106 +1,80 @@
 <?php
-include_once 'Database.php'; 
+include_once $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/Database.php';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 class Registration {
     private $db;
+    private $conn;
 
-    // Constructor to establish DB connection
-    public function __construct($db) {
-        $this->db = $db;
+    public function __construct() {
+        $this->db = new Database();
+        $this->conn = $this->db->getConnection();
+        if ($this->conn->connect_error) {
+            die('Connect Error (' . $this->conn->connect_errno . ') '
+                . $this->conn->connect_error);
+        }
     }
 
-    // Method to catch data from ride.js via POST
-    public function handleRegistrationData() {
-        // Get the raw POST data (JSON)
-        $data = json_decode(file_get_contents("php://input"), true);
-
-        if (!$data) {
-            // Return error if no data was received
-            echo json_encode(['status' => 'error', 'message' => 'No data received']);
-            return;
+    public function registerPassenger($data) {
+        $query = "INSERT INTO Users (First_name, Last_name, NIC_No, mobile_number, Address, Email, password, user_img, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            die('Prepare failed: ' . $this->conn->errorInfo()[2]);
         }
-
-        $firstName = $data['firstName'] ?? '';
-        $lastName = $data['lastName'] ?? '';
-        $nicNo = $data['nicNo'] ?? '';
-        $contactNo = $data['contactNo'] ?? '';
-        $address = $data['address'] ?? '';
-        $email = $data['email'] ?? '';
-        $password = password_hash($data['password'], PASSWORD_DEFAULT);  // Hash the password
-        $userType = $data['userType'] ?? '';
-
-        try {
-            // Start transaction
-            $this->db->beginTransaction();
-
-            // Insert into the Users table
-            $sql = "INSERT INTO Users (user_type, password, Email, First_name, Last_name, NIC_No, mobile_number, Address)
-                    VALUES (:user_type, :password, :email, :first_name, :last_name, :nic_no, :contact_no, :address)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':user_type', $userType);
-            $stmt->bindParam(':password', $password);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':first_name', $firstName);
-            $stmt->bindParam(':last_name', $lastName);
-            $stmt->bindParam(':nic_no', $nicNo);
-            $stmt->bindParam(':contact_no', $contactNo);
-            $stmt->bindParam(':address', $address);
-            $stmt->execute();
-
-            // Get the last inserted user ID
-            $userId = $this->db->lastInsertId();
-
-            // Insert into specific table based on user type
-            if ($userType === 'Passenger') {
-                $this->registerPassenger($userId);
-            } elseif ($userType === 'Driver') {
-                $this->registerDriver($userId, $data['nicFront'], $data['nicBack'], $data['driverLicense']);
-            } elseif ($userType === 'Vehicle Owner') {
-                $this->registerVehicleOwner($userId);
+    
+        $filePath = $this->saveProfileImage($data['profile_pic']);
+    
+        // Binding parameters for PDO
+        $stmt->bindParam(1, $data['first_name']);
+        $stmt->bindParam(2, $data['last_name']);
+        $stmt->bindParam(3, $data['nic_no']);
+        $stmt->bindParam(4, $data['contact_no']);
+        $stmt->bindParam(5, $data['address']);
+        $stmt->bindParam(6, $data['email']);
+        $stmt->bindParam(7, $data['password']);
+        $stmt->bindParam(8, $filePath);
+        $stmt->bindParam(9, $data['user_type']);
+    
+        if ($stmt->execute()) {
+            if ($stmt->rowCount() > 0) {
+                echo "Registration successful, rows affected: " . $stmt->rowCount();
+            } else {
+                echo "No rows affected, but the query was executed.";
             }
-
-            // Commit the transaction
-            $this->db->commit();
-
-            // Return success response
-            echo json_encode(['status' => 'success', 'message' => 'Registration completed successfully!']);
-        } catch (PDOException $e) {
-            // Rollback transaction in case of error
-            $this->db->rollBack();
-            echo json_encode(['status' => 'error', 'message' => 'Registration failed: ' . $e->getMessage()]);
+        } else {
+            echo "Registration failed: " . implode(", ", $stmt->errorInfo());
         }
-    }
+        $stmt->closeCursor();
+    }    
 
-    // Method to register Passenger
-    private function registerPassenger($userId) {
-        $sql = "INSERT INTO Passengers (User_ID) VALUES (:user_id)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':user_id', $userId);
-        $stmt->execute();
+    private function saveProfileImage($file) {
+        $targetDir = "../../Assets/img/Passenger/";
+        $targetFile = $targetDir . basename($file['name']);
+        if (!move_uploaded_file($file['tmp_name'], $targetFile)) {
+            die('Failed to save file');
+        }
+        return basename($file['name']);
     }
+}
 
-    // Method to register Driver
-    private function registerDriver($userId, $nicFront, $nicBack, $driverLicense) {
-        // Save the NIC images, for example, in /uploads/
-        $nicFrontPath = '/uploads/' . basename($nicFront['name']);
-        $nicBackPath = '/uploads/' . basename($nicBack['name']);
-        move_uploaded_file($nicFront['tmp_name'], $nicFrontPath);
-        move_uploaded_file($nicBack['tmp_name'], $nicBackPath);
+$registration = new Registration();
 
-        $sql = "INSERT INTO Drivers (User_ID, Licence_ID, Current_Location, Availability) 
-                VALUES (:user_id, :licence_id, 'N/A', 1)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':user_id', $userId);
-        $stmt->bindValue(':licence_id', null);  // Assuming Licence_ID will be updated later
-        $stmt->execute();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (empty($_FILES['profile_pic'])) {
+        die('Profile picture is required.');
     }
-
-    // Method to register Vehicle Owner
-    private function registerVehicleOwner($userId) {
-        $sql = "INSERT INTO Vehicle_Owner (User_ID) VALUES (:user_id)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':user_id', $userId);
-        $stmt->execute();
-    }
+    $passengerData = [
+        'first_name' => $_POST['first_name'],
+        'last_name' => $_POST['last_name'],
+        'nic_no' => $_POST['nic_no'],
+        'contact_no' => $_POST['contact_no'],
+        'address' => $_POST['address'],
+        'email' => $_POST['email'],
+        'password' => $_POST['password'],
+        'profile_pic' => $_FILES['profile_pic'],
+        'user_type' => 'Passenger'
+    ];
+    $registration->registerPassenger($passengerData);
 }
 ?>

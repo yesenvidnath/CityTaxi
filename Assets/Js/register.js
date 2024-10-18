@@ -130,9 +130,7 @@ document.querySelector('.next-1').addEventListener('click', (event) => {
     }
 });
 
-// Submit function for Passengers (AJAX request)
 function submitPassengerData() {
-    // Create a FormData object to handle file and text data
     const formData = new FormData();
     formData.append('first_name', document.querySelector('input[placeholder="First Name"]').value);
     formData.append('last_name', document.querySelector('input[placeholder="Last Name"]').value);
@@ -142,22 +140,31 @@ function submitPassengerData() {
     formData.append('email', document.querySelector('input[placeholder="Email"]').value);
     formData.append('password', document.querySelector('input[placeholder="Password"]').value);
     formData.append('user_type', 'Passenger');
-    formData.append('profile_pic', document.getElementById('profile-pic').files[0]);
+    const profilePicInput = document.getElementById('profile-pic');
+    if (profilePicInput.files.length > 0) {
+        formData.append('profile_pic', profilePicInput.files[0]);
+    }
 
-    // AJAX POST request
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'Registration.php', true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            console.log('Response:', xhr.responseText);
-            alert('Registration successful!');
-            window.location.href = 'login.php';
-        } else {
-            alert('Error in registration. Please try again.');
+    xhr.open('POST', '/CityTaxi/Functions/Common/Registration.php', true); // Adjusted the path to be relative to your web server root
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) { // Ensure the request is completed
+            if (xhr.status === 200) { // Check if the HTTP status is OK
+                console.log('Response:', xhr.responseText);
+                if (xhr.responseText.includes("Registration successful")) {
+                    alert('Registration successful!');
+                    window.location.href = 'login.php';
+                } else {
+                    alert('Error in registration: ' + xhr.responseText);
+                }
+            } else {
+                alert('Error in registration. Please try again.');
+            }
         }
     };
     xhr.send(formData);
 }
+
 
 function submitDriverVehicleOwnerData() {
     const formData = new FormData();
@@ -176,7 +183,7 @@ function submitDriverVehicleOwnerData() {
     formData.append('driver_license_no', document.querySelector('input[placeholder="Driver\'s Licence No"]').value);
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'registerDriverVehicleOwner.php', true);
+    xhr.open('POST', '/CityTaxi/Functions/Common/registerDriverVehicleOwner.php', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             alert('Registration successful!');
