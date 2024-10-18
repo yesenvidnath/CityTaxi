@@ -117,6 +117,24 @@ include 'TemplateParts/Header/header.php';
                                 <input type="text" class="form-control" placeholder="Address">
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="email" class="font-weight-bold p-2">Email</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" placeholder="Email">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="password" class="font-weight-bold p-2">Password</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" placeholder="Password">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row mt-3 mb-3">
@@ -238,15 +256,7 @@ include 'TemplateParts/Header/header.php';
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Toggle Button Section -->
-                                <div class="row mt-5 ml-5" id="toggleDriverSwitch" style="display: none;">
-                                    <div class="custom-control custom-switch">
-                                        <label class="custom-control-label" for="toggleDriverSwitch">Also want to become a Driver?</label>
-                                        <input type="checkbox" class="custom-control-input" id="toggleDriverSwitch">
-                                    </div>
-                                </div>
-
+                                
                             </div>
                         </div>
 

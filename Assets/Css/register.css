@@ -1,6 +1,6 @@
 .form-outer .container{
     width: 100%;
-    height: 150vh;
+    height: 140vh;
     padding-bottom: 20px;
 }
 
@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: column;
     height: auto; /* Let the form grow dynamically based on content */
-    max-height: 150vh;
+    max-height: 140vh;
 }
 
 .page.slide-page {

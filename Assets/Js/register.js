@@ -1,3 +1,196 @@
+// Get all the form pages
+const formPages = document.querySelectorAll('.page');
+
+// Initialize the current step and total steps
+let currentStep = 1;
+const totalSteps = formPages.length;
+let userType = ''; // This will track the selected user type
+
+// Initialize variables to store user data
+let userData = {
+    firstName: '',
+    lastName: '',
+    nicNo: '',
+    contactNo: '',
+    address: '',
+    email: '',
+    password: '',
+    userType: ''
+};
+
+// Initialize the form to show only the first step on load and scroll to the top
+function initializeForm() {
+    formPages.forEach((page, index) => {
+        page.style.display = index === 0 ? 'block' : 'none'; // Show only the first step
+    });
+    window.scrollTo(0, 0); // Scroll to the top of the page
+}
+
+// Function to show the current step and scroll to the top
+function showStep(step) {
+    formPages.forEach((page, index) => {
+        page.style.display = index === step - 1 ? 'block' : 'none'; // Display the correct step
+    });
+    formPages[step - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll to the top
+}
+
+// Function to load data into variables from the form
+function loadFormData() {
+    userData.firstName = document.querySelector('input[placeholder="First Name"]').value;
+    userData.lastName = document.querySelector('input[placeholder="Last Name"]').value;
+    userData.nicNo = document.querySelector('input[placeholder="NIC No"]').value;
+    userData.contactNo = document.querySelector('input[placeholder="Contact No"]').value;
+    userData.address = document.querySelector('input[placeholder="Address"]').value;
+    userData.email = document.querySelector('input[placeholder="Email"]').value;
+    userData.password = document.querySelector('input[placeholder="Password"]').value;
+    console.log('General Data Loaded:', userData);
+}
+
+// Combined Event Listener for all registration buttons
+document.querySelectorAll('.firstNext').forEach((button, index) => {
+    button.addEventListener('click', () => {
+        // Set userType based on which button is clicked
+        if (index === 0) {
+            userType = 'Passenger';
+            userData.userType = 'Passenger';
+            console.log("Passenger Button Clicked");
+        } else if (index === 1) {
+            userType = 'Driver';
+            userData.userType = 'Driver';
+            console.log("Driver Button Clicked");
+        } else if (index === 2) {
+            userType = 'Vehicle Owner';
+            userData.userType = 'Vehicle Owner';
+            console.log("Vehicle Owner Button Clicked");
+        }
+
+        // Move to the next step if applicable
+        if (currentStep < totalSteps) {
+            currentStep++;
+            showStep(currentStep); // Show the next page
+            updateButtonText(); // Update button text based on user type
+        }
+    });
+});
+
+
+// Event listener for "Back" button
+document.querySelector('.prev-1').addEventListener('click', () => {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+        updateButtonText(); // Ensure button text is reset on "Back"
+    }
+});
+
+// Function to update button text based on user type
+function updateButtonText() {
+    const nextButton = document.querySelector('.next-1');
+    if (userType === 'Passenger' && currentStep === 2) {
+        nextButton.textContent = 'Submit'; // Change "Next" to "Submit" for Passenger
+    } else {
+        nextButton.textContent = 'Next'; // Keep it "Next" for Driver/Vehicle Owner
+    }
+}
+
+document.querySelector('.prev-2').addEventListener('click', () => {
+    if (currentStep > 1) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
+
+// Combined Event Listener for "Submit" and "Next" button
+document.querySelector('.next-1').addEventListener('click', (event) => {
+    if (currentStep < totalSteps) {
+        // Check if the user type is Passenger and it's the final step
+        if (userType === 'Passenger' && currentStep === 2) {
+            event.preventDefault(); // Prevent default form submission
+            loadFormData(); // Load Passenger form data into userData
+            console.log('Passenger Data Loaded:', userData); // Log Passenger data
+            submitPassengerData(); // Submit the Passenger data via AJAX
+        }
+        // Check for Driver or Vehicle Owner and handle the final step
+        else if ((userType === 'Driver' || userType === 'Vehicle Owner') && currentStep === totalSteps) {
+            event.preventDefault(); // Prevent default form submission
+            loadFormData(); // Load Driver/Vehicle Owner form data into userData
+            console.log(`${userType} Data Loaded (Final Step):`, userData); // Log Driver/Vehicle Owner data
+            submitDriverVehicleOwnerData(); // Submit Driver/Vehicle Owner data via AJAX
+        }
+        // Handle intermediate steps for Driver and Vehicle Owner
+        else if (userType === 'Driver' || userType === 'Vehicle Owner') {
+            loadFormData(); // Load form data on each step
+            console.log(`${userType} Data Loaded (Next Step):`, userData); // Log data for each step
+            currentStep++; // Move to the next step
+            showStep(currentStep); // Show the next page
+        }
+        // For any other case, move to the next step
+        else {
+            currentStep++;
+            showStep(currentStep); // Show the next page for Passenger
+        }
+    }
+});
+
+// Submit function for Passengers (AJAX request)
+function submitPassengerData() {
+    const formData = new FormData();
+    formData.append('first_name', userData.firstName);
+    formData.append('last_name', userData.lastName);
+    formData.append('nic_no', userData.nicNo);
+    formData.append('contact_no', userData.contactNo);
+    formData.append('address', userData.address);
+    formData.append('email', userData.email);
+    formData.append('password', userData.password);
+    formData.append('user_type', 'Passenger'); // Set user type as Passenger
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'registerPassenger.php', true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            alert('Registration successful!');
+            window.location.href = 'login.php'; // Redirect to login after success
+        } else {
+            alert('Error in registration. Please try again.');
+        }
+    };
+    xhr.send(formData); // Send form data to the backend
+}
+
+// Submit function for Drivers and Vehicle Owners (AJAX request)
+function submitDriverVehicleOwnerData() {
+    const formData = new FormData();
+    formData.append('first_name', userData.firstName);
+    formData.append('last_name', userData.lastName);
+    formData.append('nic_no', userData.nicNo);
+    formData.append('contact_no', userData.contactNo);
+    formData.append('address', userData.address);
+    formData.append('email', userData.email);
+    formData.append('password', userData.password);
+    formData.append('user_type', userData.userType); // Set user type dynamically
+
+    if (userData.userType === 'Driver') {
+        formData.append('nic_image_front', document.getElementById('nic-front').files[0]);
+        formData.append('nic_image_back', document.getElementById('nic-back').files[0]);
+        formData.append('driver_license_no', document.querySelector('input[placeholder="Driver\'s Licence No"]').value);
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'registerDriverVehicleOwner.php', true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            alert('Registration successful!');
+            window.location.href = 'login.php'; // Redirect to login after success
+        } else {
+            alert('Error in registration. Please try again.');
+        }
+    };
+    xhr.send(formData); // Send form data to the backend
+}
+
+// Initialize the form to show only the first step on load
+initializeForm();
+
 // General Information Profile pic preview
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -50,103 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-// Get all the form pages and the progress bar
-const formPages = document.querySelectorAll('.page');
-
-// Initialize the current step and total steps
-let currentStep = 1;
-const totalSteps = formPages.length;
-let userType = ''; // This will track the selected user type
-
-// Get the toggle switch element
-const toggleDriverSwitch = document.getElementById('toggleDriverSwitch');
-
-// Initialize the form to show only the first step on load and scroll to the top
-function initializeForm() {
-    formPages.forEach((page, index) => {
-        page.style.display = index === 0 ? 'block' : 'none'; // Show only the first step
-    });
-    window.scrollTo(0, 0); // Scroll to the top of the page
-}
-
-// Function to show the current step and scroll to the top
-function showStep(step) {
-    formPages.forEach((page, index) => {
-        page.style.display = index === step - 1 ? 'block' : 'none'; // Display the correct step
-    });
-    formPages[step - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); // Scroll to the top
-}
-
-// Event listener for "Register as a Passenger" button
-document.querySelector('.firstNext').addEventListener('click', () => {
-    userType = 'Passenger'; // Set the user type as Passenger
-    currentStep = 1; // Move directly to the second page for Passenger
-    showStep(currentStep); // Show the second page
-    updateButtonText(); // Update button text based on user type
-});
-
-// Event listeners for registration buttons
-document.querySelectorAll('.firstNext').forEach((button, index) => {
-    button.addEventListener('click', () => {
-        if (index === 1) {
-            userType = 'Driver'; // Set user type as Driver
-            toggleDriverSwitch.style.display = 'none'; // Hide toggle switch for Drivers
-        } else if (index === 2) {
-            userType = 'Vehicle Owner'; // Set user type as Vehicle Owner
-            toggleDriverSwitch.style.display = 'block'; // Show toggle switch for Vehicle Owners
-        }
-        if (currentStep < totalSteps) {
-            currentStep++;
-            showStep(currentStep);
-            updateButtonText(); // Update button text based on user type
-        }
-    });
-});
-
-// Event listener for "Back" button
-document.querySelector('.prev-1').addEventListener('click', () => {
-    if (currentStep > 1) {
-        currentStep--;
-        showStep(currentStep);
-        updateButtonText(); // Ensure button text is reset on "Back"
-    }
-});
-
-// Function to update button text based on user type
-function updateButtonText() {
-    const nextButton = document.querySelector('.next-1');
-    if (userType === 'Passenger' && currentStep === 2) {
-        nextButton.textContent = 'Submit'; // Change "Next" to "Submit" for Passenger
-    } else {
-        nextButton.textContent = 'Next'; // Keep it "Next" for Driver/Vehicle Owner
-    }
-}
-
-document.querySelector('.prev-2').addEventListener('click', () => {
-    if (currentStep > 1) {
-      currentStep--;
-      showStep(currentStep);
-    }
-  });
-
-// Event listener for "Next" button
-document.querySelector('.next-1').addEventListener('click', () => {
-    if (currentStep < totalSteps) {
-        if (userType === 'Passenger' && currentStep === 2) {
-            // Submit functionality for Passenger
-            document.querySelector('form').submit(); // Submit the form
-        } else {
-            // Move to next step
-            currentStep++;
-            showStep(currentStep);
-        }
-    }
-});
-
-// Initialize the form to show only the first step on load
-initializeForm();
-
 
 // NIC Image preview section
 
