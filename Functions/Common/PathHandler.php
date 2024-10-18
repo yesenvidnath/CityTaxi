@@ -61,4 +61,16 @@ function showLinkOnDriverProfilePage($link) {
         echo $link;
     }
 }
+
+// DIsplay the CSS if the page equal to profile
+function showLinkOnIndexPage($link) {
+    // Get the current page's filename
+    $currentPage = basename($_SERVER['PHP_SELF']);
+
+    // Check if the current page is 'profile.php'
+    if ($currentPage === 'index.php') {
+        // Echo the link tag
+        echo $link;
+    }
+}
 ?>

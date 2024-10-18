@@ -213,10 +213,7 @@ if ($availabilityInfo) {
         </div>
     </div>
 
-    <!-- Map Section -->
-    <div class="card map-card">
-        <div id="map"></div>
-    </div>
+ 
 </div>
 
 <script>
@@ -231,17 +228,6 @@ if ($availabilityInfo) {
     // Pass PHP variables to JavaScript
     const openCageApiKey = "<?php echo $openCageApiKey; ?>";
     const tomTomApiKey = "<?php echo $tomTomApiKey; ?>";
-
-    const driverID = '<?php echo $Driver_ID; ?>';
-    const driverName = '<?php echo $driverFirstName . ' ' . $driverLastName; ?>';
-    const driverLocation = '<?php echo $driverLocation; ?>';
-    const driverMobile = '<?php echo $driverMobile; ?>';
-
-    const socket = new WebSocket(`ws://localhost:8080/ws?driverID=${driverID}`);
-
-    socket.onopen = function() {
-        console.log('Connected to WebSocket server as Driver ID: ' + driverID);
-    };
 
  
     // document.addEventListener('DOMContentLoaded', function() {
