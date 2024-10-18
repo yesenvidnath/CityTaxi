@@ -7,31 +7,6 @@ include 'TemplateParts/Shared/NavMenu.php';
 
 ?>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container">
-        <a class="navbar-brand" href="#">
-            <i class="fas fa-car-alt mr-2"></i>RideShare
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-globe mr-1"></i>Company</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-shield-alt mr-1"></i>Safety</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-question-circle mr-1"></i>Help</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
 <!-- Hero Section -->
 <section class="hero">
     <div class="container">
@@ -92,7 +67,7 @@ include 'TemplateParts/Shared/NavMenu.php';
                 <button class="btn btn-primary mt-4">Start earning</button>
             </div>
             <div class="col-lg-6">
-                <img src="/api/placeholder/600/400" alt="Driver" class="img-fluid driver-img">
+                <img src="https://plus.unsplash.com/premium_photo-1681821679118-bb069eeb2d98?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Driver" class="img-fluid driver-img">
             </div>
         </div>
     </div>
@@ -134,7 +109,7 @@ include 'TemplateParts/Shared/NavMenu.php';
 </section>
 
 <!-- Download App Section -->
-<section class="download-app">
+<!-- <section class="download-app">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
@@ -150,7 +125,7 @@ include 'TemplateParts/Shared/NavMenu.php';
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 
 

@@ -3,27 +3,39 @@
 include 'TemplateParts/Header/header.php'; 
 ?>
 
-<div class="container register-page center-content">
-
-    <div class="row">
-
-        <div class="col-lg-6 form-section">
-            <h1>Drive. Earn. Enjoy. Repeat.</h1>
-
-            <form action="Functions/Common/LoginRegistration.php" method="post">
-                <input type="text" class="form-control" name="email" placeholder="Enter Email">
-                <input type="password" class="form-control" name="password" placeholder="Enter Password">
-                <button type="submit" class="btn btn-warning">Login</button>
-            </form>
-            
+<div class="background">
+    <div class="gradient-overlay"></div>
+</div>
+<div class="container">
+    <div class="login-card">
+        <h1>Welcome Back</h1>
+        <div class="feature-icons">
+            <div class="feature-icon">
+                <i class="fas fa-car"></i>
+                <span>Drive</span>
+            </div>
+            <div class="feature-icon">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Earn</span>
+            </div>
+            <div class="feature-icon">
+                <i class="fas fa-smile"></i>
+                <span>Enjoy</span>
+            </div>
         </div>
-
-        <div class="col-lg-6 image-section">
-            <img src="Assets/Img/register_page_image.png" alt="Drive Image" class="img-fluid">
-        </div>
-
+        <form action="Functions/Common/LoginRegistration.php" method="post">
+            <div class="form-group">
+                <input type="email" class="form-control" name="email" placeholder="Email" >
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" name="password" placeholder="Password" >
+            </div>
+            <button type="submit" class="btn-primary">
+                Log In
+            </button>
+        </form>
+        <p class="signup-link">New to our platform? <a href="#">Sign up</a></p>
     </div>
-
 </div>
 
 <!-- Display SweetAlert alerts if status is passed -->

@@ -29,6 +29,8 @@
         showLinkOnRide('<link rel="stylesheet" href="/CityTaxi/Assets/Css/ride.css">');
         showLinkOnDashboard('<link rel="stylesheet" href="/CityTaxi/Assets/Css/dashboard.css">');
         showLinkOnDriverProfilePage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/driverprofile.css">');
+        showLinkOnLoginPage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/driverprofile.css">');
+        showLinkOnIndexPage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/index.css">');
 
         // Include the SessionManager
         include $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/SessionManager.php';
