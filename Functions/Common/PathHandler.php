@@ -43,8 +43,20 @@ function showLinkOnDashboard($link) {
     // Get the current page's filename
     $currentPage = basename($_SERVER['PHP_SELF']);
 
-    // Check if the current page is 'profile.php'
-    if ($currentPage === 'AdminDashboard.php') {
+    // Check if the current page is 'AdminDashboard.php'
+    if ($currentPage === 'Pages/Admin/AdminDashboard.php') {
+        // Echo the link tag
+        echo $link;
+    }
+}
+
+// DIsplay the CSS if the page equal to register
+function showLinkOnRegister($link) {
+    // Get the current page's filename
+    $currentPage = basename($_SERVER['PHP_SELF']);
+
+    // Check if the current page is 'register.php'
+    if ($currentPage === 'register.php') {
         // Echo the link tag
         echo $link;
     }

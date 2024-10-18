@@ -72,6 +72,7 @@ class Users {
             return null; // User not found
         }
     }
+    
     // Update User Information
     public function updateUser($userID, $first_name, $last_name, $email, $nic_no, $mobile, $address, $user_img) {
         try {

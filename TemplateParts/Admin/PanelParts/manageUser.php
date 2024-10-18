@@ -1,6 +1,6 @@
 <?php
-include_once 'Functions/Common/Database.php';
-include_once 'Functions/Common/Users.php';
+include_once '../../Functions/Common/Database.php';
+include_once '../../Functions/Common/Users.php';
 
 $users = new Users();
 

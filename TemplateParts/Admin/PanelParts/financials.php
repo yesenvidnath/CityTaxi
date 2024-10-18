@@ -1,6 +1,6 @@
 <?php
-include_once 'Functions/Common/Database.php';
-include_once 'Functions/Common/Financial.php';
+include_once '../../Functions/Common/Database.php';
+include_once '../../Functions/Common/Financial.php';
 
 $financial = new Financial();
 
