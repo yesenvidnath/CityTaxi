@@ -4,6 +4,8 @@ $rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/';
 
 include $rootPath . 'TemplateParts/Header/header.php'; 
 include_once $rootPath . 'Functions/Passenger/Passenger.php';
+include_once $rootPath . 'Functions/Common/Ratings.php';
+include_once $rootPath . 'Functions/Driver/Driver.php';
 
 // Start the session and get the user ID using SessionManager
 SessionManager::startSession();
@@ -16,8 +18,11 @@ if (!SessionManager::isLoggedIn() || !$userID) {
 }
 
 // Initialize Passenger class and get passenger details
+$driver = new Driver();
+$ratings = new Ratings(); 
 $passenger = new Passenger();
 $userInfo = $passenger->getPassengerUserInfo($userID);
+$rideDetails = $passenger->getPassengerDetails($userID);
 
 // Get the Passenger ID
 $passengerID = $passenger->getPassengerIDByUserID($userID);
@@ -37,32 +42,223 @@ $imagePath = "/CityTaxi/Assets/Img/Passenger/" . $userImage;
  
 ?>
 
-<div class="container profile-page center-content">
-    <div class="profile-card text-center">
-        <img src="<?php echo $imagePath; ?>" alt="Profile Image" class="profile-image">
-        <h2><?php echo $firstName . ' ' . $lastName; ?></h2>
-        <div class="membership">
-            <span class="member-since">Member Since</span>
-            <span class="member-year"><?php echo date('Y', strtotime($memberSince)); ?></span>
+<div class="wrapper-container">
+
+    <div class="container profile-page center-content">
+        <div class="profile-card text-center shadow-lg">
+            <div class="profile-cover"></div>
+            <div class="profile-header">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar">
+                        <img src="<?php echo $imagePath; ?>" alt="Profile Image" class="profile-image img-fluid">
+                        <div class="status-indicator"></div>
+                    </div>
+                </div>
+                <h2 class="profile-name mb-2"><?php echo $firstName . ' ' . $lastName; ?></h2>
+                <div class="driver-rating mb-2">
+                    <i class="fas fa-star"></i>
+                    <span>4.95</span> <!-- You can dynamically fetch rating here -->
+                </div>
+                <div class="status-pill mb-3">
+                    Member Since <?php echo date('Y', strtotime($memberSince)); ?>
+                </div>
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span><?php echo $mobile; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <span><?php echo $email; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-id-card"></i>
+                        <span><?php echo $nicNo; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span><?php echo $address; ?></span>
+                    </div>
+                </div>
+                <button class="btn btn-apple mt-4 location-btn">Bambalapitiya</button>
+            </div>
         </div>
-        <div class="contact-info">
-            <p>Mobile Number - <?php echo $mobile; ?></p>
-            <p>Email Address - <?php echo $email; ?></p>
-            <p>NIC Number - <?php echo $nicNo; ?></p>
-            <p>Address - <?php echo $address; ?></p>
-        </div>
-        <button class="btn btn-warning location-btn">Bambalapitiya</button>
     </div>
+
+    <div class="container-fluid ride-container">
+        <?php if (!empty($rideDetails) && isset($rideDetails[2]) && !empty($rideDetails[2])): ?>
+            <div class="card rides-card shadow-lg mb-4">
+                <div class="card-header">
+                    <h4>Ride History</h4>
+                    <span class="badge ride-status"><?php echo count($rideDetails[2]); ?> Rides</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <?php foreach ($rideDetails[2] as $ride): ?>
+                            <?php
+                            $driverDetails = $driver->getDriverDetails($ride['Driver_ID']);
+                            $driverName = $driverDetails ? $driverDetails['First_name'] . ' ' . $driverDetails['Last_name'] : "Driver Not Found";
+                            $isRated = $ratings->ratingExists($ride['Ride_ID']);
+                            ?>
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <div class="ride-card">
+                                    <div class="ride-header">
+                                        <div class="ride-id">Ride #<?php echo $ride['Ride_ID']; ?></div>
+                                        <span class="ride-status"><?php echo $ride['Status']; ?></span>
+                                    </div>
+                                    <div class="ride-route">
+                                        <div class="route-point">
+                                            <div class="point-marker pickup"></div>
+                                            <div class="point-details">
+                                                <label>Pickup</label>
+                                                <p><?php echo $ride['Start_Location']; ?></p>
+                                            </div>
+                                        </div>
+                                        <div class="route-line"></div>
+                                        <div class="route-point">
+                                            <div class="point-marker dropoff"></div>
+                                            <div class="point-details">
+                                                <label>Dropoff</label>
+                                                <p><?php echo $ride['End_Location']; ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ride-footer">
+                                        <div class="passenger-info">
+                                            <i class="fas fa-user-circle"></i>
+                                            <span><?php echo $ride['Passenger_ID']; ?></span>
+                                        </div>
+                                        <div class="ride-amount">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            <span><?php echo $ride['Amount']; ?></span>
+                                        </div>
+                                    </div>
+                                    <?php if ($ride['Status'] === 'Accepted'): ?>
+                                        <p class="text-muted">This ride is in progress.</p>
+                                    <?php elseif (!$isRated): ?>
+                                        <button class="btn btn-success w-100 mt-3 rate-btn"
+                                            onclick="openRatingPopup('<?php echo $ride['Ride_ID']; ?>', '<?php echo $ride['Driver_ID']; ?>')">
+                                            Rate Ride
+                                        </button>
+                                    <?php else: ?>
+                                        <p class="text-muted">This ride has already been rated.</p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="no-rides">
+                <i class="fas fa-car-side"></i>
+                <p>No rides found for this passenger.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        hideElementsBySelector('.hide-this');
+        hideElementsBySelector('#myprofile-hide-btn');
+    });
 
-<div id="paymentPopup" class="modal" style="display:none;">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Complete Your Payment</h2>
-        <div id="paymentContainer"></div>
-    </div>
-</div>
+    function openRatingPopup(rideId, driverId) {
+        // Custom HTML for the stars
+        const customHtml = `
+            <div class="custom-star-rating">
+                <h4>Select your rating</h4>
+                <div id="starRating">
+                    <i class="fas fa-star" data-value="1"></i>
+                    <i class="fas fa-star" data-value="2"></i>
+                    <i class="fas fa-star" data-value="3"></i>
+                    <i class="fas fa-star" data-value="4"></i>
+                    <i class="fas fa-star" data-value="5"></i>
+                </div>
+                <p id="ratingValue" style="margin-top: 10px;">Rating: 0</p>
+            </div>
+        `;
+
+        // First SweetAlert to handle the star rating
+        swal({
+            title: "Rate Your Ride",
+            text: customHtml,  // Custom star HTML
+            html: true,
+            showCancelButton: true,
+            confirmButtonText: "Next",
+            cancelButtonText: "Cancel",
+            closeOnConfirm: false
+        }, function() {
+            const rating = document.getElementById('ratingValue').dataset.rating;
+
+            if (!rating || rating < 1) {
+                swal("Error", "Please select a rating before proceeding.", "error");
+                return;
+            }
+
+            // Move to the comment section
+            swal({
+                title: "Leave a Comment",
+                text: "Please leave a comment about your ride:",
+                type: "input",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false
+            }, function(comment) {
+                if (comment === false) return false; // If the user cancels the comment part
+
+                if (comment === "") {
+                    swal.showInputError("You need to write something!");
+                    return false;
+                }
+
+                // Send the rating and comment via AJAX
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/CityTaxi/Functions/Common/Ratings.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        if (xhr.responseText === "success") {
+                            swal("Thank you!", "Your rating has been submitted.", "success");
+                        } else {
+                            swal("Error", xhr.responseText, "error");
+                        }
+                    }
+                };
+                xhr.send(`action=addRating&rideId=${rideId}&driverId=${driverId}&rate=${rating}&comment=${encodeURIComponent(comment)}`);
+            });
+        });
+
+        // Event listener for star rating interaction
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('fa-star')) {
+                const stars = document.querySelectorAll('#starRating .fa-star');
+                const selectedValue = event.target.getAttribute('data-value');
+                
+                // Highlight selected stars
+                stars.forEach((star) => {
+                    const starValue = star.getAttribute('data-value');
+                    if (starValue <= selectedValue) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                });
+
+                // Set rating value
+                const ratingValueElement = document.getElementById('ratingValue');
+                ratingValueElement.innerHTML = `Rating: ${selectedValue}`;
+                ratingValueElement.dataset.rating = selectedValue; // Store selected rating
+            }
+        });
+    }
+
+</script>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

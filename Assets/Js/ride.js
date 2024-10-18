@@ -433,7 +433,7 @@ function confirmRoute() {
         closeOnConfirm: false
     }, function() {
         swal("Confirmed!", "Route has been confirmed.", "success");
-        document.getElementById('step1').style.display = 'none';
+        //document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
         updateTaxiPrices(); // Update the prices after route confirmation
         fetchVehiclesNearStartLocation(); // Fetch vehicles near the start location
@@ -454,7 +454,7 @@ function confirmChangeRoute() {
     }, function() {
         swal("Route Changed!", "You can now select a new route.", "success");
         document.getElementById('step2').style.display = 'none';
-        document.getElementById('step1').style.display = 'block';
+        //document.getElementById('step1').style.display = 'block';
     });
 }
 

@@ -55,85 +55,96 @@ $rideAccepted = isset($_SESSION['ride_accepted']) ? $_SESSION['ride_accepted'] :
         
         <h2>Buckle Up For The Ride</h2>
         <div class="form-group" id="manualLocationSection">
-            <label for="startLocation">Start Location</label>
+            <label for="startLocation"> Start Location</label>
             <input type="text" class="form-control" id="startLocation" placeholder="Enter Start Location">
             <ul id="startLocationList" class="autocomplete-list"></ul>
-            <button class="btn btn-info" onclick="useTomTomLocation()">Use Current Location</button>
+            <button class="btn btn-info" onclick="useTomTomLocation()"><i class="fas fa-location-arrow"></i> Use Current Location</button>
         </div>
         <div class="form-group">
             <label for="endLocation">End Location</label>
             <input type="text" class="form-control" id="endLocation" placeholder="Enter End Location">
             <ul id="endLocationList" class="autocomplete-list"></ul> 
         </div>
-        <button class="btn btn-warning" onclick="showRoute()">Show Route</button>
-        <button class="btn btn-success" id="confirmRouteBtn" style="display: none;" onclick="confirmRoute()">Confirm Route</button>
+        <button class="btn btn-warning" onclick="showRoute()"><i class="fas fa-route"></i> Show Route</button>
+        <button class="btn btn-success" id="confirmRouteBtn" style="display: none;" onclick="confirmRoute()"> <i class="fas fa-check"></i> Confirm Route</button>
     </div>
-
-    <div class="taxi-selection-section" id="step2" style="display: none;">
-        <h2>Select Your Taxi Type</h2>
-        <div class="row">
-            <?php
-            $displayedTypes = [];
-            foreach ($taxiTypes as $taxi):
-                if (!in_array($taxi['Taxi_type'], $displayedTypes)):
-                    $displayedTypes[] = $taxi['Taxi_type'];
-                    $ratePerKM = isset($taxiRatesMap[$taxi['Taxi_type']]) ? $taxiRatesMap[$taxi['Taxi_type']]['Rate_per_Km'] : 'N/A';
-            ?>
-                <div class="col-lg-4">
-                    <div class="taxi-card">
-                        <img src="Assets/img/taxis/<?php echo $taxi['Taxi_type'] == 'Car' ? 'car.png' : $taxi['Vehicle_Img']; ?>" alt="<?php echo $taxi['Taxi_type']; ?>" class="img-fluid">
-                        <h3><?php echo $taxi['Taxi_type']; ?></h3>
-                        <p>Rate per KM: <?php echo $ratePerKM; ?></p>
-                        <p>Total Price: <span id="price-<?php echo $taxi['Taxi_type']; ?>"></span></p>
-                        <button class="btn btn-warning" onclick="selectTaxiType('<?php echo $taxi['Taxi_type']; ?>')">Select</button>
-                    </div>
-                </div>
-            <?php
-                endif;
-            endforeach;
-            ?>
-        </div>
-        <button class="btn btn-danger" id="changeRouteBtn" onclick="confirmChangeRoute()">Change Route</button>
-    </div>
-
-    <div class="selection-summary-section" id="step3" style="display: none;">
-        <h2 class="text-center">Your Selection</h2>
-        <p id="selectionDetails" class="text-center"></p>
-        
-        <h3 class="text-center">Available Drivers</h3>
-        <div id="driverList" class="driver-list">
-            <?php foreach ($availableDrivers as $driver): ?>
-                <div class="driver-card card mb-4">
-                    <div class="card-body">
-                        <h4 class="card-title"><?php echo $driver['First_name'] . ' ' . $driver['Last_name']; ?></h4>
-                        <p class="card-text">Location: <?php echo $driver['Current_Location']; ?></p>
-                        <p class="card-text">Vehicle Type: <?php echo $driver['Taxi_type']; ?></p>
-                        <button class="btn btn-success" onclick="confirmDriverSelection('<?php echo $driver['Driver_ID']; ?>')">Select Driver</button>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="text-center mt-4" id="bookingButtons" style="<?php echo $rideAccepted ? 'display:none;' : ''; ?>">
-            <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
-            <button class="btn btn-secondary" onclick="changeVehicleType()">Change Vehicle Type</button>
-        </div>
-
-        <!-- Display Visit Your Profile button when ride is accepted -->
-        <div class="text-center mt-4" id="visitProfileButton" style="<?php echo $rideAccepted ? 'display:block;' : 'display:none;'; ?>">
-            <a href="/CityTaxi/Pages/Driver/profile.php" class="btn btn-info">Visit Your Profile</a>
-        </div>
-
-    </div>
-
+    
 
     <div class="map-info">
-        <div id="map" style="width: 800px; height: 600px;"></div>
+        <div id="map" ></div>
         <div id="details">
             <h4>Route Details</h4>
             <p id="routeDetails"></p>
         </div>
     </div>
+
+
+    <div class="fixed-drag-handle"></div>
+
+    <section class="bottom-content-section">
+        <div class="drag-handle"></div>
+
+        <div class="taxi-selection-section" id="step2" style="display: none;">
+            
+            <h2>Select Your Taxi Type</h2>
+            <div class="row">
+                <?php
+                $displayedTypes = [];
+                foreach ($taxiTypes as $taxi):
+                    if (!in_array($taxi['Taxi_type'], $displayedTypes)):
+                        $displayedTypes[] = $taxi['Taxi_type'];
+                        $ratePerKM = isset($taxiRatesMap[$taxi['Taxi_type']]) ? $taxiRatesMap[$taxi['Taxi_type']]['Rate_per_Km'] : 'N/A';
+                ?>
+                    <div class="col-lg-4">
+                        <div class="taxi-card">
+                            <img src="Assets/img/taxis/<?php echo $taxi['Taxi_type'] == 'Car' ? 'car.png' : $taxi['Vehicle_Img']; ?>" alt="<?php echo $taxi['Taxi_type']; ?>" class="img-fluid">
+                            <h3><?php echo $taxi['Taxi_type']; ?></h3>
+                            <p>Rate per KM: <?php echo $ratePerKM; ?></p>
+                            <p>Total Price: <span id="price-<?php echo $taxi['Taxi_type']; ?>"></span></p>
+                            <button class="btn btn-warning" onclick="selectTaxiType('<?php echo $taxi['Taxi_type']; ?>')">Select</button>
+                        </div>
+                    </div>
+                <?php
+                    endif;
+                endforeach;
+                ?>
+            </div>
+            <button class="btn btn-danger" id="changeRouteBtn" onclick="confirmChangeRoute()">Change Route</button>
+        </div>
+
+        <div class="selection-summary-section" id="step3" style="display: none;">
+            <!-- <h2 class="text-center">Your Selection</h2>
+            <p id="selectionDetails" class="text-center"></p> -->
+            
+            <h3 class="text-center">Available Drivers</h3>
+            <div id="driverList" class="driver-list">
+                <?php foreach ($availableDrivers as $driver): ?>
+                    <div class="driver-card card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title"><?php echo $driver['First_name'] . ' ' . $driver['Last_name']; ?></h4>
+                            <p class="card-text">Location: <?php echo $driver['Current_Location']; ?></p>
+                            <p class="card-text">Vehicle Type: <?php echo $driver['Taxi_type']; ?></p>
+                            <!-- <button class="btn btn-success" onclick="confirmDriverSelection('<?php //echo $driver['Driver_ID']; ?>')">Select Driver</button> -->
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="text-center mt-4" id="bookingButtons" style="<?php echo $rideAccepted ? 'display:none;' : ''; ?>">
+                <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+                <button class="btn btn-secondary" onclick="changeVehicleType()">Change Vehicle Type</button>
+            </div>
+
+            <!-- Display Visit Your Profile button when ride is accepted -->
+            <div class="text-center mt-4" id="visitProfileButton" style="<?php echo $rideAccepted ? 'display:block;' : 'display:none;'; ?>">
+                <a href="/CityTaxi/Pages/Driver/profile.php" class="btn btn-info">Visit Your Profile</a>
+            </div>
+
+        </div>
+
+    </section>
+
+
 </section>
 
 <!-- Display SweetAlert alerts if status is passed -->
@@ -149,8 +160,9 @@ $rideAccepted = isset($_SESSION['ride_accepted']) ? $_SESSION['ride_accepted'] :
         </script>
         ";
     }
-
 ?>
+
+
 
 <script>
 
@@ -259,6 +271,70 @@ $rideAccepted = isset($_SESSION['ride_accepted']) ? $_SESSION['ride_accepted'] :
     function generateUniqueRideID() {
         return 'ride-' + Date.now(); // Simple unique ID based on current timestamp
     }
+
+
+    // Variables to track drag state
+    let isDragging = false;
+    let startY = 0;
+    let currentY = 0;
+    let bottomSection = document.querySelector('.bottom-content-section');
+    let dragHandle = document.querySelector('.drag-handle');
+    let fixedDragHandle = document.querySelector('.fixed-drag-handle');
+    let threshold = 50; // The distance threshold for showing/hiding
+
+    // Function to show the section
+    function showSection() {
+        bottomSection.classList.remove('hidden');
+        bottomSection.classList.add('visible');
+        fixedDragHandle.style.display = 'none'; // Hide fixed handle when section is visible
+    }
+
+    // Function to hide the section
+    function hideSection() {
+        bottomSection.classList.add('hidden');
+        bottomSection.classList.remove('visible');
+        fixedDragHandle.style.display = 'block'; // Show fixed handle when section is hidden
+    }
+
+    // Reset drag state after drag is complete
+    function resetDragState() {
+        isDragging = false;
+        startY = 0;
+        currentY = 0;
+    }
+
+    // Function to handle the drag start
+    function startDrag(event) {
+        isDragging = true;
+        startY = event.touches ? event.touches[0].clientY : event.clientY; // Track starting Y position for both touch and mouse
+    }
+
+    // Function to handle the drag move
+    function onDrag(event) {
+        if (!isDragging) return;
+        currentY = event.touches ? event.touches[0].clientY : event.clientY;
+
+        // Detect if the user is dragging down or up
+        if (currentY - startY > threshold) {
+        // User drags down - hide section
+        hideSection();
+        } else if (startY - currentY > threshold) {
+        // User drags up - show section
+        showSection();
+        }
+    }
+
+    // Attach event listeners for both touch and mouse events
+    dragHandle.addEventListener('touchstart', startDrag);
+    dragHandle.addEventListener('mousedown', startDrag);
+    fixedDragHandle.addEventListener('touchstart', startDrag);
+    fixedDragHandle.addEventListener('mousedown', startDrag);
+
+    document.addEventListener('touchmove', onDrag);
+    document.addEventListener('mousemove', onDrag);
+
+    document.addEventListener('touchend', resetDragState);
+    document.addEventListener('mouseup', resetDragState);
 </script>
 
 
