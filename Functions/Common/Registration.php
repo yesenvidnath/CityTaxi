@@ -17,34 +17,56 @@ class Registration {
     }
 
     public function registerPassenger($data) {
-        $query = "INSERT INTO Users (First_name, Last_name, NIC_No, mobile_number, Address, Email, password, user_img, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            die('Prepare failed: ' . $this->conn->errorInfo()[2]);
-        }
+        // Start a transaction
+        $this->conn->beginTransaction();
     
-        $filePath = $this->saveProfileImage($data['profile_pic']);
-    
-        // Binding parameters for PDO
-        $stmt->bindParam(1, $data['first_name']);
-        $stmt->bindParam(2, $data['last_name']);
-        $stmt->bindParam(3, $data['nic_no']);
-        $stmt->bindParam(4, $data['contact_no']);
-        $stmt->bindParam(5, $data['address']);
-        $stmt->bindParam(6, $data['email']);
-        $stmt->bindParam(7, $data['password']);
-        $stmt->bindParam(8, $filePath);
-        $stmt->bindParam(9, $data['user_type']);
-    
-        if ($stmt->execute()) {
-            if ($stmt->rowCount() > 0) {
-                echo "Registration successful, rows affected: " . $stmt->rowCount();
-            } else {
-                echo "No rows affected, but the query was executed.";
+        try {
+            // Query to insert user into the Users table
+            $query = "INSERT INTO Users (First_name, Last_name, NIC_No, mobile_number, Address, Email, password, user_img, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($query);
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $this->conn->errorInfo()[2]);
             }
-        } else {
-            echo "Registration failed: " . implode(", ", $stmt->errorInfo());
+    
+            // Binding parameters for PDO
+            $filePath = $this->saveProfileImage($data['profile_pic']);  // Save the profile image and get the file name
+            $stmt->bindParam(1, $data['first_name']);
+            $stmt->bindParam(2, $data['last_name']);
+            $stmt->bindParam(3, $data['nic_no']);
+            $stmt->bindParam(4, $data['contact_no']);
+            $stmt->bindParam(5, $data['address']);
+            $stmt->bindParam(6, $data['email']);
+            $stmt->bindParam(7, $data['password']);
+            $stmt->bindParam(8, $filePath);
+            $stmt->bindParam(9, $data['user_type']);
+    
+            // Execute the user insertion
+            $stmt->execute();
+            $lastUserId = $this->conn->lastInsertId();  // Get the last inserted user ID
+    
+            if ($stmt->rowCount() > 0) {
+                // Insert into Passengers table
+                $queryPassenger = "INSERT INTO Passengers (User_ID) VALUES (?)";
+                $stmtPassenger = $this->conn->prepare($queryPassenger);
+                $stmtPassenger->bindParam(1, $lastUserId);
+                $stmtPassenger->execute();
+    
+                if ($stmtPassenger->rowCount() > 0) {
+                    // Commit the transaction
+                    $this->conn->commit();
+                    echo "Registration successful, new passenger created.";
+                } else {
+                    throw new Exception("Failed to create passenger record.");
+                }
+            } else {
+                throw new Exception("No rows affected in Users table, but the query was executed.");
+            }
+        } catch (Exception $e) {
+            // Rollback the transaction on error
+            $this->conn->rollBack();
+            echo "Registration failed: " . $e->getMessage();
         }
+    
         $stmt->closeCursor();
     }    
 

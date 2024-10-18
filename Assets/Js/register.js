@@ -73,7 +73,6 @@ document.querySelectorAll('.firstNext').forEach((button, index) => {
     });
 });
 
-
 // Event listener for "Back" button
 document.querySelector('.prev-1').addEventListener('click', () => {
     if (currentStep > 1) {
@@ -130,6 +129,33 @@ document.querySelector('.next-1').addEventListener('click', (event) => {
     }
 });
 
+document.querySelector('.submit').addEventListener('click', (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Check the user type and call the appropriate function
+    if (userType === 'Passenger' && currentStep === 2) {
+        loadFormData(); // Load Passenger form data into userData
+        console.log('Passenger Data Loaded:', userData); // Log Passenger data
+        submitPassengerData(); // Submit the Passenger data via AJAX
+    } else if ((userType === 'Driver' || userType === 'Vehicle Owner') && currentStep === totalSteps) {
+        loadFormData(); // Load Driver/Vehicle Owner form data into userData
+        console.log(`${userType} Data Loaded (Final Step):`, userData); // Log Driver/Vehicle Owner data
+        //submitDriverVehicleOwnerData(); // Submit Driver/Vehicle Owner data via AJAX
+    }
+});
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('submit')) {
+        event.preventDefault();
+        if (userType === 'Driver' || userType === 'Vehicle Owner') {
+            loadFormData(); // Load form data
+            console.log(`${userType} Data Loaded (Final Step):`, userData);
+            //submitDriverVehicleOwnerData();
+        }
+    }
+});
+
+
 function submitPassengerData() {
     const formData = new FormData();
     formData.append('first_name', document.querySelector('input[placeholder="First Name"]').value);
@@ -166,7 +192,13 @@ function submitPassengerData() {
 }
 
 
+// Function to submit Driver or Vehicle Owner data
 function submitDriverVehicleOwnerData() {
+    if (!validateDriverVehicleOwnerData()) {
+        alert('Please complete all required fields and ensure files are selected.');
+        return; // Stop the function if validation fails
+    }
+
     const formData = new FormData();
     formData.append('first_name', userData.firstName);
     formData.append('last_name', userData.lastName);
@@ -175,25 +207,51 @@ function submitDriverVehicleOwnerData() {
     formData.append('address', userData.address);
     formData.append('email', userData.email);
     formData.append('password', userData.password);
-    formData.append('user_type', userData.userType); // Set user type dynamically (Driver or Vehicle Owner)
+    formData.append('user_type', userData.userType);
 
-    // Append driver-specific fields (relevant for both Driver and Vehicle Owner)
-    formData.append('nic_image_front', document.getElementById('nic-front').files[0]);
-    formData.append('nic_image_back', document.getElementById('nic-back').files[0]);
-    formData.append('driver_license_no', document.querySelector('input[placeholder="Driver\'s Licence No"]').value);
+    // Append file inputs
+    formData.append('profile_pic', document.getElementById('profile-pic').files[0]);
+    formData.append('nic_front', document.getElementById('nic-front').files[0]);
+    formData.append('nic_back', document.getElementById('nic-back').files[0]);
+    formData.append('license_front', document.getElementById('license-front').files[0]);
+    formData.append('license_back', document.getElementById('license-back').files[0]);
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/CityTaxi/Functions/Common/registerDriverVehicleOwner.php', true);
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            alert('Registration successful!');
-            window.location.href = 'login.php'; // Redirect to login after success
-        } else {
-            alert('Error in registration. Please try again.');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log('Response:', xhr.responseText);
+            if (xhr.responseText.includes("Registration successful")) {
+                alert('Registration successful!');
+                window.location.href = 'login.php';
+            } else {
+                alert('Error in registration: ' + xhr.responseText);
+            }
         }
     };
-    xhr.send(formData); // Send form data to the backend
+    xhr.send(formData);
 }
+
+// Validate data before submission
+function validateDriverVehicleOwnerData() {
+    // Example validation, extend it according to your actual form requirements
+    return document.getElementById('profile-pic').files.length &&
+           document.getElementById('nic-front').files.length &&
+           document.getElementById('nic-back').files.length &&
+           document.getElementById('license-front').files.length &&
+           document.getElementById('license-back').files.length;
+}
+
+// Bind event listener to the submit button
+document.addEventListener('DOMContentLoaded', function() {
+    const submitBtn = document.querySelector('.submit');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            submitDriverVehicleOwnerData();
+        });
+    }
+});
 
 // Initialize the form to show only the first step on load
 initializeForm();
