@@ -77,9 +77,7 @@ document.querySelectorAll('.firstNext').forEach((button, index) => {
 // Event listener for "Back" button
 document.querySelector('.prev-1').addEventListener('click', () => {
     if (currentStep > 1) {
-        currentStep--;
-        showStep(currentStep);
-        updateButtonText(); // Ensure button text is reset on "Back"
+        location.reload();
     }
 });
 
@@ -134,30 +132,33 @@ document.querySelector('.next-1').addEventListener('click', (event) => {
 
 // Submit function for Passengers (AJAX request)
 function submitPassengerData() {
+    // Create a FormData object to handle file and text data
     const formData = new FormData();
-    formData.append('first_name', userData.firstName);
-    formData.append('last_name', userData.lastName);
-    formData.append('nic_no', userData.nicNo);
-    formData.append('contact_no', userData.contactNo);
-    formData.append('address', userData.address);
-    formData.append('email', userData.email);
-    formData.append('password', userData.password);
-    formData.append('user_type', 'Passenger'); // Set user type as Passenger
+    formData.append('first_name', document.querySelector('input[placeholder="First Name"]').value);
+    formData.append('last_name', document.querySelector('input[placeholder="Last Name"]').value);
+    formData.append('nic_no', document.querySelector('input[placeholder="NIC No"]').value);
+    formData.append('contact_no', document.querySelector('input[placeholder="Contact No"]').value);
+    formData.append('address', document.querySelector('input[placeholder="Address"]').value);
+    formData.append('email', document.querySelector('input[placeholder="Email"]').value);
+    formData.append('password', document.querySelector('input[placeholder="Password"]').value);
+    formData.append('user_type', 'Passenger');
+    formData.append('profile_pic', document.getElementById('profile-pic').files[0]);
 
+    // AJAX POST request
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'registerPassenger.php', true);
-    xhr.onload = function() {
+    xhr.open('POST', 'Registration.php', true);
+    xhr.onload = function () {
         if (xhr.status === 200) {
+            console.log('Response:', xhr.responseText);
             alert('Registration successful!');
-            window.location.href = 'login.php'; // Redirect to login after success
+            window.location.href = 'login.php';
         } else {
             alert('Error in registration. Please try again.');
         }
     };
-    xhr.send(formData); // Send form data to the backend
+    xhr.send(formData);
 }
 
-// Submit function for Drivers and Vehicle Owners (AJAX request)
 function submitDriverVehicleOwnerData() {
     const formData = new FormData();
     formData.append('first_name', userData.firstName);
@@ -167,13 +168,12 @@ function submitDriverVehicleOwnerData() {
     formData.append('address', userData.address);
     formData.append('email', userData.email);
     formData.append('password', userData.password);
-    formData.append('user_type', userData.userType); // Set user type dynamically
+    formData.append('user_type', userData.userType); // Set user type dynamically (Driver or Vehicle Owner)
 
-    if (userData.userType === 'Driver') {
-        formData.append('nic_image_front', document.getElementById('nic-front').files[0]);
-        formData.append('nic_image_back', document.getElementById('nic-back').files[0]);
-        formData.append('driver_license_no', document.querySelector('input[placeholder="Driver\'s Licence No"]').value);
-    }
+    // Append driver-specific fields (relevant for both Driver and Vehicle Owner)
+    formData.append('nic_image_front', document.getElementById('nic-front').files[0]);
+    formData.append('nic_image_back', document.getElementById('nic-back').files[0]);
+    formData.append('driver_license_no', document.querySelector('input[placeholder="Driver\'s Licence No"]').value);
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'registerDriverVehicleOwner.php', true);
@@ -191,8 +191,8 @@ function submitDriverVehicleOwnerData() {
 // Initialize the form to show only the first step on load
 initializeForm();
 
-// General Information Profile pic preview
 
+// General Information Profile pic preview
 document.addEventListener('DOMContentLoaded', function() {
     var fileInput = document.getElementById('profile-pic');
     var imagePreview = document.getElementById('img-pic');
@@ -349,3 +349,29 @@ document.addEventListener("DOMContentLoaded", function () {
         handleRemove(licenseBackInput, licenseBackImg, defaultIcon); // Reset NIC Back
     });
   });
+
+  function sendRegistrationData(userData) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'Registration.php', true);  // Send request to Registration.php
+    xhr.setRequestHeader('Content-Type', 'application/json');  // Send data as JSON
+    xhr.onload = function() {
+        console.log("Server response:", xhr.responseText); // Log the server response
+        if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.status === 'success') {
+                alert('Registration successful!');
+                window.location.href = 'login.php';  // Redirect to login after success
+            } else {
+                alert('Error: ' + response.message);
+            }
+        } else {
+            alert('Error: Failed to register. Please try again.');
+        }
+    };
+
+    // Log the data being sent
+    console.log("Sending registration data:", userData);
+
+    // Send the userData object as JSON to the backend
+    xhr.send(JSON.stringify(userData));
+}

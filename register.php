@@ -1,6 +1,6 @@
 <?php 
 // Include the header part
-include 'TemplateParts/Header/header.php'; 
+include 'TemplateParts/Header/header.php';
 ?>
 
 <div class="container-fluid">
