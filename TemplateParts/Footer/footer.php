@@ -87,5 +87,9 @@
     <script src="/CityTaxi/Assets/Js/main.js"></script>
 
 
+    <?php 
+        showLinkOnRide('<script src="/CityTaxi/Assets/Js/ride.js"></script>');
+        showLinkOnDriverProfilePage( '<script src="/CityTaxi/Assets/Js/driver.js"></script>');
+    ?> 
 </body>
 </html>
