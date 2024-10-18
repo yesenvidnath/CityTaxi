@@ -196,7 +196,55 @@ body, html {
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.4s ease-in-out;
+  transform: translateY(0);
 }
+
+.bottom-content-section.hidden {
+  transform: translateY(100%);
+}
+
+
+/* Drag handle inside the bottom content section */
+.drag-handle {
+  width: 50px;
+  height: 6px;
+  background-color: #ccc;
+  border-radius: 10px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  z-index: 1100; /* Ensure it's always on top */
+}
+
+/* Fixed handle when the section is hidden */
+.fixed-drag-handle {
+  width: 50px;
+  height: 6px;
+  background-color: #ccc;
+  border-radius: 10px;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  z-index: 1100; /* Always on top */
+}
+
+/* Visible handle state for hover effect */
+.fixed-drag-handle:hover,
+.drag-handle:hover {
+  background-color: #999;
+}
+
+
+/* Hide the fixed drag handle when the section is visible */
+.bottom-content-section.visible ~ .fixed-drag-handle {
+  display: none;
+}
+
 
 /* Carousel Styling for 3 Items */
 .carousel-inner {
@@ -362,6 +410,7 @@ body, html {
   .bottom-content-section {
     padding: 16px;
     max-height: 60vh;
+    
   }
   
   .carousel-item {
@@ -449,3 +498,4 @@ body, html {
     transform: translate(-50%, -50%) rotate(360deg);
   }
 }
+

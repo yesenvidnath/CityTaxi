@@ -248,6 +248,69 @@ if ($availabilityInfo) {
     //     const driverID = '<?php //echo $Driver_ID; ?>';  
     // });
 
+
+    // Variables to track drag state
+    let isDragging = false;
+    let startY = 0;
+    let currentY = 0;
+    let bottomSection = document.querySelector('.bottom-content-section');
+    let dragHandle = document.querySelector('.drag-handle');
+    let fixedDragHandle = document.querySelector('.fixed-drag-handle');
+    let threshold = 50; // The distance threshold for showing/hiding
+
+    // Function to show the section
+    function showSection() {
+        bottomSection.classList.remove('hidden');
+        bottomSection.classList.add('visible');
+        fixedDragHandle.style.display = 'none'; // Hide fixed handle when section is visible
+    }
+
+    // Function to hide the section
+    function hideSection() {
+        bottomSection.classList.add('hidden');
+        bottomSection.classList.remove('visible');
+        fixedDragHandle.style.display = 'block'; // Show fixed handle when section is hidden
+    }
+
+    // Reset drag state after drag is complete
+    function resetDragState() {
+        isDragging = false;
+        startY = 0;
+        currentY = 0;
+    }
+
+    // Function to handle the drag start
+    function startDrag(event) {
+        isDragging = true;
+        startY = event.touches ? event.touches[0].clientY : event.clientY; // Track starting Y position for both touch and mouse
+    }
+
+    // Function to handle the drag move
+    function onDrag(event) {
+        if (!isDragging) return;
+        currentY = event.touches ? event.touches[0].clientY : event.clientY;
+
+        // Detect if the user is dragging down or up
+        if (currentY - startY > threshold) {
+        // User drags down - hide section
+        hideSection();
+        } else if (startY - currentY > threshold) {
+        // User drags up - show section
+        showSection();
+        }
+    }
+
+    // Attach event listeners for both touch and mouse events
+    dragHandle.addEventListener('touchstart', startDrag);
+    dragHandle.addEventListener('mousedown', startDrag);
+    fixedDragHandle.addEventListener('touchstart', startDrag);
+    fixedDragHandle.addEventListener('mousedown', startDrag);
+
+    document.addEventListener('touchmove', onDrag);
+    document.addEventListener('mousemove', onDrag);
+
+    document.addEventListener('touchend', resetDragState);
+    document.addEventListener('mouseup', resetDragState);
 </script>
 
 
