@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" />
 
     <?php 
+        error_reporting(0); 
+        ini_set('display_errors', 0); 
+
         $rootPath = $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/'; 
         
         include $rootPath . 'Functions/Common/PathHandler.php'; 
@@ -28,7 +31,9 @@
         showLinkOnMyRides('<link rel="stylesheet" href="/CityTaxi/Assets/Css/myrides.css">');
         showLinkOnRide('<link rel="stylesheet" href="/CityTaxi/Assets/Css/ride.css">');
         showLinkOnDashboard('<link rel="stylesheet" href="/CityTaxi/Assets/Css/dashboard.css">');
-
+        showLinkOnDriverProfilePage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/driverprofile.css">');
+        showLinkOnLoginPage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/login.css">');
+        showLinkOnIndexPage('<link rel="stylesheet" href="/CityTaxi/Assets/Css/index.css">');
 
         // Include the SessionManager
         include $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/SessionManager.php';
@@ -57,8 +62,17 @@
                 <!-- Dynamic Profile Button -->
                 <?php 
                     $userType = SessionManager::get('user_type');
-                    $profileLink = ($userType === 'Passenger') ? 'Pages/Passenger/profile.php' : 'Pages/Driver/profile.php';
+                    if ($userType === 'Passenger') {
+                        $profileLink = 'Pages/Passenger/profile.php';
+                    } elseif ($userType === 'Driver') {
+                        $profileLink = 'Pages/Driver/profile.php';
+                    } elseif ($userType === 'CallOperator') {
+                        $profileLink = 'Pages/CallOperator/profile.php';
+                    } else {
+                        $profileLink = '#'; // Default link if no user type is found
+                    }
                 ?>
+
                 <a href="<?php echo $profileLink; ?>" class="btn btn-secondary btn-sm ml-3" id="myprofile-hide-btn">Visit My Profile</a>
                 <!-- Logout Button -->
                 <a href="javascript:void(0);" onclick="confirmLogout();" class="btn btn-outline-secondary btn-sm ml-3">Logout</a>
@@ -68,6 +82,9 @@
             <?php endif; ?>
             
             <!-- Ride With Call Button -->
-            <a href="#" class="btn btn-warning btn-sm ml-3">Ride With Call</a>
+            <a href="https://wa.me/94704605516" target="_blank" class="btn btn-warning btn-sm ml-3">
+                <i class="fab fa-whatsapp"></i> Ride With Call
+            </a>
+
         </div>
     </header>

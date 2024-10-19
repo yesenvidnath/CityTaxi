@@ -514,8 +514,9 @@ $imagePath = "/CityTaxi/Assets/Img/Passenger/" . $userImage;
 <script src="https://www.payhere.lk/lib/payhere.js"></script>
 <script src="/CityTaxi/Assets/Js/payments.js"></script>
 
+<script src="//code.tidio.co/3zbfxeuvta3jkyr1we8h8cr9yjg060c0.js" async></script>
 
 <?php // tmp add please remove immediatly looks
-include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
+// include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
 include $rootPath . 'TemplateParts/Footer/footer.php'; 
 ?>

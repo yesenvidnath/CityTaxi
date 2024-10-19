@@ -90,6 +90,7 @@
     <?php 
         showLinkOnRide('<script src="/CityTaxi/Assets/Js/ride.js"></script>');
         showLinkOnDriverProfilePage( '<script src="/CityTaxi/Assets/Js/driver.js"></script>');
+        showLinkOnRegister('<script src="/CityTaxi/Assets/Js/register.js"></script>')
     ?> 
 </body>
 </html>

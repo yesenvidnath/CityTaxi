@@ -84,5 +84,36 @@ class Texts {
             echo "Payment success SMS sent response: " . $response; // Optional: Log the response for debugging
         }
     }    
+
+
+    public function sendSmsForReservations($mobileNumber, $message) {
+        // Prepare the data payload
+        $msgData = [
+            "phone_number" => $mobileNumber,
+            "message" => $message
+        ];
+    
+        // Make the API request to the Heroku endpoint
+        $ch = curl_init($this->apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($msgData));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Content-Type: application/json",
+            "Accept: application/json"
+        ]);
+    
+        // Execute the request
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+    
+        // Log the response but don't return it to the front-end to avoid JSON parsing errors
+        if ($err) {
+            error_log("SMS Error: " . $err);
+        } else {
+            error_log("SMS sent successfully: " . $response);
+        }
+    }
     
 }

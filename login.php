@@ -34,7 +34,7 @@ include 'TemplateParts/Header/header.php';
                 Log In
             </button>
         </form>
-        <p class="signup-link">New to our platform? <a href="#">Sign up</a></p>
+        <p class="signup-link">New to our platform? <a href="register.php">Sign up</a></p>
     </div>
 </div>
 
