@@ -2,7 +2,7 @@
 // Import the header
 include 'TemplateParts/Header/header.php';
 // Import the right-side nav menu
-include 'TemplateParts/Shared/NavMenu.php';
+// include 'TemplateParts/Shared/NavMenu.php';
 
 
 ?>
@@ -15,8 +15,8 @@ include 'TemplateParts/Shared/NavMenu.php';
                 <h1>Go anywhere with confidence</h1>
                 <p class="lead">Request a ride, hop in, and relax. Your destination awaits.</p>
                 <div class="d-flex flex-wrap">
-                    <button class="btn btn-primary mr-3 mb-3">Sign up to ride</button>
-                    <button class="btn btn-outline-light mb-3">Become a driver</button>
+                    <a href="login.php" class="btn btn-primary mr-3 mb-3">Sign up to ride</a>
+                    <a href="register.php" class="btn btn-outline-light mb-3">Become a driver</a>
                 </div>
             </div>
         </div>
@@ -144,6 +144,7 @@ include 'TemplateParts/Shared/NavMenu.php';
     }
 ?>
 
+<script src="//code.tidio.co/3zbfxeuvta3jkyr1we8h8cr9yjg060c0.js" async></script>
 
 <?php
 // Import the footer

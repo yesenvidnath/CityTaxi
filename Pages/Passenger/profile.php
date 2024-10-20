@@ -135,7 +135,7 @@ $imagePath = "/CityTaxi/Assets/Img/Passenger/" . $userImage;
                                     </div>
                                     <?php if ($ride['Status'] === 'Accepted'): ?>
                                         <p class="text-muted">This ride is in progress.</p>
-                                    <?php elseif (!$isRated): ?>
+                                        <?php elseif (!$isRated): ?>
                                         <button class="btn btn-success w-100 mt-3 rate-btn"
                                             onclick="openRatingPopup('<?php echo $ride['Ride_ID']; ?>', '<?php echo $ride['Driver_ID']; ?>')">
                                             Rate Ride
@@ -514,8 +514,9 @@ $imagePath = "/CityTaxi/Assets/Img/Passenger/" . $userImage;
 <script src="https://www.payhere.lk/lib/payhere.js"></script>
 <script src="/CityTaxi/Assets/Js/payments.js"></script>
 
+<script src="//code.tidio.co/3zbfxeuvta3jkyr1we8h8cr9yjg060c0.js" async></script>
 
 <?php // tmp add please remove immediatly looks
-include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
+// include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
 include $rootPath . 'TemplateParts/Footer/footer.php'; 
 ?>

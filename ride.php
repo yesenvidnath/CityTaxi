@@ -51,6 +51,12 @@ $rideAccepted = isset($_SESSION['ride_accepted']) ? $_SESSION['ride_accepted'] :
 
 <!-- Main content -->
 <section class="ride-info-section">
+    <!-- Back to Home Button -->
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <a href="index.php" class="btn btn-primary rounded-circle shadow-sm" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: #4e73df; border: none;">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
     <div class="driver-info" id="step1">
         
         <h2>Buckle Up For The Ride</h2>
@@ -339,6 +345,6 @@ $rideAccepted = isset($_SESSION['ride_accepted']) ? $_SESSION['ride_accepted'] :
 
 
 <?php 
-    include 'TemplateParts/Shared/NavMenu.php'; 
+    // include 'TemplateParts/Shared/NavMenu.php'; 
     include 'TemplateParts/Footer/footer.php';   
 ?>

@@ -660,3 +660,28 @@ END$$
 
 DELIMITER ;
 
+
+22.
+DELIMITER //
+
+CREATE PROCEDURE AddReservationAndUpdateDriver(
+    IN p_firstName VARCHAR(255),
+    IN p_lastName VARCHAR(255),
+    IN p_email VARCHAR(255),
+    IN p_phoneNumber VARCHAR(50),
+    IN p_startLocation VARCHAR(255),
+    IN p_endLocation VARCHAR(255),
+    IN p_driverID INT
+)
+BEGIN
+    -- Insert reservation into the reservations table
+    INSERT INTO reservations (First_name, Last_name, Email, Phone_number, Start_Location, End_Location, Driver_ID, TaxiID) 
+    VALUES (p_firstName, p_lastName, p_email, p_phoneNumber, p_startLocation, p_endLocation, p_driverID, NULL);
+
+    -- Update the driver's availability to 0 (unavailable)
+    UPDATE drivers 
+    SET Availability = 0 
+    WHERE Driver_ID = p_driverID;
+END //
+
+DELIMITER ;

@@ -499,3 +499,41 @@ body, html {
   }
 }
 
+
+/* Apple-inspired styling for the back-to-home button */
+.back-to-home-btn {
+  position: fixed; /* Fixed for consistency on scroll */
+  top: 20px;
+  right: 20px;
+  z-index: 9999; /* Ensures it stays on top */
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background for elegance */
+  color: #276EF1; /* Subtle color for the icon */
+  border-radius: 50%; /* Circular button */
+  padding: 12px;
+  font-size: 1.6rem; /* Slightly larger icon */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border for structure */
+}
+
+.back-to-home-btn:hover {
+  background-color: rgba(255, 255, 255, 1); /* Fully opaque on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+  text-decoration: none; /* No underline */
+}
+
+.back-to-home-btn:active {
+  transform: scale(0.98); /* Press effect */
+  background-color: rgba(245, 245, 245, 1); /* Slight color change on click */
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .back-to-home-btn {
+      top: 15px;
+      right: 15px;
+      font-size: 1.4rem; /* Slightly smaller icon */
+      padding: 10px;
+  }
+}
+

@@ -99,6 +99,25 @@ class Driver {
         }
     }
 
+    // Fetch available drivers (where Availability is 1)
+    public function getAvailableDrivers() {
+        // Updated query to join with the users and taxis tables to fetch driver's vehicle type
+        $query = "
+            SELECT d.Driver_ID, d.Current_Location, d.Availability, u.First_name, u.Last_name, u.mobile_number, t.Taxi_type 
+            FROM drivers d
+            JOIN users u ON d.User_ID = u.user_ID
+            JOIN drivervehicleassignment dva ON d.Driver_ID = dva.Driver_ID
+            JOIN taxis t ON dva.Taxi_ID = t.Taxi_ID
+            WHERE d.Availability = 1
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
+    
+
 }
 
 // Handle AJAX request for changing availability

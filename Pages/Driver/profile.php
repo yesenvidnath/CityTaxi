@@ -315,6 +315,6 @@ if ($availabilityInfo) {
 
 
 <?php 
-    include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
+    // include $rootPath . 'TemplateParts/Passenger/PanelParts/menu.php';
     include $rootPath . 'TemplateParts/Footer/footer.php'; 
 ?>
