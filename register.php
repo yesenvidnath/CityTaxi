@@ -3,11 +3,11 @@
 include 'TemplateParts/Header/header.php';
 ?>
 
-<div class="container-fluid">
+<div class="container-fluid apple-container">
 
     <div class="container">
         <div>
-            <h1 class="mt-5 mb-4">Drive. Earn. Enjoy. Repeat.</h1>
+            <h1 class="mt-5 mb-4 apple-heading">Drive. Earn. Enjoy. Repeat.</h1>
         </div>
     </div>
     <br>
@@ -26,15 +26,15 @@ include 'TemplateParts/Header/header.php';
 
                         <div class="col-6">
                             <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" class="firstNext btn btn-warning">Register as a Passenger</button>
+                                <button type="button" class="firstNext btn btn-warning">Register as a Pas apple-btnsenger</button>
                             </div>
                             <br>
                             <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" class="firstNext btn btn-warning">Register as a Driver</button>
+                                <button type="button" class="firstNext btn btn-warning">Register as a Dri apple-btnver</button>
                             </div>
                             <br>
                             <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" class="firstNext btn btn-warning">Register as a Vehicle Owner</button>
+                                <button type="button" class="firstNext btn btn-warning">Register as a Veh apple-btnicle Owner</button>
                             </div>
                         </div>
 
@@ -82,10 +82,10 @@ include 'TemplateParts/Header/header.php';
                             <div class="col-9">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" placeholder="First Name">
+                                        <input type="text" class="form-control apple-input" placeholder="First Name">
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" placeholder="Last Name">
+                                        <input type="text" class="form-control apple-input" placeholder="Last Name">
                                     </div>
                                 </div>
                             </div>
@@ -96,7 +96,7 @@ include 'TemplateParts/Header/header.php';
                                 <label for="nic-no" class="font-weight-bold p-2">NIC No</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" placeholder="NIC No">
+                                <input type="text" class="form-control apple-input" placeholder="NIC No">
                             </div>
                         </div>
 
@@ -105,7 +105,7 @@ include 'TemplateParts/Header/header.php';
                                 <label for="contact-no" class="font-weight-bold p-2">Contact No</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" placeholder="Contact No">
+                                <input type="text" class="form-control apple-input" placeholder="Contact No">
                             </div>
                         </div>
 
@@ -114,7 +114,7 @@ include 'TemplateParts/Header/header.php';
                                 <label for="address" class="font-weight-bold p-2">Address</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" placeholder="Address">
+                                <input type="text" class="form-control apple-input" placeholder="Address">
                             </div>
                         </div>
 
@@ -123,7 +123,7 @@ include 'TemplateParts/Header/header.php';
                                 <label for="email" class="font-weight-bold p-2">Email</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" placeholder="Email">
+                                <input type="text" class="form-control apple-input" placeholder="Email">
                             </div>
                         </div>
 
@@ -132,17 +132,17 @@ include 'TemplateParts/Header/header.php';
                                 <label for="password" class="font-weight-bold p-2">Password</label>
                             </div>
                             <div class="col-9">
-                                <input type="text" class="form-control" placeholder="Password">
+                                <input type="text" class="form-control apple-input" placeholder="Password">
                             </div>
                         </div>
                     </div>
 
                     <div class="row mt-3 mb-3">
                         <div class="col-auto mr-auto">
-                            <button type="button" class="prev-1 btn btn-warning font-weight-bold px-5">Back</button>
+                            <button type="button" class="prev-1 btn btn-warning font-weight-bold px-5 apple-btn">Back</button>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="next-1 btn btn-warning font-weight-bold px-5">Next</button>
+                            <button type="button" class="next-1 btn btn-warning font-weight-bold px-5 apple-btn">Next</button>
                         </div>
                     </div>
 
@@ -208,7 +208,7 @@ include 'TemplateParts/Header/header.php';
                             <div class="col-9">
                                 <div class="row">
                                     <div class="col-10 align-self-center ml-4">
-                                        <input type="text" class="form-control" placeholder="Driver's Licence No">
+                                        <input type="text" class="form-control apple-input" placeholder="Driver's Licence No">
                                     </div>
                                 </div>
                             </div>
@@ -265,10 +265,10 @@ include 'TemplateParts/Header/header.php';
 
                     <div class="row mt-3 mb-3">
                         <div class="col-auto mr-auto">
-                            <button type="button" class="prev-2 btn btn-warning font-weight-bold px-5">Back</button>
+                            <button type="button" class="prev-2 btn btn-warning font-weight-bold px-5 apple-btn">Back</button>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="submit btn btn-warning font-weight-bold px-5">Submit</button>
+                            <button type="button" class="submit btn btn-warning font-weight-bold px-5 apple-btn">Submit</button>
                         </div>
                     </div>
 

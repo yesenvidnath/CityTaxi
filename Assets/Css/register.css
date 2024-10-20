@@ -1,105 +1,297 @@
-.form-outer .container{
-    width: 100%;
-    height: 140vh;
-    padding-bottom: 20px;
+/* Reset and Base Styles */
+body {
+  background-color: #f5f5f7 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif !important;
+  color: #1d1d1f !important;
+  line-height: 1.47059 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.022em !important;
 }
 
+/* Main Container Styles */
+.container-fluid {
+  padding: 0 !important;
+  background-color: #fff !important;
+  min-height: 100vh !important;
+}
+
+.container {
+  max-width: 980px !important;
+  margin: 0 auto !important;
+  padding: 40px 20px !important;
+}
+
+/* Header Styles */
+h1 {
+  font-size: 48px !important;
+  line-height: 1.08349 !important;
+  font-weight: 600 !important;
+  letter-spacing: -.003em !important;
+  color: #1d1d1f !important;
+  text-align: center !important;
+  margin-bottom: 48px !important;
+}
+
+/* Form Outer Container */
 .form-outer {
-    display: flex;
-    flex-direction: column;
-    height: auto; /* Let the form grow dynamically based on content */
-    max-height: 140vh;
+  background-color: #fff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  padding: 40px !important;
+  margin: 0 auto !important;
+  max-width: 880px !important;
 }
 
-.page.slide-page {
-    flex-grow: 1;
-}
-  
-.card-profile-pic{
-  border: solid 2px; 
+/* Registration Options Section */
+.register-page {
+  padding: 40px 0 !important;
 }
 
-.card-image{
-  width: 18rem;
-  height: 18rem;
-  justify-content: center; /* Center the content horizontally */
-  align-items: center; /* Center the content vertically */
-}
-.card {
-  max-width: 60rem;
-  border: 1px solid #ccc;
-  padding: 10px;
-  display: inline-flex; /* Allows the card to adjust to its content */
-}
-
-.card img {
-  width: auto; /* Retain the original width */
-  height: auto; /* Retain the original height */
-  max-height: 17rem;
-  max-width: 17rem;
+.register-page .btn {
+  width: 100% !important;
+  padding: 15px 30px !important;
+  font-size: 17px !important;
+  line-height: 1.47059 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.022em !important;
+  border-radius: 980px !important;
+  margin-bottom: 16px !important;
+  transition: all 0.3s ease !important;
+  background-color: #0071e3 !important;
+  border: none !important;
 }
 
-.btn-warning{
-  color: white;
+.register-page .btn:hover {
+  background-color: #0077ED !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
 }
 
-/* NIC Image Upload */
+/* Form Group Styles */
+.form-group {
+  margin-bottom: 24px !important;
+}
 
+.form-group label {
+  font-size: 17px !important;
+  line-height: 1.47059 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.022em !important;
+  color: #1d1d1f !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+.form-control {
+  background-color: #fff !important;
+  border: 1px solid #d2d2d7 !important;
+  border-radius: 12px !important;
+  font-size: 17px !important;
+  line-height: 1.47059 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.022em !important;
+  padding: 12px 16px !important;
+  height: auto !important;
+  transition: all 0.2s ease !important;
+}
+
+.form-control:focus {
+  border-color: #0071e3 !important;
+  box-shadow: 0 0 0 4px rgba(0,113,227,0.2) !important;
+  outline: none !important;
+}
+
+/* Profile Picture Section */
+.card-image {
+  background-color: #fff !important;
+  border: 1px solid #d2d2d7 !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  height: auto !important;
+  width: 100% !important;
+  max-width: 300px !important;
+  margin: 0 auto !important;
+  transition: all 0.3s ease !important;
+}
+
+.card-image:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
+}
+
+.card-profile-pic {
+  border: 2px dashed #d2d2d7 !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+  text-align: center !important;
+  transition: all 0.3s ease !important;
+}
+
+.card-profile-pic:hover {
+  border-color: #0071e3 !important;
+  background-color: rgba(0,113,227,0.05) !important;
+}
+
+/* Document Upload Styles */
 .dropzone {
-    width: 100px;
-    height: 80px;
-    border: 1px dashed #999;
-    border-radius: 3px;
-    text-align: center;
+  width: 100% !important;
+  min-height: 150px !important;
+  border: 2px dashed #d2d2d7 !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #fbfbfd !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+}
+
+.dropzone:hover {
+  border-color: #0071e3 !important;
+  background-color: rgba(0,113,227,0.05) !important;
+}
+
+.upload-icon {
+  width: 40px !important;
+  height: 40px !important;
+  margin-bottom: 12px !important;
+  opacity: 0.5 !important;
+}
+
+.nic-dec {
+  font-size: 15px !important;
+  color: #86868b !important;
+  margin: 8px 0 0 !important;
+}
+
+/* Button Styles */
+.btn-warning {
+  background-color: #0071e3 !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  font-size: 17px !important;
+  line-height: 1.47059 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.022em !important;
+  border-radius: 980px !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-warning:hover {
+  background-color: #0077ED !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-danger {
+  background-color: #ff3b30 !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  font-size: 15px !important;
+  line-height: 1.47059 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.022em !important;
+  border-radius: 980px !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+  margin-top: 12px !important;
+}
+
+.btn-danger:hover {
+  background-color: #ff453a !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Navigation Buttons */
+.prev-1, .prev-2, .next-1, .submit {
+  min-width: 120px !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .container {
+      padding: 20px !important;
   }
-  
-  .upload-icon {
-    margin: 25px 2px 2px 2px;
+
+  h1 {
+      font-size: 32px !important;
+      margin-bottom: 32px !important;
   }
-  
-  .upload-input {
-    position: relative;
-    top: -62px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
+
+  .form-outer {
+      padding: 20px !important;
   }
-  
-  .center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 3px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+
+  .register-page .btn {
+      padding: 12px 24px !important;
+      font-size: 16px !important;
   }
-  
-  .center .upload-icon{
-    position: absolute;
-    top: 20%;
-    bottom: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    padding: 10px;
-    width: auto; /* Retain the original width */
-    height: auto; /* Retain the original height */
-    max-height: 17rem;
-    max-width: 17rem;
+
+  .card-image {
+      max-width: 100% !important;
   }
-  
-  .nic-dec {
-    width: 100%;
-    /* height: 50px; */
-    text-align: center;
-    color: #ccc;
-    font-size: 16px;
-    font-weight: 300;
-    color: #666;
-  }
+}
+
+/* Image Preview Styles */
+#img-pic, 
+#img-nic-front, 
+#img-nic-back, 
+#img-license-front, 
+#img-license-back {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Form Row Spacing */
+.row {
+  margin-bottom: 16px !important;
+}
+
+/* Center Content Helper */
+.center-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 400px !important;
+}
+
+/* Image Section Styles */
+.image-section img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
+}
+
+/* Additional Helper Classes */
+.font-weight-bold {
+  font-weight: 600 !important;
+}
+
+.p-2 {
+  padding: 12px !important;
+}
+
+/* Form Validation Styles */
+.form-control.is-invalid {
+  border-color: #ff3b30 !important;
+  background-image: none !important;
+}
+
+.form-control.is-invalid:focus {
+  box-shadow: 0 0 0 4px rgba(255,59,48,0.2) !important;
+}
+
+/* Success States */
+.form-control.is-valid {
+  border-color: #34c759 !important;
+  background-image: none !important;
+}
+
+.form-control.is-valid:focus {
+  box-shadow: 0 0 0 4px rgba(52,199,89,0.2) !important;
+}
