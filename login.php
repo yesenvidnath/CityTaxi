@@ -62,7 +62,7 @@ include 'TemplateParts/Header/header.php';
 
 <!-- Include the navigation menu -->
 <?php 
-include 'TemplateParts/Shared/NavMenu.php'; 
+// include 'TemplateParts/Shared/NavMenu.php'; 
 ?>
 
 <!-- Include the footer -->

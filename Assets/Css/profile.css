@@ -755,3 +755,7 @@ body {
         padding: 1.5rem;
     }
 }
+
+.fa-star .selected{
+    color: yellow;
+}

@@ -85,6 +85,10 @@
             <a href="https://wa.me/94704605516" target="_blank" class="btn btn-warning btn-sm ml-3">
                 <i class="fab fa-whatsapp"></i> Ride With Call
             </a>
+            <!-- Ride With Call Button -->
+            <a href="index.php" target="_blank" class="btn btn-warning btn-sm ml-3">
+                Home page
+            </a>
 
         </div>
     </header>
