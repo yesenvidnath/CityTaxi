@@ -1,297 +1,325 @@
-/* Reset and Base Styles */
+/* Import Apple's San Francisco font */
+@font-face {
+  font-family: 'SF Pro Text';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-regular-webfont.woff');
+}
+
+:root {
+  --apple-bg: #ffffff;
+  --apple-card-bg: #f5f5f7;
+  --apple-primary: #0071e3;
+  --apple-success: #28cd41;
+  --apple-danger: #ff3b30;
+  --apple-text: #1d1d1f;
+  --apple-secondary: #86868b;
+  --apple-border: #d2d2d7;
+  --apple-hover: #f5f5f7;
+}
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  background-color: #f5f5f7 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif !important;
-  color: #1d1d1f !important;
-  line-height: 1.47059 !important;
-  font-weight: 400 !important;
-  letter-spacing: -.022em !important;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--apple-bg);
+  color: var(--apple-text);
+  line-height: 1.47059;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Main Container Styles */
-.container-fluid {
-  padding: 0 !important;
-  background-color: #fff !important;
-  min-height: 100vh !important;
+/* Container Styles */
+.apple-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-.container {
-  max-width: 980px !important;
-  margin: 0 auto !important;
-  padding: 40px 20px !important;
+/* Heading Styles */
+.apple-heading {
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--apple-text);
+  text-align: center;
 }
 
-/* Header Styles */
-h1 {
-  font-size: 48px !important;
-  line-height: 1.08349 !important;
-  font-weight: 600 !important;
-  letter-spacing: -.003em !important;
-  color: #1d1d1f !important;
-  text-align: center !important;
-  margin-bottom: 48px !important;
-}
-
-/* Form Outer Container */
+/* Form Styles */
 .form-outer {
-  background-color: #fff !important;
-  border-radius: 18px !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-  padding: 40px !important;
-  margin: 0 auto !important;
-  max-width: 880px !important;
+  width: 100%;
+  background: var(--apple-bg);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+  margin-top: 2rem;
 }
 
-/* Registration Options Section */
-.register-page {
-  padding: 40px 0 !important;
+/* Page Animation */
+.page {
+  display: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.register-page .btn {
-  width: 100% !important;
-  padding: 15px 30px !important;
-  font-size: 17px !important;
-  line-height: 1.47059 !important;
-  font-weight: 400 !important;
-  letter-spacing: -.022em !important;
-  border-radius: 980px !important;
-  margin-bottom: 16px !important;
-  transition: all 0.3s ease !important;
-  background-color: #0071e3 !important;
-  border: none !important;
+.page.active {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.register-page .btn:hover {
-  background-color: #0077ED !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Form Group Styles */
-.form-group {
-  margin-bottom: 24px !important;
+/* Input Styles */
+.apple-input {
+  height: 44px;
+  border: 1px solid var(--apple-border);
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 17px;
+  margin: 8px 0;
+  transition: all 0.2s ease;
+  width: 100%;
+  background-color: var(--apple-bg);
+  color: var(--apple-text);
 }
 
-.form-group label {
-  font-size: 17px !important;
-  line-height: 1.47059 !important;
-  font-weight: 400 !important;
-  letter-spacing: -.022em !important;
-  color: #1d1d1f !important;
-  margin-bottom: 8px !important;
-  display: block !important;
-}
-
-.form-control {
-  background-color: #fff !important;
-  border: 1px solid #d2d2d7 !important;
-  border-radius: 12px !important;
-  font-size: 17px !important;
-  line-height: 1.47059 !important;
-  font-weight: 400 !important;
-  letter-spacing: -.022em !important;
-  padding: 12px 16px !important;
-  height: auto !important;
-  transition: all 0.2s ease !important;
-}
-
-.form-control:focus {
-  border-color: #0071e3 !important;
-  box-shadow: 0 0 0 4px rgba(0,113,227,0.2) !important;
-  outline: none !important;
-}
-
-/* Profile Picture Section */
-.card-image {
-  background-color: #fff !important;
-  border: 1px solid #d2d2d7 !important;
-  border-radius: 18px !important;
-  padding: 24px !important;
-  height: auto !important;
-  width: 100% !important;
-  max-width: 300px !important;
-  margin: 0 auto !important;
-  transition: all 0.3s ease !important;
-}
-
-.card-image:hover {
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
-}
-
-.card-profile-pic {
-  border: 2px dashed #d2d2d7 !important;
-  border-radius: 12px !important;
-  padding: 24px !important;
-  text-align: center !important;
-  transition: all 0.3s ease !important;
-}
-
-.card-profile-pic:hover {
-  border-color: #0071e3 !important;
-  background-color: rgba(0,113,227,0.05) !important;
-}
-
-/* Document Upload Styles */
-.dropzone {
-  width: 100% !important;
-  min-height: 150px !important;
-  border: 2px dashed #d2d2d7 !important;
-  border-radius: 12px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background-color: #fbfbfd !important;
-  transition: all 0.3s ease !important;
-  cursor: pointer !important;
-}
-
-.dropzone:hover {
-  border-color: #0071e3 !important;
-  background-color: rgba(0,113,227,0.05) !important;
-}
-
-.upload-icon {
-  width: 40px !important;
-  height: 40px !important;
-  margin-bottom: 12px !important;
-  opacity: 0.5 !important;
-}
-
-.nic-dec {
-  font-size: 15px !important;
-  color: #86868b !important;
-  margin: 8px 0 0 !important;
+.apple-input:focus {
+  border-color: var(--apple-primary);
+  box-shadow: 0 0 0 4px rgba(0, 125, 250, 0.1);
+  outline: none;
 }
 
 /* Button Styles */
-.btn-warning {
-  background-color: #0071e3 !important;
-  border: none !important;
-  padding: 12px 24px !important;
-  font-size: 17px !important;
-  line-height: 1.47059 !important;
-  font-weight: 400 !important;
-  letter-spacing: -.022em !important;
-  border-radius: 980px !important;
-  color: #fff !important;
-  transition: all 0.3s ease !important;
+.apple-btn {
+  background-color: var(--apple-primary);
+  color: #fff;
+  border: none;
+  border-radius: 980px;
+  padding: 12px 24px;
+  font-size: 17px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  min-width: 140px;
+  text-align: center;
+  cursor: pointer;
 }
 
-.btn-warning:hover {
-  background-color: #0077ED !important;
-  color: #fff !important;
-  transform: translateY(-1px) !important;
+.apple-btn:hover {
+  background-color: #0077ED;
 }
 
 .btn-danger {
-  background-color: #ff3b30 !important;
-  border: none !important;
-  padding: 8px 16px !important;
-  font-size: 15px !important;
-  line-height: 1.47059 !important;
-  font-weight: 400 !important;
-  letter-spacing: -.022em !important;
-  border-radius: 980px !important;
-  color: #fff !important;
-  transition: all 0.3s ease !important;
-  margin-top: 12px !important;
+  background-color: var(--apple-danger);
+  border: none;
+  border-radius: 980px;
+  padding: 8px 16px;
+  font-size: 15px;
+  color: #fff;
 }
 
 .btn-danger:hover {
-  background-color: #ff453a !important;
-  color: #fff !important;
-  transform: translateY(-1px) !important;
+  background-color: #ff2d55;
 }
 
-/* Navigation Buttons */
-.prev-1, .prev-2, .next-1, .submit {
-  min-width: 120px !important;
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 18px;
+  background-color: var(--apple-card-bg);
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .container {
-      padding: 20px !important;
-  }
-
-  h1 {
-      font-size: 32px !important;
-      margin-bottom: 32px !important;
-  }
-
-  .form-outer {
-      padding: 20px !important;
-  }
-
-  .register-page .btn {
-      padding: 12px 24px !important;
-      font-size: 16px !important;
-  }
-
-  .card-image {
-      max-width: 100% !important;
-  }
+.card-image {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--apple-card-bg);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px dashed var(--apple-border);
 }
 
-/* Image Preview Styles */
-#img-pic, 
-#img-nic-front, 
-#img-nic-back, 
-#img-license-front, 
-#img-license-back {
-  max-width: 100% !important;
-  height: auto !important;
-  border-radius: 8px !important;
-  margin-bottom: 12px !important;
+/* Dropzone Styles */
+.dropzone {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 20px;
+}
+
+.dropzone:hover {
+  background-color: var(--apple-hover);
+}
+
+.upload-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.nic-dec {
+  color: var(--apple-secondary);
+  font-size: 15px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Label Styles */
+label.font-weight-bold {
+  font-size: 17px;
+  color: var(--apple-text);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* Registration Page Styles */
+.register-page {
+  padding: 3rem 0;
+}
+
+.register-page .btn {
+  width: 100%;
+  margin-bottom: 1rem;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+/* Success State */
+.form-success {
+  color: var(--apple-success);
+}
+
+/* Progress Steps */
+.progress-steps {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  gap: 8px;
+}
+
+.step {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--apple-border);
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  background-color: var(--apple-primary);
 }
 
 /* Form Row Spacing */
-.row {
-  margin-bottom: 16px !important;
+.form-group .row {
+  margin-bottom: 1.5rem;
 }
 
-/* Center Content Helper */
-.center-content {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  min-height: 400px !important;
+/* Profile Picture Styles */
+.card-profile-pic {
+  background-color: var(--apple-card-bg);
+  border-radius: 18px;
+  overflow: hidden;
 }
 
-/* Image Section Styles */
-.image-section img {
-  max-width: 100% !important;
-  height: auto !important;
-  border-radius: 18px !important;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
+#img-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 18px;
 }
 
-/* Additional Helper Classes */
-.font-weight-bold {
-  font-weight: 600 !important;
+/* File Upload Visual Enhancement */
+.upload-input {
+  display: none;
 }
 
-.p-2 {
-  padding: 12px !important;
+/* Custom File Upload Button */
+.custom-file-upload {
+  display: inline-block;
+  padding: 12px 24px;
+  cursor: pointer;
+  background-color: var(--apple-card-bg);
+  border-radius: 980px;
+  color: var(--apple-primary);
+  font-size: 15px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.custom-file-upload:hover {
+  background-color: var(--apple-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .apple-heading {
+    font-size: 32px;
+  }
+
+  .form-outer {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 14px;
+  }
+
+  .apple-btn {
+    width: 100%;
+  }
+
+  .col-3, .col-9 {
+    padding: 0.5rem;
+  }
+}
+
+/* Animation for Form Transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out forwards;
 }
 
 /* Form Validation Styles */
-.form-control.is-invalid {
-  border-color: #ff3b30 !important;
-  background-image: none !important;
+.apple-input.is-invalid {
+  border-color: var(--apple-danger);
 }
 
-.form-control.is-invalid:focus {
-  box-shadow: 0 0 0 4px rgba(255,59,48,0.2) !important;
+.invalid-feedback {
+  color: var(--apple-danger);
+  font-size: 14px;
+  margin-top: 4px;
 }
 
-/* Success States */
-.form-control.is-valid {
-  border-color: #34c759 !important;
-  background-image: none !important;
-}
-
-.form-control.is-valid:focus {
-  box-shadow: 0 0 0 4px rgba(52,199,89,0.2) !important;
+/* Success Messages */
+.success-message {
+  color: var(--apple-success);
+  font-size: 17px;
+  text-align: center;
+  padding: 1rem;
 }

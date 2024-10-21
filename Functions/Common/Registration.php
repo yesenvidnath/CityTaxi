@@ -16,11 +16,19 @@ class Registration {
         }
     }
 
+    // Method to hash password using SHA-256
+    private function hashPassword($password) {
+        return hash('sha256', $password); // Hash the password using SHA-256
+    }
+
     public function registerPassenger($data) {
         // Start a transaction
         $this->conn->beginTransaction();
     
         try {
+            // Hash the password before storing it
+            $hashedPassword = $this->hashPassword($data['password']); 
+
             // Query to insert user into the Users table
             $query = "INSERT INTO Users (First_name, Last_name, NIC_No, mobile_number, Address, Email, password, user_img, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $this->conn->prepare($query);
@@ -36,7 +44,7 @@ class Registration {
             $stmt->bindParam(4, $data['contact_no']);
             $stmt->bindParam(5, $data['address']);
             $stmt->bindParam(6, $data['email']);
-            $stmt->bindParam(7, $data['password']);
+            $stmt->bindParam(7, $hashedPassword); // Use the hashed password here
             $stmt->bindParam(8, $filePath);
             $stmt->bindParam(9, $data['user_type']);
     
@@ -68,8 +76,9 @@ class Registration {
         }
     
         $stmt->closeCursor();
-    }    
+    }
 
+    // Method to save profile image
     private function saveProfileImage($file) {
         $targetDir = "../../Assets/img/Passenger/";
         $targetFile = $targetDir . basename($file['name']);
@@ -93,10 +102,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'contact_no' => $_POST['contact_no'],
         'address' => $_POST['address'],
         'email' => $_POST['email'],
-        'password' => $_POST['password'],
+        'password' => $_POST['password'], // Password to be hashed
         'profile_pic' => $_FILES['profile_pic'],
         'user_type' => 'Passenger'
     ];
     $registration->registerPassenger($passengerData);
 }
+
 ?>

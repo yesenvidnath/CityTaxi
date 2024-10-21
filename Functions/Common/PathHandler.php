@@ -95,4 +95,15 @@ function showLinkOnLoginPage($link) {
         echo $link;
     }
 }
+
+function showLinkOnRegisterPage($link) {
+    // Get the current page's filename
+    $currentPage = basename($_SERVER['PHP_SELF']);
+
+    // Check if the current page is 'profile.php'
+    if ($currentPage === 'register.php') {
+        // Echo the link tag
+        echo $link;
+    }
+}
 ?>

@@ -88,6 +88,11 @@
 
 
     <?php 
+        // Include the Security class
+        include_once $_SERVER['DOCUMENT_ROOT'] . '/CityTaxi/Functions/Common/Security.php';
+        $security = new Security();
+        $security->preventInspect();
+
         showLinkOnRide('<script src="/CityTaxi/Assets/Js/ride.js"></script>');
         showLinkOnDriverProfilePage( '<script src="/CityTaxi/Assets/Js/driver.js"></script>');
         showLinkOnRegister('<script src="/CityTaxi/Assets/Js/register.js"></script>')

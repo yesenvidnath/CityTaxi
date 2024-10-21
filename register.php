@@ -20,28 +20,29 @@ include 'TemplateParts/Header/header.php';
             <!-- Seperate Registration -->
 
             <div class="page slide-page">
-                <div class="container register-page center-content">
-                    
-                    <div class="row">
-
-                        <div class="col-6">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" class="firstNext btn btn-warning">Register as a Pas apple-btnsenger</button>
+                <div class="container register-page">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="text-center mb-5">
+                                <p class="lead" style="color: var(--apple-secondary);">Choose how you'd like to join us</p>
                             </div>
-                            <br>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" class="firstNext btn btn-warning">Register as a Dri apple-btnver</button>
-                            </div>
-                            <br>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <button type="button" class="firstNext btn btn-warning">Register as a Veh apple-btnicle Owner</button>
+                            <div class="d-flex flex-column align-items-center">
+                                <button type="button" class="firstNext apple-btn mb-3" style="width: 100%; max-width: 320px;">
+                                    Register as a Passenger
+                                </button>
+                                <button type="button" class="firstNext apple-btn mb-3" style="width: 100%; max-width: 320px;">
+                                    Register as a Driver
+                                </button>
+                                <button type="button" class="firstNext apple-btn mb-3" style="width: 100%; max-width: 320px;">
+                                    Register as a Vehicle Owner
+                                </button>
                             </div>
                         </div>
-
-                        <div class="col-6 image-section">
-                            <img src="Assets/Img/register_page_image.png" alt="Drive Image" class="img-fluid">
+                    </div>
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-8 col-lg-6">
+                            <img src="Assets/Img/register_page_image.png" alt="Drive Image" class="img-fluid rounded-3" style="width: 100%; max-width: 400px; display: block; margin: 0 auto;">
                         </div>
-
                     </div>
                 </div>
             </div>
