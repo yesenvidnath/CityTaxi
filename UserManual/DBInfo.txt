@@ -639,6 +639,7 @@ DELIMITER ;
 
 
 21.
+Prosedure Name : UpdateDriverAvailabilityByRideStatus
 DELIMITER $$
 
 CREATE PROCEDURE UpdateDriverAvailabilityByRideStatus(
@@ -662,6 +663,7 @@ DELIMITER ;
 
 
 22.
+Prosedure Name : AddReservationAndUpdateDriver
 DELIMITER //
 
 CREATE PROCEDURE AddReservationAndUpdateDriver(
